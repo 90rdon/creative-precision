@@ -251,23 +251,6 @@
       <p class="footer-copy">&copy; 2026 Gordon Chan. All rights reserved.</p>
     </div>
   </footer>
-  <script>
-    // Simple parallax effect for hero elements
-    window.addEventListener('scroll', () => {
-      const scrollY = window.scrollY;
-      const heroTag = document.querySelector('.hero-tag');
-      const heroH1 = document.querySelector('.hero h1');
-      const heroP = document.querySelector('.hero-p');
-      const heroCtas = document.querySelector('.hero-ctas');
-
-      if (scrollY < window.innerHeight) {
-        if (heroTag) heroTag.style.transform = `translateY(${scrollY * 0.1}px)`;
-        if (heroH1) heroH1.style.transform = `translateY(${scrollY * 0.25}px)`;
-        if (heroP) heroP.style.transform = `translateY(${scrollY * 0.15}px)`;
-        if (heroCtas) heroCtas.style.transform = `translateY(${scrollY * 0.05}px)`;
-      }
-    });
-  </script>
 </body>
 
 </html>

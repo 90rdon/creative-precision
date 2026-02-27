@@ -1,0 +1,27 @@
+{
+  "name": "reflect---executive-assessment",
+  "private": true,
+  "version": "0.0.0",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build:css": "npx tailwindcss -i src/style.css -o assets/style.css",
+    "build": "npm run build:css && vite build",
+    "preview": "vite preview",
+    "lint": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@google/genai": "^1.41.0",
+    "lucide-react": "^0.564.0",
+    "react": "^19.2.4",
+    "react-dom": "^19.2.4"
+  },
+  "devDependencies": {
+    "@tailwindcss/cli": "^4.2.0",
+    "@types/node": "^22.14.0",
+    "@vitejs/plugin-react": "^5.0.0",
+    "tailwindcss": "^4.2.0",
+    "typescript": "~5.8.2",
+    "vite": "^6.2.0"
+  }
+}

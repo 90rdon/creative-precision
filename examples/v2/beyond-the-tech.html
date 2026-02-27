@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>The Perspective — Creative Precision</title>
+  <meta name="description" content="Three observations about why AI fails at scale — and what the organizations getting it right are doing differently.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F4F1EB;
+      --cream-deep: #EBE7DF;
+      --linen: #FEFDFB;
+      --charcoal: #2A2520;
+      --charcoal-lt: #3A3530;
+      --stone: #6B6560;
+      --stone-lt: #9B9590;
+      --border: rgba(42,37,32,0.06);
+      --border-m: rgba(42,37,32,0.12);
+      --accent: #8B7355;
+      --accent-lt: rgba(139,115,85,0.08);
+      --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --sans: 'Libre Franklin', 'Helvetica Neue', Arial, sans-serif;
+      --max-w: 760px;
+      --max-w-wide: 960px;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--charcoal);
+      line-height: 1.65;
+      font-size: 15px;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(139,115,85,0.15); }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(244,241,235,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: var(--max-w-wide); margin: 0 auto; padding: 0.9rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; color: var(--charcoal); text-decoration: none; letter-spacing: -0.01em; }
+    .logo em { font-style: italic; color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 1.8rem; }
+    .nav-links a { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stone); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--charcoal); }
+    .nav-cta { background: var(--charcoal) !important; color: var(--cream) !important; padding: 0.5rem 1.1rem !important; border-radius: 2px; transition: background 0.2s !important; }
+    .nav-cta:hover { background: var(--charcoal-lt) !important; }
+
+    /* LAYOUT */
+    .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+    section { padding: 5rem 0; }
+    .divider { width: 40px; height: 1px; background: var(--border-m); margin: 0 auto; }
+
+    /* TYPOGRAPHY */
+    .h-xl { font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; color: var(--charcoal); }
+    .h-xl em { font-style: italic; }
+    .h-lg { font-family: var(--serif); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 400; line-height: 1.25; letter-spacing: -0.01em; color: var(--charcoal); }
+    .h-lg em { font-style: italic; }
+    .tag { font-family: var(--sans); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone-lt); }
+    .body-text { font-size: 0.95rem; line-height: 1.75; color: var(--stone); max-width: 540px; }
+    .body-text-sm { font-size: 0.82rem; line-height: 1.7; color: var(--stone-lt); }
+
+    /* BUTTONS */
+    .btn { display: inline-block; font-family: var(--sans); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 0.75rem 1.8rem; border-radius: 2px; transition: all 0.2s; }
+    .btn-primary { background: var(--charcoal); color: var(--cream); }
+    .btn-primary:hover { background: var(--charcoal-lt); }
+    .btn-ghost { background: transparent; color: var(--stone); border: 1px solid var(--border-m); }
+    .btn-ghost:hover { border-color: var(--charcoal); color: var(--charcoal); }
+
+    /* HERO */
+    .hero { padding: 10rem 0 4rem; text-align: center; }
+    .hero .tag { margin-bottom: 1.5rem; }
+    .hero .h-xl { margin-bottom: 1.5rem; }
+    .hero .body-text { margin: 0 auto; text-align: center; }
+
+    /* OBSERVATIONS */
+    .observation {
+      padding: 4rem 0;
+      border-top: 1px solid var(--border);
+    }
+    .obs-number {
+      font-family: var(--serif);
+      font-size: 4rem;
+      font-weight: 400;
+      color: var(--cream-deep);
+      line-height: 1;
+      margin-bottom: 1rem;
+    }
+    .observation .h-lg { margin-bottom: 1rem; }
+    .observation .body-text { margin-bottom: 0; }
+
+    /* CTA SECTION */
+    .cta-section {
+      text-align: center;
+      background: var(--linen);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .cta-section .h-lg { margin-bottom: 0.75rem; }
+    .cta-section .body-text { margin: 0 auto 2rem; text-align: center; }
+    .cta-actions { display: flex; gap: 1rem; justify-content: center; flex-wrap: wrap; }
+
+    /* FOOTER */
+    footer { padding: 3rem 0; text-align: center; border-top: 1px solid var(--border); }
+    .footer-brand { font-family: var(--serif); font-size: 0.9rem; color: var(--stone-lt); margin-bottom: 0.5rem; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 0.5rem; }
+    .footer-links a { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stone-lt); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--charcoal); }
+    .footer-sig { font-family: var(--serif); font-size: 0.82rem; font-style: italic; color: var(--stone-lt); margin-top: 0.5rem; }
+
+    @media (max-width: 768px) {
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero { padding: 8rem 0 3rem; }
+      .cta-actions { flex-direction: column; align-items: center; }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .hero .tag { animation: fadeUp 0.6s ease both; }
+    .hero .h-xl { animation: fadeUp 0.6s ease 0.1s both; }
+    .hero .body-text { animation: fadeUp 0.6s ease 0.2s both; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Creative <em>Precision.</em></a>
+      <div class="nav-links">
+        <a href="beyond-the-tech.html">The Perspective</a>
+        <a href="playbooks.html">Playbooks</a>
+        <a href="assessment.html" class="nav-cta">Free Assessment</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO — Provocation -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="tag">The Perspective</p>
+      <h1 class="h-xl">Three things I keep seeing<br>that nobody's <em>saying.</em></h1>
+      <p class="body-text">After 14 years building AI systems inside enterprises, these are the patterns that keep showing up — in every industry, at every scale.</p>
+    </div>
+  </section>
+
+  <!-- OBSERVATION 1 — Recognition -->
+  <section class="observation">
+    <div class="wrap">
+      <div class="obs-number">01</div>
+      <h2 class="h-lg">The most expensive AI projects <em>aren't failing</em><br>because the models are wrong.</h2>
+      <p class="body-text">They're failing because the organization around them wasn't designed for them. The approval workflows, the risk reviews, the compliance checks — all built for a world where humans made every decision. AI doesn't need that process. It needs a different one.</p>
+      <p class="body-text" style="margin-top: 1rem;">The organizations pulling ahead didn't add AI to their existing operating model. They asked whether that model should still exist at all.</p>
+    </div>
+  </section>
+
+  <!-- OBSERVATION 2 — Recognition -->
+  <section class="observation">
+    <div class="wrap">
+      <div class="obs-number">02</div>
+      <h2 class="h-lg">Governance is the <em>accelerator,</em><br>not the brake.</h2>
+      <p class="body-text">Deloitte surveyed 3,235 AI leaders. Their finding: organizations with mature governance frameworks scale AI faster and more profitably than those without. Governance doesn't slow things down — the absence of it does. Every stalled pilot, every compliance review that takes months, every legal hold on deployment — that's what happens without a system.</p>
+      <p class="body-text" style="margin-top: 1rem;">The right framework turns governance from a bottleneck into the thing that gets AI into production.</p>
+    </div>
+  </section>
+
+  <!-- OBSERVATION 3 — Aspiration -->
+  <section class="observation">
+    <div class="wrap">
+      <div class="obs-number">03</div>
+      <h2 class="h-lg">The regulatory clock<br>is already <em>running.</em></h2>
+      <p class="body-text">The EU AI Act is in force. NIST AI RMF is the U.S. standard. ISO 42001 is becoming the procurement baseline. Organizations that treat compliance as a future problem are going to discover it's a present one — with fines up to €35 million and market access at stake.</p>
+      <p class="body-text" style="margin-top: 1rem;">The ones moving now aren't doing it out of fear. They're doing it because early alignment is a competitive advantage, not just a legal obligation.</p>
+    </div>
+  </section>
+
+  <!-- CTA — Action -->
+  <section class="cta-section">
+    <div class="wrap">
+      <h2 class="h-lg">Curious where you <em>stand?</em></h2>
+      <p class="body-text">Five minutes. An AI-powered reflection on your organization's AI posture. No pitch. Just sharper questions than the ones you're being asked.</p>
+      <div class="cta-actions">
+        <a href="assessment.html" class="btn btn-primary">Start the Assessment</a>
+        <a href="playbooks.html" class="btn btn-ghost">See the Playbooks</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <p class="footer-brand">Gordon Chan · Creative Precision</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
+        <a href="assessment.html">Assessment</a>
+        <a href="index.html">Home</a>
+      </div>
+      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
+    </div>
+  </footer>
+
+</body>
+</html>

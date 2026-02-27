@@ -4,72 +4,164 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Creative Precision | AI Governance, Redesigned</title>
+  <title>Reflect. — AI Leadership Assessment</title>
   <meta name="description"
-    content="Precision Governance: AI governance designed for AI. The framework between your AI investment and production value. By Gordon Chan.">
-  <meta property="og:title" content="Creative Precision | AI Governance, Redesigned">
-  <meta property="og:description" content="Most governance wasn't designed for AI. Precision Governance is.">
-  <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
+    content="A 5-minute AI-powered reflection on your organization's AI governance posture. No pitch. Just sharper questions than the ones you're being asked.">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Libre+Franklin:wght@300;400;500;600;700&display=swap"
-    rel="stylesheet">
-  <link
-    href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap"
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
-  <script type="importmap">
-  {
-    "imports": {
-      "react/": "https://esm.sh/react@^19.2.4/",
-      "react": "https://esm.sh/react@^19.2.4",
-      "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-      "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
-      "lucide-react": "https://esm.sh/lucide-react@^0.564.0"
-    }
-  }
-  </script>
-  <style>
-    body {
-      -webkit-font-smoothing: antialiased;
-    }
-
-    ::-webkit-scrollbar {
-      width: 6px;
-    }
-
-    ::-webkit-scrollbar-track {
-      background: transparent;
-    }
-
-    ::-webkit-scrollbar-thumb {
-      background-color: #D1D1CB;
-      border-radius: 20px;
-    }
-  </style>
 </head>
 
 <body>
 
-  <!-- ═══════════════ NAV ═══════════════ -->
+  <!-- NAV -->
   <nav>
-    <div class="wrap">
+    <div class="nav-inner">
       <a href="index.html" class="logo">Creative <em>Precision.</em></a>
-      <div class="nav-r">
-        <a href="beyond-the-tech.html">Beyond the Tech</a>
-        <a href="index.html#access">Early Access</a>
-        <a href="reflect.html" class="nav-cta">Take the Assessment</a>
+      <div class="nav-links">
+        <a href="perspective.html">The Perspective</a>
+        <a href="playbooks.html">Playbooks</a>
+        <a href="assessment.html" class="nav-cta">Free Assessment</a>
       </div>
     </div>
   </nav>
 
-  <div id="root"
-    style="width: 100%; margin-top: 76px; height: calc(100vh - 76px); overflow: hidden; background-color: #F3F3EF;">
-  </div>
+  <!-- SECTION 1: THE GATE — Hero CTA -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="tag">Reflect.</p>
+      <h1 class="h-xl">The questions most people around you<br><em>won't ask.</em></h1>
+      <p class="body-text">Most AI projects don't fail because of the technology. They fail because nobody asked the
+        harder questions about the system around it. This is a 5-minute AI-powered conversation about your
+        organization's AI posture. Not a quiz. Not a sales tool. A mirror.</p>
+      <a href="assessment.html" class="btn btn-primary btn-lg">Start the Assessment</a>
+    </div>
+  </section>
 
-  <script type="module" src="dist/assets/app.js"></script>
+  <!-- SECTION 2: WHAT THIS IS / ISN'T / WHO IT'S FOR -->
+  <section class="clarity">
+    <div class="wrap-wide">
+      <div class="clarity-grid">
+        <div class="clarity-card">
+          <p class="tag">What this is</p>
+          <p class="h-md">A thinking partner.</p>
+          <p class="body-text-sm">An AI that listens to how you describe your organization's AI challenges — then
+            reflects back what it hears. Patterns you might not have named yet.</p>
+        </div>
+        <div class="clarity-card">
+          <p class="tag">What this isn't</p>
+          <p class="h-md">A lead generation form.</p>
+          <p class="body-text-sm">No gates. No required email. No sales follow-up. You get value whether or not you ever
+            hear from me again.</p>
+        </div>
+        <div class="clarity-card">
+          <p class="tag">Who it's for</p>
+          <p class="h-md">AI leaders making decisions.</p>
+          <p class="body-text-sm">CTOs, VPs, Directors — anyone responsible for getting AI from ambition to production.
+            If you're spending on AI but not sure it's working, this is for you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: THREE DELIVERABLES -->
+  <section class="deliverables">
+    <div class="wrap-wide">
+      <p class="tag">What you get</p>
+      <h2 class="h-lg">Three things. <em>Five minutes.</em></h2>
+      <div class="del-grid">
+        <div class="del-card">
+          <p class="h-md">Governance Posture Score</p>
+          <p class="body-text-sm">Where your organization sits across strategy, risk, compliance, and operational
+            readiness. Benchmarked against what mature AI organizations look like.</p>
+        </div>
+        <div class="del-card">
+          <p class="h-md">Gap Analysis</p>
+          <p class="body-text-sm">The specific areas where your current approach has blind spots — and which ones matter
+            most based on your industry and scale.</p>
+        </div>
+        <div class="del-card">
+          <p class="h-md">Priority Roadmap</p>
+          <p class="body-text-sm">Three concrete next moves. Not a 90-page consulting deck. Three things you could start
+            this week that would move the needle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: HOW IT WORKS -->
+  <section class="how-it-works">
+    <div class="wrap-wide">
+      <p class="tag">How it works</p>
+      <h2 class="h-lg">Four steps. No <em>forms.</em></h2>
+      <div class="steps">
+        <div>
+          <div class="step-num">1</div>
+          <p class="step-title">Describe</p>
+          <p class="step-desc">Tell the AI about your current AI challenges in your own words. Type or use voice.</p>
+        </div>
+        <div>
+          <div class="step-num">2</div>
+          <p class="step-title">Reflect</p>
+          <p class="step-desc">The AI asks follow-up questions. Not a checklist — a conversation that adapts to what you
+            share.</p>
+        </div>
+        <div>
+          <div class="step-num">3</div>
+          <p class="step-title">Score</p>
+          <p class="step-desc">Receive your governance posture score with specific strengths and gaps identified.</p>
+        </div>
+        <div>
+          <div class="step-num">4</div>
+          <p class="step-title">Act</p>
+          <p class="step-desc">Get your priority roadmap — three moves, this week, that change the trajectory.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: BOTTOM CTA REPEAT -->
+  <section class="bottom-cta">
+    <div class="wrap">
+      <h2 class="h-lg">Ready to find out what you're <em>not seeing?</em></h2>
+      <p class="body-text">The assessment is free. The insights are yours to keep. No email required.</p>
+      <a href="assessment.html" class="btn btn-primary btn-lg">Start the Assessment</a>
+      <p class="body-text-sm" style="margin-top: 1rem; text-align: center;">Built on the Creative Precision Governance
+        Fabric · NIST AI RMF · ISO 42001 · EU AI Act</p>
+    </div>
+  </section>
+
+  <!-- TRUST SIGNAL — For cold traffic -->
+  <section style="padding: 3.5rem 0; border-top: 1px solid var(--border);">
+    <div class="wrap" style="text-align: center;">
+      <div
+        style="width: 56px; height: 56px; border-radius: 50%; background: var(--cream-deep); border: 2px solid var(--border-m); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 1.1rem; font-weight: 500; color: var(--stone);">
+        GC</div>
+      <p style="font-family: var(--serif); font-size: 1.1rem; color: var(--charcoal); margin-bottom: 0.35rem;">Gordon
+        Chan</p>
+      <p class="body-text-sm" style="max-width: 400px; margin: 0 auto 1.25rem; text-align: center;">14 years building AI
+        systems, governance frameworks, and centers of excellence inside enterprises. This assessment is built on what
+        I've shipped — not theory.</p>
+      <a href="index.html" class="btn btn-ghost" style="font-size: 0.68rem;">Explore Creative Precision</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <p class="footer-brand">Gordon Chan · Creative Precision</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
+        <a href="index.html">Home</a>
+        <a href="perspective.html">The Perspective</a>
+      </div>
+      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
+    </div>
+  </footer>
+
 </body>
 
 </html>

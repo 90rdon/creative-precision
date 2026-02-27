@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Playbooks — Creative Precision</title>
+  <meta name="description" content="Practitioner-built AI governance playbooks. From free assessment to full regulatory compliance — designed to get AI from stuck to shipped.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F4F1EB;
+      --cream-deep: #EBE7DF;
+      --linen: #FEFDFB;
+      --charcoal: #2A2520;
+      --charcoal-lt: #3A3530;
+      --stone: #6B6560;
+      --stone-lt: #9B9590;
+      --border: rgba(42,37,32,0.06);
+      --border-m: rgba(42,37,32,0.12);
+      --accent: #8B7355;
+      --accent-lt: rgba(139,115,85,0.08);
+      --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --sans: 'Libre Franklin', 'Helvetica Neue', Arial, sans-serif;
+      --max-w: 760px;
+      --max-w-wide: 960px;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--cream); color: var(--charcoal); line-height: 1.65; font-size: 15px; font-weight: 400; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(139,115,85,0.15); }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(244,241,235,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: var(--max-w-wide); margin: 0 auto; padding: 0.9rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; color: var(--charcoal); text-decoration: none; letter-spacing: -0.01em; }
+    .logo em { font-style: italic; color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 1.8rem; }
+    .nav-links a { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stone); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--charcoal); }
+    .nav-cta { background: var(--charcoal) !important; color: var(--cream) !important; padding: 0.5rem 1.1rem !important; border-radius: 2px; transition: background 0.2s !important; }
+    .nav-cta:hover { background: var(--charcoal-lt) !important; }
+
+    /* LAYOUT */
+    .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+    .wrap-wide { max-width: var(--max-w-wide); margin: 0 auto; padding: 0 2rem; }
+    section { padding: 5rem 0; }
+    .divider { width: 40px; height: 1px; background: var(--border-m); margin: 0 auto; }
+
+    /* TYPOGRAPHY */
+    .h-xl { font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; color: var(--charcoal); }
+    .h-xl em { font-style: italic; }
+    .h-lg { font-family: var(--serif); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 400; line-height: 1.25; letter-spacing: -0.01em; color: var(--charcoal); }
+    .h-lg em { font-style: italic; }
+    .h-md { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; color: var(--charcoal); }
+    .tag { font-family: var(--sans); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone-lt); }
+    .body-text { font-size: 0.95rem; line-height: 1.75; color: var(--stone); max-width: 540px; }
+    .body-text-sm { font-size: 0.82rem; line-height: 1.7; color: var(--stone-lt); }
+
+    /* BUTTONS */
+    .btn { display: inline-block; font-family: var(--sans); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 0.75rem 1.8rem; border-radius: 2px; transition: all 0.2s; }
+    .btn-primary { background: var(--charcoal); color: var(--cream); }
+    .btn-primary:hover { background: var(--charcoal-lt); }
+    .btn-ghost { background: transparent; color: var(--stone); border: 1px solid var(--border-m); }
+    .btn-ghost:hover { border-color: var(--charcoal); color: var(--charcoal); }
+
+    /* HERO */
+    .hero { padding: 10rem 0 4rem; text-align: center; }
+    .hero .tag { margin-bottom: 1.5rem; }
+    .hero .h-xl { margin-bottom: 1.5rem; }
+    .hero .body-text { margin: 0 auto; text-align: center; }
+
+    /* PRODUCTS GRID */
+    .products {
+      background: var(--linen);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .products .tag { text-align: center; margin-bottom: 2.5rem; }
+    .tier-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+    }
+    .tier-card {
+      padding: 2rem;
+      background: var(--cream);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+      position: relative;
+    }
+    .tier-card.live {
+      border-color: var(--charcoal);
+      background: white;
+    }
+    .tier-badge {
+      display: inline-block;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 0.25rem 0.6rem;
+      border-radius: 2px;
+      margin-bottom: 1rem;
+    }
+    .badge-live {
+      background: var(--charcoal);
+      color: var(--cream);
+    }
+    .badge-soon {
+      background: var(--cream-deep);
+      color: var(--stone-lt);
+    }
+    .tier-card .h-md { margin-bottom: 0.35rem; }
+    .tier-price {
+      font-family: var(--serif);
+      font-size: 1.5rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      margin-bottom: 0.75rem;
+    }
+    .tier-price .price-original {
+      text-decoration: line-through;
+      color: var(--stone-lt);
+      font-size: 1.1rem;
+      font-weight: 400;
+      margin-right: 0.35rem;
+    }
+    .tier-price .price-note {
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 400;
+      color: var(--stone-lt);
+    }
+    .tier-body {
+      font-size: 0.82rem;
+      color: var(--stone);
+      line-height: 1.65;
+      margin-bottom: 1.25rem;
+    }
+    .tier-includes {
+      font-size: 0.75rem;
+      color: var(--stone-lt);
+      line-height: 1.8;
+    }
+    .tier-includes span {
+      display: block;
+    }
+    .tier-card .btn { margin-top: 1.25rem; }
+
+    /* FOUNDING ACCESS */
+    .founding {
+      text-align: center;
+    }
+    .founding .h-lg { margin-bottom: 0.75rem; }
+    .founding .body-text { margin: 0 auto 2rem; text-align: center; }
+    .capture-form {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .capture-form input {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      border: 1px solid var(--border-m);
+      border-radius: 2px;
+      background: var(--linen);
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .capture-form input:focus { border-color: var(--accent); }
+    .capture-form button {
+      padding: 0.7rem 1.4rem;
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--charcoal);
+      color: var(--cream);
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .capture-form button:hover { background: var(--charcoal-lt); }
+
+    /* SERVICES */
+    .services {
+      background: var(--linen);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .services .h-lg { margin-bottom: 0.75rem; }
+    .services .body-text { margin: 0 auto 2rem; text-align: center; }
+    .service-card {
+      max-width: 520px;
+      margin: 0 auto;
+      padding: 2rem;
+      background: var(--cream);
+      border: 1px solid var(--border-m);
+      border-radius: 2px;
+      text-align: left;
+    }
+    .service-card .h-md { margin-bottom: 0.35rem; }
+    .service-card .tier-price { margin-bottom: 0.75rem; }
+    .service-card .tier-body { margin-bottom: 0; }
+
+    /* FOOTER */
+    footer { padding: 3rem 0; text-align: center; border-top: 1px solid var(--border); }
+    .footer-brand { font-family: var(--serif); font-size: 0.9rem; color: var(--stone-lt); margin-bottom: 0.5rem; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 0.5rem; }
+    .footer-links a { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stone-lt); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--charcoal); }
+    .footer-sig { font-family: var(--serif); font-size: 0.82rem; font-style: italic; color: var(--stone-lt); margin-top: 0.5rem; }
+
+    @media (max-width: 768px) {
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero { padding: 8rem 0 3rem; }
+      .tier-grid { grid-template-columns: 1fr; }
+      .capture-form { flex-direction: column; }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .hero .tag { animation: fadeUp 0.6s ease both; }
+    .hero .h-xl { animation: fadeUp 0.6s ease 0.1s both; }
+    .hero .body-text { animation: fadeUp 0.6s ease 0.2s both; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Creative <em>Precision.</em></a>
+      <div class="nav-links">
+        <a href="beyond-the-tech.html">The Perspective</a>
+        <a href="playbooks.html">Playbooks</a>
+        <a href="assessment.html" class="nav-cta">Free Assessment</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- HERO -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="tag">Playbooks</p>
+      <h1 class="h-xl">Everything I've built.<br>Available to <em>deploy.</em></h1>
+      <p class="body-text">Practitioner-built governance frameworks, risk routing toolkits, and regulatory compliance packs. Designed to get AI from stuck to shipped — in weeks, not months.</p>
+    </div>
+  </section>
+
+  <!-- PRODUCT TIERS -->
+  <section class="products">
+    <div class="wrap-wide">
+      <p class="tag">Product Catalog</p>
+      <div class="tier-grid">
+
+        <!-- TIER 0: REFLECT — LIVE -->
+        <div class="tier-card live">
+          <span class="tier-badge badge-live">Available Now</span>
+          <p class="h-md">Reflect.</p>
+          <div class="tier-price">Free</div>
+          <p class="tier-body">AI-powered governance assessment. Five minutes, no pitch. Get your posture score, gap analysis, and three priority moves.</p>
+          <a href="assessment.html" class="btn btn-primary">Start the Assessment</a>
+        </div>
+
+        <!-- TIER 1: RISK & ROUTING -->
+        <div class="tier-card">
+          <span class="tier-badge badge-soon">Coming Soon</span>
+          <p class="h-md">Risk & Routing Toolkit</p>
+          <div class="tier-price"><span class="price-original">$197</span> $149 <span class="price-note">Founding Access</span></div>
+          <p class="tier-body">Risk classification matrix, routing decision tree, and governance-lite templates for teams deploying their first AI systems.</p>
+          <div class="tier-includes">
+            <span>↳ AI risk tiering framework</span>
+            <span>↳ Routing decision templates</span>
+            <span>↳ Quick-start governance guide</span>
+          </div>
+        </div>
+
+        <!-- TIER 2: GOVERNANCE-IN-A-BOX -->
+        <div class="tier-card">
+          <span class="tier-badge badge-soon">Coming Soon</span>
+          <p class="h-md">Governance-in-a-Box</p>
+          <div class="tier-price"><span class="price-original">$697</span> $597 <span class="price-note">Founding Access</span></div>
+          <p class="tier-body">The complete operating framework. Everything you need to stand up AI governance from scratch — policies, workflows, model cards, and change management.</p>
+          <div class="tier-includes">
+            <span>↳ Everything in Risk & Routing</span>
+            <span>↳ Full Governance Fabric templates</span>
+            <span>↳ Model card & documentation system</span>
+            <span>↳ Change management playbook</span>
+          </div>
+        </div>
+
+        <!-- TIER 3: GOVERNANCE + REGULATORY -->
+        <div class="tier-card">
+          <span class="tier-badge badge-soon">Coming Soon</span>
+          <p class="h-md">Governance + Regulatory Compliance</p>
+          <div class="tier-price"><span class="price-original">$1,497</span> $997 <span class="price-note">Founding Access</span></div>
+          <p class="tier-body">Governance-in-a-Box plus complete regulatory alignment. NIST AI RMF traceability, ISO 42001 control mapping, and EU AI Act Annex IV compliance.</p>
+          <div class="tier-includes">
+            <span>↳ Everything in Governance-in-a-Box</span>
+            <span>↳ NIST AI RMF traceability matrix</span>
+            <span>↳ ISO 42001 control mapping</span>
+            <span>↳ EU AI Act compliance checklist</span>
+            <span>↳ Declaration of Conformity template</span>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- FOUNDING ACCESS EMAIL CAPTURE -->
+  <section class="founding">
+    <div class="wrap">
+      <h2 class="h-lg">Founding <em>Access.</em></h2>
+      <p class="body-text">Launch pricing for the first wave. Get notified when playbooks go live — and lock in the founding price before it goes up.</p>
+      <div class="capture-form">
+        <input type="email" placeholder="Your email" aria-label="Email address">
+        <button type="submit">Get Founding Access</button>
+      </div>
+      <p class="body-text-sm" style="margin-top: 0.75rem; text-align: center;">No spam. Unsubscribe anytime. Founding pricing ends after 50 customers or 30 days.</p>
+    </div>
+  </section>
+
+  <!-- SERVICES -->
+  <section class="services">
+    <div class="wrap">
+      <h2 class="h-lg">Need hands-on <em>help?</em></h2>
+      <p class="body-text">Some organizations need more than a playbook. Implementation sessions bring everything above to life inside your specific environment.</p>
+      <div class="service-card">
+        <p class="h-md">Implementation Sessions</p>
+        <p class="tier-body">1:1 working sessions to deploy the Governance Fabric inside your organization. Tailored to your industry, scale, and regulatory requirements. Includes framework customization, team enablement, and a 90-day implementation roadmap.</p>
+        <a href="https://www.linkedin.com/in/gordonychan/" target="_blank" class="btn btn-primary" style="margin-top: 0.75rem;">Schedule a Conversation</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <p class="footer-brand">Gordon Chan · Creative Precision</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
+        <a href="assessment.html">Assessment</a>
+        <a href="index.html">Home</a>
+      </div>
+      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
+    </div>
+  </footer>
+
+</body>
+</html>

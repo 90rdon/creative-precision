@@ -42,23 +42,23 @@ async function decodeAudioData(
 
 // --- Visualizer Helper: Organic Blob ---
 const drawBlob = (
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  volume: number,
+  ctx: CanvasRenderingContext2D, 
+  width: number, 
+  height: number, 
+  volume: number, 
   time: number
 ) => {
   ctx.clearRect(0, 0, width, height);
-
+  
   // Base settings
   const centerX = width / 2;
   const centerY = height / 2;
   // Volume usually 0-255. Normalize to 0-1 for scaling.
-  const intensity = Math.min(1, volume / 50);
+  const intensity = Math.min(1, volume / 50); 
   const baseRadius = 20 + (intensity * 15);
-
+  
   ctx.beginPath();
-
+  
   // Create a blob shape using sine waves
   for (let i = 0; i <= 360; i += 10) {
     const angle = (i * Math.PI) / 180;
@@ -67,13 +67,13 @@ const drawBlob = (
     const r = baseRadius + noise;
     const x = centerX + Math.cos(angle) * r;
     const y = centerY + Math.sin(angle) * r;
-
+    
     if (i === 0) ctx.moveTo(x, y);
     else ctx.lineTo(x, y);
   }
-
+  
   ctx.closePath();
-
+  
   // Gradient Fill
   const gradient = ctx.createRadialGradient(centerX, centerY, baseRadius * 0.2, centerX, centerY, baseRadius * 2);
   gradient.addColorStop(0, 'rgba(57, 85, 75, 0.8)'); // Forest-800
@@ -85,7 +85,7 @@ const drawBlob = (
   // Inner Core
   ctx.beginPath();
   ctx.arc(centerX, centerY, 4 + (intensity * 2), 0, Math.PI * 2);
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#F0EDE6';
+  ctx.fillStyle = '#F3F3EF'; // Sand-100
   ctx.fill();
 };
 
@@ -93,7 +93,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   // UI State
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
-  const [interimInput, setInterimInput] = useState('');
+  const [interimInput, setInterimInput] = useState(''); 
   const [isLoading, setIsLoading] = useState(false);
   const [voiceMode, setVoiceMode] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
@@ -107,7 +107,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const inputRef = useRef(''); // Syncs with input state for closures
   const voiceModeRef = useRef(false); // Syncs with voiceMode state for robust callbacks
   const voiceStatusRef = useRef<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
-
+  
   // Audio Refs
   const audioCtxRef = useRef<AudioContext | null>(null);
   const sourceRef = useRef<AudioBufferSourceNode | null>(null);
@@ -115,7 +115,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const analyserRef = useRef<AnalyserNode | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const animationRef = useRef<number | null>(null);
-
+  
   // Audio Queue Refs
   const audioQueueRef = useRef<AudioBuffer[]>([]);
   const isPlayingQueueRef = useRef(false);
@@ -150,12 +150,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       if (!streamRef.current) {
         streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
       }
-
+      
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!audioCtxRef.current) {
         audioCtxRef.current = new AudioContextClass();
       }
-
+      
       const ctx = audioCtxRef.current;
       if (ctx.state === 'suspended') await ctx.resume();
 
@@ -170,14 +170,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
           const bufferLength = analyserRef.current.frequencyBinCount;
           const dataArray = new Uint8Array(bufferLength);
           analyserRef.current.getByteFrequencyData(dataArray);
-
+          
           let sum = 0;
-          for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
+          for(let i = 0; i < bufferLength; i++) sum += dataArray[i];
           const avg = sum / bufferLength;
 
           const canvasCtx = canvasRef.current.getContext('2d');
           if (canvasCtx) {
-            drawBlob(canvasCtx, canvasRef.current.width, canvasRef.current.height, avg, time);
+             drawBlob(canvasCtx, canvasRef.current.width, canvasRef.current.height, avg, time);
           }
         }
         animationRef.current = requestAnimationFrame(animate);
@@ -228,12 +228,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         // If voice mode is still ON, and we aren't currently speaking or processing,
         // then the browser stopped listening unexpectedly (silence timeout). Restart it.
         if (voiceModeRef.current && voiceStatusRef.current !== 'speaking' && voiceStatusRef.current !== 'processing') {
-          setTimeout(() => {
-            if (voiceModeRef.current && voiceStatusRef.current !== 'speaking' && voiceStatusRef.current !== 'processing') {
-              console.log("🔄 Restarting microphone loop...");
-              try { recognition.start(); } catch (e) { /* ignore */ }
-            }
-          }, 300);
+           setTimeout(() => {
+             if (voiceModeRef.current && voiceStatusRef.current !== 'speaking' && voiceStatusRef.current !== 'processing') {
+               console.log("🔄 Restarting microphone loop...");
+               try { recognition.start(); } catch (e) { /* ignore */ }
+             }
+           }, 300);
         }
       };
 
@@ -275,25 +275,25 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
           setInput(next);
           inputRef.current = next;
           setInterimInput('');
-
+          
           // Fast debounce (1.2s) for final results -> Feels snappy
           silenceTimerRef.current = setTimeout(() => {
             console.log("🚀 Sending message due to final silence detection");
             handleSend(next);
-          }, 1200);
+          }, 1200); 
         } else if (interimTrans) {
           console.log("👂 Interim Voice Input:", interimTrans);
           setInterimInput(interimTrans);
           // Slower debounce (2s) for interim (mid-thought pauses)
           silenceTimerRef.current = setTimeout(() => {
-            console.log("🚀 Sending message due to interim silence detection");
-            const current = inputRef.current;
-            const combined = (current + ' ' + interimTrans).trim();
-            handleSend(combined);
+             console.log("🚀 Sending message due to interim silence detection");
+             const current = inputRef.current;
+             const combined = (current + ' ' + interimTrans).trim();
+             handleSend(combined);
           }, 2000);
         }
       };
-
+      
       recognitionRef.current = recognition;
     }
 
@@ -302,7 +302,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     } catch (e) {
       // already started or starting
     }
-  }, []);
+  }, []); 
 
   const stopListening = useCallback(() => {
     if (recognitionRef.current) {
@@ -345,12 +345,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       const source = ctx.createBufferSource();
       source.buffer = buffer;
       source.connect(ctx.destination);
-
+      
       source.onended = () => {
         isPlayingQueueRef.current = false;
         playNextInQueue();
       };
-
+      
       sourceRef.current = source;
       source.start();
     } catch (e) {
@@ -363,7 +363,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const queueSpeech = async (text: string) => {
     if (!text.trim()) return;
     console.log("🎵 Queuing speech for:", text.substring(0, 30) + "...");
-
+    
     try {
       const base64 = await generateSpeech(text);
       if (!base64) return;
@@ -371,10 +371,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
       if (!audioCtxRef.current) audioCtxRef.current = new AudioContextClass();
       const ctx = audioCtxRef.current;
-
+      
       const bytes = decode(base64);
       const buffer = await decodeAudioData(bytes, ctx);
-
+      
       audioQueueRef.current.push(buffer);
       playNextInQueue();
     } catch (e) {
@@ -388,7 +388,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     audioQueueRef.current = []; // Clear queue
     isPlayingQueueRef.current = false;
     if (sourceRef.current) {
-      try { sourceRef.current.stop(); } catch (e) { }
+      try { sourceRef.current.stop(); } catch(e) {}
     }
     await queueSpeech(text);
   };
@@ -409,7 +409,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       console.log("▶️ Voice mode toggled ON");
       setVoiceMode(true);
       await startVisualizer();
-
+      
       // Feature: Speak the last message (greeting) if it exists and hasn't been spoken
       const lastMsg = messages[messages.length - 1];
       if (lastMsg && lastMsg.role === 'model' && !lastMsg.isStreaming) {
@@ -432,19 +432,19 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     inputRef.current = '';
     setInterimInput('');
     setIsLoading(true);
-
+    
     // Reset streaming state
     sentenceBufferRef.current = '';
     processedSentencesRef.current.clear();
     audioQueueRef.current = [];
     isPlayingQueueRef.current = false;
     if (sourceRef.current) {
-      try { sourceRef.current.stop(); } catch (e) { }
+      try { sourceRef.current.stop(); } catch(e) {}
     }
 
     if (voiceMode) {
-      setVoiceStatus('processing');
-      stopListening();
+       setVoiceStatus('processing');
+       stopListening(); 
     }
 
     const userMsg: Message = { role: 'user', text: textToSend };
@@ -452,14 +452,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
     try {
       const streamResult = await chatRef.current.sendMessageStream({ message: userMsg.text });
-
+      
       let fullText = '';
       setMessages(prev => [...prev, { role: 'model', text: '', isStreaming: true }]);
 
       for await (const chunk of streamResult) {
         const text = (chunk as GenerateContentResponse).text || '';
         fullText += text;
-
+        
         // Update UI
         setMessages(prev => {
           const copy = [...prev];
@@ -470,17 +470,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         // Streaming TTS logic
         if (voiceModeRef.current) {
           sentenceBufferRef.current += text;
-
+          
           // Split by sentence boundaries but keep the boundary
           const sentences = sentenceBufferRef.current.split(/(?<=[.!?])\s+/);
-
+          
           if (sentences.length > 1) {
             let combinedSentence = "";
             for (let i = 0; i < sentences.length - 1; i++) {
               const sentence = sentences[i].trim();
               if (sentence) {
                 combinedSentence += (combinedSentence ? " " : "") + sentence;
-
+                
                 // If combined sentence is long enough (e.g. > 20 chars) or it's the last complete one
                 if (combinedSentence.length > 20 || i === sentences.length - 2) {
                   if (!processedSentencesRef.current.has(combinedSentence)) {
@@ -518,7 +518,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       console.error("Chat error", error);
       setIsLoading(false);
       if (voiceModeRef.current) {
-        startListening();
+         startListening(); 
       }
     }
   };
@@ -527,218 +527,124 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const isReadyForResults = messages.length > 4 && messages[messages.length - 1].role === 'model';
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      overflow: 'hidden',
-      fontFamily: 'var(--sans)',
-    }}>
-
-      {/* Chat Container */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        background: 'var(--linen)',
-        border: '1px solid var(--border-m)',
-        borderRadius: '8px',
-        margin: '0.75rem 0',
-      }}>
-
-        {/* Session Label */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.5rem',
-          padding: '1.25rem 1rem 0.75rem',
-          flexShrink: 0,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              background: voiceStatus === 'listening' ? 'var(--charcoal)' : 'var(--accent)',
-              opacity: voiceStatus === 'listening' ? 1 : 0.5,
-              transition: 'all 0.3s',
-            }} />
-            <span style={{
-              fontSize: '0.78rem',
-              fontWeight: 500,
-              color: 'var(--stone)',
-              letterSpacing: '0.01em',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-            }}>
-              {voiceStatus === 'processing' ? <><Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Reflecting...</> :
-                voiceStatus === 'speaking' ? <><Volume2 size={12} style={{ animation: 'pulse 2s infinite' }} /> Speaking...</> :
-                  voiceStatus === 'listening' ? 'Listening...' :
-                    'Reflection Session'}
-            </span>
-          </div>
-
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
-            {micError && (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '0.25rem',
-                color: '#dc2626', fontSize: '0.7rem', background: '#fef2f2',
-                padding: '0.2rem 0.5rem', borderRadius: '4px',
-              }}>
-                <AlertCircle size={12} /> {micError}
-              </div>
-            )}
-
-            {isReadyForResults && (
-              <button
-                onClick={() => onComplete(messages)}
-                style={{
-                  fontFamily: 'var(--sans)', fontSize: '0.68rem', fontWeight: 600,
-                  letterSpacing: '0.06em', textTransform: 'uppercase',
-                  background: 'var(--charcoal)', color: 'var(--cream, #F4F1EB)',
-                  border: 'none', padding: '0.45rem 1rem', borderRadius: '2px',
-                  cursor: 'pointer', transition: 'background 0.2s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--charcoal-lt)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--charcoal)')}
-              >
-                Generate Assessment
-              </button>
-            )}
-          </div>
+    <div className="flex flex-col h-[85vh] max-w-4xl mx-auto w-full bg-sand-50 rounded-lg shadow-sm border border-stone-200 overflow-hidden relative font-sans">
+      
+      {/* Header */}
+      <div className="bg-white border-b border-stone-100 p-4 flex justify-between items-center z-20">
+        <div className="flex items-center gap-3">
+          <div className={`w-2 h-2 rounded-full transition-all duration-500 ${voiceStatus === 'listening' ? 'bg-forest-800 scale-125 shadow-sm' : voiceStatus === 'speaking' ? 'bg-sand-400' : 'bg-stone-300'}`} />
+          <span className="font-medium text-stone-500 transition-all duration-300 flex items-center gap-2 text-sm tracking-tight">
+            {voiceStatus === 'processing' ? <><Loader2 size={12} className="animate-spin" /> Reflecting...</> : 
+             voiceStatus === 'speaking' ? <><Volume2 size={12} className="animate-pulse" /> Speaking...</> : 
+             voiceStatus === 'listening' ? (interimInput ? 'Listening...' : 'Listening...') : 
+             'Reflection Session'}
+          </span>
         </div>
+        
+        {micError && (
+          <div className="flex items-center gap-1 text-red-600 text-xs bg-red-50 px-2 py-1 rounded">
+            <AlertCircle size={12} /> {micError}
+          </div>
+        )}
 
-        {/* Messages */}
-        <div style={{
-          flex: 1, overflowY: 'auto', padding: '1rem 1.25rem',
-          display: 'flex', flexDirection: 'column', gap: '1.5rem',
-        }}>
-          {messages.map((msg, idx) => (
-            <div key={idx} style={{
-              display: 'flex', flexDirection: 'column',
-              alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
-            }}>
-              <div style={{ maxWidth: '85%' }}>
-                <div style={{
-                  fontFamily: 'var(--sans)', fontSize: '0.95rem', lineHeight: 1.7,
-                  color: msg.role === 'user' ? 'var(--stone)' : 'var(--charcoal)',
-                  ...(msg.role === 'user' ? {
-                    background: 'var(--linen)', border: '1px solid var(--border)',
-                    borderRadius: '12px 12px 2px 12px', padding: '0.85rem 1.1rem',
-                  } : {}),
-                }}>
-                  {msg.text}
-                  {msg.isStreaming && (
-                    <span style={{
-                      display: 'inline-block', width: '2px', height: '1em',
-                      marginLeft: '2px', background: 'var(--accent)',
-                      animation: 'pulse 1.5s infinite', verticalAlign: 'middle',
-                    }} />
-                  )}
+        {isReadyForResults && (
+           <Button variant="secondary" onClick={() => onComplete(messages)} className="py-1 px-4 text-xs font-medium border-forest-800 text-forest-800 hover:bg-forest-800 hover:text-white transition-colors">
+             Generate Assessment
+           </Button>
+        )}
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-6 space-y-8 bg-sand-50 scroll-smooth">
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2 duration-500`}>
+            <div className={`max-w-[85%] ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+              <div className={`
+                inline-block p-6 rounded-lg text-[16px] leading-relaxed relative tracking-wide
+                ${msg.role === 'user' 
+                  ? 'bg-white text-sand-900 shadow-sm border border-stone-100' 
+                  : 'text-sand-900 font-serif text-xl bg-transparent px-0'}
+              `}>
+                {msg.text}
+                {msg.isStreaming && <span className="inline-block w-1.5 h-4 ml-1 bg-forest-800 animate-pulse align-middle" />}
+              </div>
+            </div>
+          </div>
+        ))}
+        {/* Loading / Thinking State Visual */}
+        {(voiceStatus === 'processing' || (isLoading && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.text === '')) && (
+           <div className="flex flex-col items-start max-w-[85%] animate-in fade-in">
+             <div className="flex items-center gap-3 text-stone-400 p-2 font-serif italic text-lg">
+                <div className="flex gap-1">
+                  <div className="w-1.5 h-1.5 bg-forest-500 rounded-full animate-bounce [animation-delay:-0.3s]" />
+                  <div className="w-1.5 h-1.5 bg-forest-500 rounded-full animate-bounce [animation-delay:-0.15s]" />
+                  <div className="w-1.5 h-1.5 bg-forest-500 rounded-full animate-bounce" />
                 </div>
-              </div>
-            </div>
-          ))}
+                <span className="text-forest-800/60">Reflecting...</span>
+             </div>
+           </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-          {/* Loading / Thinking State */}
-          {(voiceStatus === 'processing' || (isLoading && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.text === '')) && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--stone-lt)', padding: '0.5rem 0' }}>
-              <div style={{ display: 'flex', gap: '3px' }}>
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent)', animation: 'bounce 1s infinite', animationDelay: '-0.3s' }} />
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent)', animation: 'bounce 1s infinite', animationDelay: '-0.15s' }} />
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent)', animation: 'bounce 1s infinite' }} />
-              </div>
-              <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.88rem', color: 'var(--stone-lt)' }}>Reflecting...</span>
-            </div>
-          )}
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Bar — v2 pill style */}
-        <div style={{
-          flexShrink: 0, padding: '0.75rem 1rem 1rem',
-          background: 'var(--linen)', borderTop: '1px solid var(--border)',
-          borderRadius: '0 0 8px 8px',
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '0.5rem',
-            background: 'white', border: '1px solid var(--border-m)',
-            borderRadius: '24px', padding: '0.6rem 0.6rem 0.6rem 1.25rem',
-            transition: 'border-color 0.2s',
-          }}>
-            <input
-              type="text"
-              value={interimInput || input}
-              onChange={(e) => { setInput(e.target.value); }}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-              placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait for response...") : "Share your thoughts..."}
-              disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking'}
-              style={{
-                flex: 1, fontFamily: 'var(--sans)', fontSize: '0.9rem',
-                color: 'var(--charcoal)', background: 'none', border: 'none', outline: 'none',
-              }}
-            />
-
-            {/* Visualizer + Mic Button */}
-            <div style={{ position: 'relative', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
-              <canvas
+      {/* Input Area */}
+      <div className="p-6 bg-white border-t border-stone-100 z-20 transition-colors duration-500">
+        <div className="relative flex items-center gap-2">
+           <textarea
+            value={interimInput || input}
+            onChange={(e) => { setInput(e.target.value); }}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
+            placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait for response...") : "Share your thoughts..."}
+            className={`
+              w-full bg-sand-50 text-sand-900 placeholder:text-stone-400 rounded-lg py-4 pl-4 pr-20 resize-none 
+              focus:outline-none focus:ring-1 focus:ring-forest-800 border-none max-h-32 min-h-[64px] transition-all duration-300
+              ${voiceStatus === 'listening' ? 'bg-forest-50/10 ring-1 ring-forest-100' : ''}
+              ${interimInput ? 'text-stone-500' : ''} 
+            `}
+            rows={1}
+            disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking'}
+          />
+          
+          <div className="absolute right-3 flex items-center gap-2">
+             
+            {/* Visualizer & Mic Button Container */}
+            <div className="relative w-12 h-12 flex items-center justify-center">
+              <canvas 
                 ref={canvasRef}
                 width={80}
                 height={80}
-                style={{
-                  position: 'absolute', inset: 0, width: '100%', height: '100%',
-                  pointerEvents: 'none', transition: 'opacity 0.5s',
-                  opacity: voiceStatus === 'listening' ? 1 : 0,
-                }}
+                className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-500 ${voiceStatus === 'listening' ? 'opacity-100' : 'opacity-0'}`}
               />
+              
               <button
                 onClick={handleToggleVoice}
-                style={{
-                  position: 'relative', zIndex: 10, width: '36px', height: '36px',
-                  borderRadius: '50%', border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.2s', background: 'none',
-                  color: voiceMode ? 'var(--charcoal)' : 'var(--stone-lt)', flexShrink: 0,
-                }}
+                className={`
+                  relative z-10 p-2.5 rounded-full transition-all duration-300 border
+                  ${voiceMode 
+                    ? 'bg-transparent border-transparent text-forest-900 hover:scale-105' 
+                    : 'bg-transparent border-transparent text-stone-400 hover:bg-stone-100 hover:text-sand-900'}
+                `}
                 title={voiceMode ? "Stop Voice Mode" : "Start Voice Mode"}
               >
-                {voiceMode ? <Square size={16} fill="currentColor" /> : <Mic size={18} />}
+                {voiceMode ? <Square size={18} fill="currentColor" /> : <Mic size={20} />}
               </button>
             </div>
 
-            {/* Send Button — charcoal circle */}
             <button
               onClick={() => handleSend()}
               disabled={(!input.trim() && !interimInput.trim()) || isLoading}
-              style={{
-                width: '36px', height: '36px', borderRadius: '50%', border: 'none',
-                cursor: (!input.trim() && !interimInput.trim()) || isLoading ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.2s', background: 'var(--charcoal)',
-                color: 'var(--cream, #F4F1EB)', flexShrink: 0,
-                opacity: (!input.trim() && !interimInput.trim()) || isLoading ? 0.5 : 1,
-              }}
+              className="p-2.5 bg-forest-900 text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black transition-colors"
             >
-              <Send size={16} />
+              <Send size={18} />
             </button>
           </div>
         </div>
-
-      </div>
-
-      {/* Footer Label */}
-      <div style={{ textAlign: 'center', padding: '0.5rem 0 0.75rem', flexShrink: 0 }}>
-        <span style={{
-          fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em',
-          textTransform: 'uppercase', color: 'var(--stone-lt)', opacity: 0.5,
-        }}>
-          {voiceMode ? (voiceStatus === 'listening' ? "Speak naturally · I'll respond to silence" : "AI is thinking...") : "Reflect AI Assessment"}
-        </span>
+        <div className="text-center mt-3 flex justify-center gap-4">
+             <span className="text-[11px] font-medium tracking-wide text-stone-400 uppercase">
+               {voiceMode ? (voiceStatus === 'listening' ? "Speak naturally · I'll respond to silence" : "AI is thinking...") : "Reflect AI Assessment"}
+             </span>
+        </div>
       </div>
     </div>
   );
 };
-

@@ -59,14 +59,7 @@ const App: React.FC = () => {
     return (
         <div className="bg-sand-100 text-sand-900 font-sans selection:bg-sand-200 h-full w-full flex flex-col relative overflow-hidden">
 
-            {/* Settings Button (floating) */}
-            <button
-                onClick={() => setIsConfigOpen(true)}
-                className="absolute top-3 right-4 z-40 p-2 text-stone-400 hover:text-sand-900 transition-colors rounded-full hover:bg-white/50"
-                title="Configure AI"
-            >
-                <Settings size={18} />
-            </button>
+
 
             {/* Main Content Area */}
             <main className="flex-1 overflow-hidden flex flex-col items-center px-6 pb-6 pt-4">

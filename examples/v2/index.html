@@ -1,0 +1,515 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Creative Precision — AI Governance, Redesigned</title>
+  <meta name="description" content="Close the gap between AI ambition and AI results. Practitioner-built governance frameworks aligned to NIST AI RMF, ISO 42001, and EU AI Act.">
+  <meta property="og:title" content="Creative Precision — AI Governance, Redesigned">
+  <meta property="og:description" content="AI doesn't fail because of the technology. The system around it does. Practitioner-built governance for organizations deploying AI at scale.">
+  <meta property="og:type" content="website">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    /* ═══════════════════════════════════════════════════════════
+       CREATIVE PRECISION — SHARED DESIGN SYSTEM
+       Warm Editorial · EB Garamond + Libre Franklin
+       Quiet Expert Archetype · Brand Standard v2
+       ═══════════════════════════════════════════════════════════ */
+    :root {
+      --cream: #F4F1EB;
+      --cream-deep: #EBE7DF;
+      --linen: #FEFDFB;
+      --charcoal: #2A2520;
+      --charcoal-lt: #3A3530;
+      --stone: #6B6560;
+      --stone-lt: #9B9590;
+      --border: rgba(42,37,32,0.06);
+      --border-m: rgba(42,37,32,0.12);
+      --accent: #8B7355;
+      --accent-lt: rgba(139,115,85,0.08);
+      --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --sans: 'Libre Franklin', 'Helvetica Neue', Arial, sans-serif;
+      --max-w: 760px;
+      --max-w-wide: 960px;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      font-family: var(--sans);
+      background: var(--cream);
+      color: var(--charcoal);
+      line-height: 1.65;
+      font-size: 15px;
+      font-weight: 400;
+      -webkit-font-smoothing: antialiased;
+    }
+    ::selection { background: rgba(139,115,85,0.15); }
+
+    /* ═══════════ NAV ═══════════ */
+    nav {
+      position: fixed; top: 0; left: 0; right: 0;
+      z-index: 100;
+      background: rgba(244,241,235,0.92);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+    }
+    .nav-inner {
+      max-width: var(--max-w-wide);
+      margin: 0 auto;
+      padding: 0.9rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .logo {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      text-decoration: none;
+      letter-spacing: -0.01em;
+    }
+    .logo em {
+      font-style: italic;
+      color: var(--accent);
+    }
+    .nav-links {
+      display: flex;
+      align-items: center;
+      gap: 1.8rem;
+    }
+    .nav-links a {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--stone);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .nav-links a:hover { color: var(--charcoal); }
+    .nav-cta {
+      background: var(--charcoal) !important;
+      color: var(--cream) !important;
+      padding: 0.5rem 1.1rem !important;
+      border-radius: 2px;
+      font-size: 0.7rem !important;
+      letter-spacing: 0.08em !important;
+      transition: background 0.2s !important;
+    }
+    .nav-cta:hover { background: var(--charcoal-lt) !important; }
+
+    /* ═══════════ LAYOUT ═══════════ */
+    .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+    .wrap-wide { max-width: var(--max-w-wide); margin: 0 auto; padding: 0 2rem; }
+    section { padding: 5rem 0; }
+    .divider { width: 40px; height: 1px; background: var(--border-m); margin: 0 auto; }
+
+    /* ═══════════ TYPOGRAPHY ═══════════ */
+    .h-xl {
+      font-family: var(--serif);
+      font-size: clamp(2.2rem, 5vw, 3.2rem);
+      font-weight: 400;
+      line-height: 1.15;
+      letter-spacing: -0.02em;
+      color: var(--charcoal);
+    }
+    .h-xl em { font-style: italic; }
+    .h-lg {
+      font-family: var(--serif);
+      font-size: clamp(1.5rem, 3vw, 2rem);
+      font-weight: 400;
+      line-height: 1.25;
+      letter-spacing: -0.01em;
+      color: var(--charcoal);
+    }
+    .h-lg em { font-style: italic; }
+    .tag {
+      font-family: var(--sans);
+      font-size: 0.68rem;
+      font-weight: 600;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      color: var(--stone-lt);
+    }
+    .body-text {
+      font-size: 0.95rem;
+      line-height: 1.75;
+      color: var(--stone);
+      max-width: 540px;
+    }
+    .body-text-sm {
+      font-size: 0.82rem;
+      line-height: 1.7;
+      color: var(--stone-lt);
+    }
+
+    /* ═══════════ BUTTONS ═══════════ */
+    .btn {
+      display: inline-block;
+      font-family: var(--sans);
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      text-decoration: none;
+      padding: 0.75rem 1.8rem;
+      border-radius: 2px;
+      transition: all 0.2s;
+    }
+    .btn-primary {
+      background: var(--charcoal);
+      color: var(--cream);
+    }
+    .btn-primary:hover { background: var(--charcoal-lt); }
+    .btn-ghost {
+      background: transparent;
+      color: var(--stone);
+      border: 1px solid var(--border-m);
+    }
+    .btn-ghost:hover {
+      border-color: var(--charcoal);
+      color: var(--charcoal);
+    }
+
+    /* ═══════════ HERO ═══════════ */
+    .hero {
+      padding: 10rem 0 5rem;
+      text-align: center;
+    }
+    .hero .tag { margin-bottom: 1.5rem; }
+    .hero .h-xl { margin-bottom: 1.5rem; }
+    .hero .body-text {
+      margin: 0 auto 2.5rem;
+      text-align: center;
+    }
+    .hero-ctas {
+      display: flex;
+      gap: 1rem;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ═══════════ EVIDENCE (STATS) ═══════════ */
+    .evidence {
+      background: var(--linen);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .evidence .tag { text-align: center; margin-bottom: 2.5rem; }
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .stat-card {
+      text-align: center;
+      padding: 2rem 1.5rem;
+    }
+    .stat-number {
+      font-family: var(--serif);
+      font-size: 2.5rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      line-height: 1;
+      margin-bottom: 0.6rem;
+    }
+    .stat-label {
+      font-size: 0.78rem;
+      color: var(--stone);
+      line-height: 1.5;
+    }
+    .stat-source {
+      font-size: 0.68rem;
+      color: var(--stone-lt);
+      margin-top: 0.4rem;
+    }
+
+    /* ═══════════ METHODOLOGY ═══════════ */
+    .method-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+    .method-card {
+      padding: 1.5rem;
+      background: var(--linen);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+    .method-card .tag { margin-bottom: 0.6rem; }
+    .method-title {
+      font-family: var(--serif);
+      font-size: 1.15rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      margin-bottom: 0.5rem;
+    }
+    .method-body {
+      font-size: 0.82rem;
+      color: var(--stone);
+      line-height: 1.6;
+    }
+
+    /* ═══════════ PROFILE ═══════════ */
+    .profile {
+      text-align: center;
+    }
+    .profile-photo {
+      width: 72px;
+      height: 72px;
+      border-radius: 50%;
+      background: var(--cream-deep);
+      border: 2px solid var(--border-m);
+      margin: 0 auto 1.25rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: var(--serif);
+      font-size: 1.4rem;
+      font-weight: 500;
+      color: var(--stone);
+      overflow: hidden;
+    }
+    .profile-photo img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+    .profile .h-lg { margin-bottom: 1rem; }
+    .profile .body-text {
+      margin: 0 auto 1.5rem;
+      text-align: center;
+    }
+    .standards-signal {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--stone-lt);
+      margin-top: 1.5rem;
+    }
+
+    /* ═══════════ CAPTURE ═══════════ */
+    .capture {
+      background: var(--linen);
+      border-top: 1px solid var(--border);
+      text-align: center;
+    }
+    .capture .h-lg { margin-bottom: 0.75rem; }
+    .capture .body-text {
+      margin: 0 auto 2rem;
+      text-align: center;
+    }
+    .capture-form {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+      max-width: 420px;
+      margin: 0 auto;
+    }
+    .capture-form input {
+      flex: 1;
+      padding: 0.7rem 1rem;
+      font-family: var(--sans);
+      font-size: 0.82rem;
+      border: 1px solid var(--border-m);
+      border-radius: 2px;
+      background: var(--cream);
+      color: var(--charcoal);
+      outline: none;
+      transition: border-color 0.2s;
+    }
+    .capture-form input:focus { border-color: var(--accent); }
+    .capture-form button {
+      padding: 0.7rem 1.4rem;
+      font-family: var(--sans);
+      font-size: 0.7rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      background: var(--charcoal);
+      color: var(--cream);
+      border: none;
+      border-radius: 2px;
+      cursor: pointer;
+      transition: background 0.2s;
+    }
+    .capture-form button:hover { background: var(--charcoal-lt); }
+
+    /* ═══════════ FOOTER ═══════════ */
+    footer {
+      padding: 3rem 0;
+      text-align: center;
+      border-top: 1px solid var(--border);
+    }
+    .footer-brand {
+      font-family: var(--serif);
+      font-size: 0.9rem;
+      color: var(--stone-lt);
+      margin-bottom: 0.5rem;
+    }
+    .footer-links {
+      display: flex;
+      gap: 1.5rem;
+      justify-content: center;
+      margin-bottom: 0.5rem;
+    }
+    .footer-links a {
+      font-size: 0.68rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--stone-lt);
+      text-decoration: none;
+      transition: color 0.2s;
+    }
+    .footer-links a:hover { color: var(--charcoal); }
+    .footer-sig {
+      font-family: var(--serif);
+      font-size: 0.82rem;
+      font-style: italic;
+      color: var(--stone-lt);
+      margin-top: 0.5rem;
+    }
+
+    /* ═══════════ RESPONSIVE ═══════════ */
+    @media (max-width: 768px) {
+      .nav-links a:not(.nav-cta) { display: none; }
+      .stats-grid { grid-template-columns: 1fr; gap: 1rem; }
+      .method-grid { grid-template-columns: 1fr; }
+      .hero { padding: 8rem 0 4rem; }
+      .capture-form { flex-direction: column; }
+    }
+
+    /* ═══════════ ANIMATIONS ═══════════ */
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .hero .tag { animation: fadeUp 0.6s ease both; }
+    .hero .h-xl { animation: fadeUp 0.6s ease 0.1s both; }
+    .hero .body-text { animation: fadeUp 0.6s ease 0.2s both; }
+    .hero-ctas { animation: fadeUp 0.6s ease 0.3s both; }
+  </style>
+</head>
+<body>
+
+  <!-- ═══════════ NAV ═══════════ -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Creative <em>Precision.</em></a>
+      <div class="nav-links">
+        <a href="beyond-the-tech.html">The Perspective</a>
+        <a href="playbooks.html">Playbooks</a>
+        <a href="assessment.html" class="nav-cta">Free Assessment</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- ═══════════ SECTION 1: HERO — Provocation ═══════════ -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="tag">AI Governance, Redesigned</p>
+      <h1 class="h-xl">AI doesn't fail because of<br>the <em>technology.</em></h1>
+      <p class="body-text">The gap between AI ambition and AI results isn't a technology problem. It's a system problem. The organizations closing that gap are doing something different.</p>
+      <div class="hero-ctas">
+        <a href="assessment.html" class="btn btn-primary">Start the Assessment</a>
+        <a href="beyond-the-tech.html" class="btn btn-ghost">The Perspective</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SECTION 2: EVIDENCE — Stats that speak ═══════════ -->
+  <section class="evidence">
+    <div class="wrap-wide">
+      <p class="tag">What the data shows</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">87%</div>
+          <div class="stat-label">of AI projects never make it past pilot.</div>
+          <div class="stat-source">Gartner</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3,235</div>
+          <div class="stat-label">AI leaders surveyed. Conclusion: governance enables scaling — it doesn't constrain it.</div>
+          <div class="stat-source">Deloitte</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">€35M</div>
+          <div class="stat-label">maximum fine under the EU AI Act. Compliance deadlines are already in motion.</div>
+          <div class="stat-source">EU AI Act, 2024</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SECTION 3: METHODOLOGY — Channel, not control ═══════════ -->
+  <section>
+    <div class="wrap-wide">
+      <p class="tag" style="text-align: center; margin-bottom: 0.8rem;">The Creative Precision Methodology</p>
+      <h2 class="h-lg" style="text-align: center; margin-bottom: 0.5rem;"><em>Channel,</em> not control.</h2>
+      <p class="body-text" style="text-align: center; margin: 0 auto;">AI's most powerful capability isn't efficiency — it's creativity. The right framework channels it from ambition to results.</p>
+
+      <div class="method-grid">
+        <div class="method-card">
+          <p class="tag">Principle</p>
+          <p class="method-title">Stop automating the old.</p>
+          <p class="method-body">Business processes were designed around human limitations. AI doesn't share them. Start with the goal, not the existing process.</p>
+        </div>
+        <div class="method-card">
+          <p class="tag">Framework</p>
+          <p class="method-title">The system around the algorithm.</p>
+          <p class="method-body">Governance, risk routing, compliance, and change management — integrated as one operating fabric, not bolted on after deployment.</p>
+        </div>
+        <div class="method-card">
+          <p class="tag">Outcome</p>
+          <p class="method-title">From ideation to realization.</p>
+          <p class="method-body">AI moves from pilot purgatory to production value. Regulatory alignment comes built-in, not retrofitted.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ═══════════ SECTION 4: PROFILE — Trust signal ═══════════ -->
+  <section class="profile" style="border-top: 1px solid var(--border);">
+    <div class="wrap">
+      <div class="profile-photo">GC</div>
+      <h2 class="h-lg">Built by a <em>practitioner.</em></h2>
+      <p class="body-text">I've spent 14 years building AI systems, governance frameworks, and centers of excellence inside enterprises — from healthcare to financial services to public sector. This isn't theory assembled from best practices. It's what I've shipped.</p>
+      <p class="body-text" style="margin-top: 1rem;">— Gordon Chan</p>
+      <p class="standards-signal">Built on NIST AI RMF · ISO 42001 · EU AI Act</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ SECTION 5: CAPTURE — Email ═══════════ -->
+  <section class="capture">
+    <div class="wrap">
+      <h2 class="h-lg">What's <em>next.</em></h2>
+      <p class="body-text">Governance playbooks, risk routing toolkits, and regulatory compliance frameworks — designed to get AI from stuck to shipped in weeks.</p>
+      <div class="capture-form">
+        <input type="email" placeholder="Your email" aria-label="Email address">
+        <button type="submit">Get Early Access</button>
+      </div>
+      <p class="body-text-sm" style="margin-top: 0.75rem; text-align: center;">First access goes to the list. No spam. Unsubscribe anytime.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
+  <footer>
+    <div class="wrap">
+      <p class="footer-brand">Gordon Chan · Creative Precision</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
+        <a href="assessment.html">Assessment</a>
+        <a href="beyond-the-tech.html">The Perspective</a>
+      </div>
+      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
+    </div>
+  </footer>
+
+</body>
+</html>

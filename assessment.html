@@ -1,0 +1,79 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflect. — AI Leadership Assessment</title>
+    <meta name="description"
+        content="A 5-minute AI-powered reflection on your organization's AI governance posture. Start your conversation.">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap"
+        rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600&family=Newsreader:ital,opsz,wght@0,6..72,200..800;1,6..72,200..800&display=swap"
+        rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+
+
+    <style>
+        html,
+        body {
+            height: 100%;
+            overflow: hidden;
+        }
+
+        ::-webkit-scrollbar {
+            width: 6px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: transparent;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background-color: #D1D1CB;
+            border-radius: 20px;
+        }
+    </style>
+</head>
+
+<body>
+
+    <!-- ═══════════ NAV ═══════════ -->
+    <nav>
+        <div class="nav-inner">
+            <a href="index.html" class="logo">Creative <em>Precision.</em></a>
+            <div class="nav-links">
+                <a href="perspective.html">The Perspective</a>
+                <a href="playbooks.html">Playbooks</a>
+                <a href="assessment.html" class="nav-cta">Free Assessment</a>
+            </div>
+        </div>
+    </nav>
+
+    <div class="app-shell" style="margin-top: 52px; height: calc(100vh - 52px);">
+
+        <!-- 
+      ═══════════════════════════════════════════
+      CHAT PLACEHOLDER
+      This is where the AI assessment chat 
+      interface is rendered. The React app
+      mounts into the #root element below,
+      providing the full chat experience with
+      message-ai and message-user styling,
+      voice input, and streaming AI responses.
+      ═══════════════════════════════════════════ 
+    -->
+        <div id="root" style="flex: 1; overflow: hidden; display: flex; flex-direction: column;"></div>
+
+
+    </div>
+
+    <script type="module" src="/src/index.tsx"></script>
+
+</body>
+
+</html>

@@ -4,179 +4,143 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Creative Precision | AI Governance, Redesigned</title>
+  <title>Creative Precision — AI Governance, Redesigned</title>
   <meta name="description"
-    content="Precision Governance: AI governance designed for AI. The framework between your AI investment and production value. By Gordon Chan.">
-  <meta property="og:title" content="Creative Precision | AI Governance, Redesigned">
-  <meta property="og:description" content="Most governance wasn't designed for AI. Precision Governance is.">
+    content="Close the gap between AI ambition and AI results. Practitioner-built governance frameworks aligned to NIST AI RMF, ISO 42001, and EU AI Act.">
+  <meta property="og:title" content="Creative Precision — AI Governance, Redesigned">
+  <meta property="og:description"
+    content="AI doesn't fail because of the technology. The system around it does. Practitioner-built governance for organizations deploying AI at scale.">
   <meta property="og:type" content="website">
-  <meta name="twitter:card" content="summary_large_image">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500&family=Libre+Franklin:wght@300;400;500;600;700&display=swap"
+    href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
-
   <link rel="stylesheet" href="assets/style.css">
-  <script type="importmap">
-  {
-    "imports": {
-      "react/": "https://esm.sh/react@^19.2.4/",
-      "react": "https://esm.sh/react@^19.2.4",
-      "react-dom/": "https://esm.sh/react-dom@^19.2.4/",
-      "@google/genai": "https://esm.sh/@google/genai@^1.41.0",
-      "lucide-react": "https://esm.sh/lucide-react@^0.564.0"
-    }
-  }
-  </script>
 </head>
 
 <body>
 
-  <!-- ═══════════════ NAV ═══════════════ -->
+  <!-- ═══════════ NAV ═══════════ -->
   <nav>
-    <div class="wrap">
-      <a href="#" class="logo">Creative <em>Precision.</em></a>
-      <div class="nav-r">
-        <a href="beyond-the-tech.html">Beyond the Tech</a>
-        <a href="#access">Early Access</a>
-        <a href="reflect.html" class="nav-cta">Take the Assessment</a>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Creative <em>Precision.</em></a>
+      <div class="nav-links">
+        <a href="perspective.html">The Perspective</a>
+        <a href="playbooks.html">Playbooks</a>
+        <a href="assessment.html" class="nav-cta">Free Assessment</a>
       </div>
     </div>
   </nav>
 
-  <!-- ═══════════════ HERO ═══════════════ -->
+  <!-- ═══════════ SECTION 1: HERO — Provocation ═══════════ -->
   <section class="hero">
     <div class="wrap">
-      <div class="hero-inner">
-        <p class="hero-tag">Creative Precision</p>
-        <h1>AI doesn't fail because<br>of the technology.</h1>
-        <p class="hero-p">Stop automating the old. Start designing the new.</p>
-        <div class="hero-ctas">
-          <a href="reflect.html" class="btn btn-dark">
-            Take the AI Leadership Assessment
-            <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-              <path fill-rule="evenodd"
-                d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z"
-                clip-rule="evenodd" />
-            </svg>
-          </a>
-          <a href="beyond-the-tech.html" class="btn btn-outline">Learn More</a>
-        </div>
+      <p class="tag">AI Governance, Redesigned</p>
+      <h1 class="h-xl">AI doesn't fail because of<br>the <em>technology.</em></h1>
+      <p class="body-text">The gap between AI ambition and AI results isn't a technology problem. It's a system problem.
+        The organizations closing that gap are doing something different.</p>
+      <div class="hero-ctas">
+        <a href="assessment.html" class="btn btn-primary">Start the Assessment</a>
+        <a href="perspective.html" class="btn btn-ghost">The Perspective</a>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ PROBLEM / SIGNALS ═══════════════ -->
-  <section class="sec-alt">
-    <div class="wrap">
-      <div class="sec-head">
-        <p class="sec-tag">The Evidence</p>
-        <h2>The numbers tell the story.</h2>
-      </div>
-
-      <div class="signals">
-        <div class="signal">
-          <div class="signal-num">95%</div>
-          <div class="signal-text">of AI pilots never reach production. Not because the technology failed.
+  <!-- ═══════════ SECTION 2: EVIDENCE — Stats that speak ═══════════ -->
+  <section class="evidence">
+    <div class="wrap-wide">
+      <p class="tag">What the data shows</p>
+      <div class="stats-grid">
+        <div class="stat-card">
+          <div class="stat-number">87%</div>
+          <div class="stat-label">of AI projects never make it past pilot.</div>
+          <div class="stat-source">Gartner</div>
+        </div>
+        <div class="stat-card">
+          <div class="stat-number">3,235</div>
+          <div class="stat-label">AI leaders surveyed. Conclusion: governance enables scaling — it doesn't constrain it.
           </div>
+          <div class="stat-source">Deloitte</div>
         </div>
-        <div class="signal">
-          <div class="signal-num">79%</div>
-          <div class="signal-text">of organizations are deploying AI agents. Only 21% are ready to manage
-            them.</div>
+        <div class="stat-card">
+          <div class="stat-number">€35M</div>
+          <div class="stat-label">maximum fine under the EU AI Act. Compliance deadlines are already in motion.</div>
+          <div class="stat-source">EU AI Act, 2024</div>
         </div>
-        <div class="signal">
-          <div class="signal-num">Aug '26</div>
-          <div class="signal-text">EU AI Act enforcement begins. Fines up to €35M or 7% of global revenue.
-          </div>
-        </div>
-      </div>
-
-      <p
-        style="text-align:center; margin-top:2.5rem; font-size:0.72rem; font-weight:600; letter-spacing:0.12em; text-transform:uppercase; color:var(--stone-lt);">
-        Built on NIST AI RMF · ISO 42001 · EU AI Act</p>
-    </div>
-  </section>
-
-  <!-- ═══════════════ ASSESSMENT CTA ═══════════════ -->
-  <section class="assess" id="assess">
-    <div class="wrap">
-      <div class="assess-inner">
-        <h2>The gaps already exist. The question is who finds them first.</h2>
-        <p>Five minutes. A personalized reflection on where your AI governance stands — and the strategic
-          questions your leadership team should be asking.</p>
-
-        <div class="assess-feats">
-          <span class="assess-feat"><span class="dot"></span>5 minutes</span>
-          <span class="assess-feat"><span class="dot"></span>Personalized insight</span>
-          <span class="assess-feat"><span class="dot"></span>No sales pitch</span>
-        </div>
-
-        <a href="reflect.html" class="btn btn-dark">
-          Start the Assessment
-          <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor">
-            <path fill-rule="evenodd"
-              d="M3 10a.75.75 0 01.75-.75h10.638L11.23 6.29a.75.75 0 111.04-1.08l4.5 4.25a.75.75 0 010 1.08l-4.5 4.25a.75.75 0 11-1.04-1.08l3.158-2.96H3.75A.75.75 0 013 10z"
-              clip-rule="evenodd" />
-          </svg>
-        </a>
-
-        <p style="margin-top:1.5rem; font-size:0.85rem; color:var(--text-3);">Prefer a conversation? <a href="#"
-            style="color:var(--text-2); text-decoration:underline;">Let's talk →</a></p>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ PROFILE ═══════════════ -->
+  <!-- ═══════════ SECTION 3: METHODOLOGY — Channel, not control ═══════════ -->
   <section>
-    <div class="wrap">
-      <div class="profile">
-        <div class="profile-img-wrap">
-          <img src="assets/profile.png" alt="Gordon Chan" class="profile-img">
+    <div class="wrap-wide">
+      <p class="tag" style="text-align: center; margin-bottom: 0.8rem;">The Creative Precision Methodology</p>
+      <h2 class="h-lg" style="text-align: center; margin-bottom: 0.5rem;"><em>Channel,</em> not control.</h2>
+      <p class="body-text" style="text-align: center; margin: 0 auto;">AI's most powerful capability isn't efficiency —
+        it's creativity. The right framework channels it from ambition to results.</p>
+
+      <div class="method-grid">
+        <div class="method-card">
+          <p class="tag">Principle</p>
+          <p class="method-title">Stop automating the old.</p>
+          <p class="method-body">Business processes were designed around human limitations. AI doesn't share them. Start
+            with the goal, not the existing process.</p>
         </div>
-        <div class="profile-text">
-          <div class="profile-name">Gordon Chan</div>
-          <p class="profile-bio">Helping leadership teams close the gap between AI ambition and AI results.
-          </p>
-          <a href="#" class="profile-link">Connect on LinkedIn →</a>
-          <br>
-          <a href="#" class="profile-link">Navigating the shift to AI? Let's talk →</a>
+        <div class="method-card">
+          <p class="tag">Framework</p>
+          <p class="method-title">The system around the algorithm.</p>
+          <p class="method-body">Governance, risk routing, compliance, and change management — integrated as one
+            operating fabric, not bolted on after deployment.</p>
+        </div>
+        <div class="method-card">
+          <p class="tag">Outcome</p>
+          <p class="method-title">From ideation to realization.</p>
+          <p class="method-body">AI moves from pilot purgatory to production value. Regulatory alignment comes built-in,
+            not retrofitted.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════════ EARLY ACCESS ═══════════════ -->
-  <section class="sec-alt" id="access">
+  <!-- ═══════════ SECTION 4: PROFILE — Trust signal ═══════════ -->
+  <section class="profile" style="border-top: 1px solid var(--border);">
     <div class="wrap">
-      <div class="capture">
-        <p class="sec-tag">Founding Access</p>
-        <h3>Follow the work</h3>
-        <p>Practitioner insights and frameworks as they're built. Founding members get first access and a direct
-          line to shape what comes next.</p>
-        <div class="cap-form">
-          <input type="email" placeholder="your@email.com" aria-label="Email address">
-          <button type="button">Get Early Access</button>
-        </div>
-        <p class="cap-fine">No spam. Just the frameworks before they go public.</p>
-      </div>
+      <div class="profile-photo"><img src="assets/profile.png" alt="Gordon Chan"></div>
+      <h2 class="h-lg">Built by a <em>practitioner.</em></h2>
+      <p class="body-text">I've spent 14 years building AI systems, governance frameworks, and centers of excellence
+        inside enterprises — from healthcare to financial services to public sector. This isn't theory assembled from
+        best practices. It's what I've shipped.</p>
+      <p class="body-text" style="margin-top: 1rem;">— Gordon Chan</p>
+      <p class="standards-signal">Built on NIST AI RMF · ISO 42001 · EU AI Act</p>
     </div>
   </section>
 
-  <!-- ═══════════════ FOOTER ═══════════════ -->
+  <!-- ═══════════ SECTION 5: CAPTURE — Email ═══════════ -->
+  <section class="capture">
+    <div class="wrap">
+      <h2 class="h-lg">What's <em>next.</em></h2>
+      <p class="body-text">Governance playbooks, risk routing toolkits, and regulatory compliance frameworks — designed
+        to get AI from stuck to shipped in weeks.</p>
+      <div class="capture-form">
+        <input type="email" placeholder="Your email" aria-label="Email address">
+        <button type="submit">Get Early Access</button>
+      </div>
+      <p class="body-text-sm" style="margin-top: 0.75rem; text-align: center;">First access goes to the list. No spam.
+        Unsubscribe anytime.</p>
+    </div>
+  </section>
+
+  <!-- ═══════════ FOOTER ═══════════ -->
   <footer>
     <div class="wrap">
-      <div class="footer-brand">Creative <em style="font-family: var(--serif); font-style: italic;">Precision.</em>
-      </div>
+      <p class="footer-brand">Gordon Chan · Creative Precision</p>
       <div class="footer-links">
-        <a href="beyond-the-tech.html">Beyond the Tech</a>
-        <a href="#assess">Assessment</a>
-        <a href="#access">Early Access</a>
-        <a href="#">LinkedIn</a>
+        <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
+        <a href="assessment.html">Assessment</a>
+        <a href="perspective.html">The Perspective</a>
       </div>
-      <p class="footer-sig">Stop automating the old. Start designing the new.</p>
-      <p class="footer-copy">&copy; 2026 Gordon Chan. All rights reserved.</p>
+      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
     </div>
   </footer>
 

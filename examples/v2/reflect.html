@@ -1,0 +1,312 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Reflect. — AI Leadership Assessment</title>
+  <meta name="description" content="A 5-minute AI-powered reflection on your organization's AI governance posture. No pitch. Just sharper questions than the ones you're being asked.">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+      --cream: #F4F1EB;
+      --cream-deep: #EBE7DF;
+      --linen: #FEFDFB;
+      --charcoal: #2A2520;
+      --charcoal-lt: #3A3530;
+      --stone: #6B6560;
+      --stone-lt: #9B9590;
+      --border: rgba(42,37,32,0.06);
+      --border-m: rgba(42,37,32,0.12);
+      --accent: #8B7355;
+      --accent-lt: rgba(139,115,85,0.08);
+      --serif: 'EB Garamond', Georgia, 'Times New Roman', serif;
+      --sans: 'Libre Franklin', 'Helvetica Neue', Arial, sans-serif;
+      --max-w: 760px;
+      --max-w-wide: 960px;
+    }
+    *, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body { font-family: var(--sans); background: var(--cream); color: var(--charcoal); line-height: 1.65; font-size: 15px; font-weight: 400; -webkit-font-smoothing: antialiased; }
+    ::selection { background: rgba(139,115,85,0.15); }
+
+    /* NAV */
+    nav { position: fixed; top: 0; left: 0; right: 0; z-index: 100; background: rgba(244,241,235,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border-bottom: 1px solid var(--border); }
+    .nav-inner { max-width: var(--max-w-wide); margin: 0 auto; padding: 0.9rem 2rem; display: flex; justify-content: space-between; align-items: center; }
+    .logo { font-family: var(--serif); font-size: 1.05rem; font-weight: 500; color: var(--charcoal); text-decoration: none; letter-spacing: -0.01em; }
+    .logo em { font-style: italic; color: var(--accent); }
+    .nav-links { display: flex; align-items: center; gap: 1.8rem; }
+    .nav-links a { font-size: 0.72rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stone); text-decoration: none; transition: color 0.2s; }
+    .nav-links a:hover { color: var(--charcoal); }
+    .nav-cta { background: var(--charcoal) !important; color: var(--cream) !important; padding: 0.5rem 1.1rem !important; border-radius: 2px; transition: background 0.2s !important; }
+    .nav-cta:hover { background: var(--charcoal-lt) !important; }
+
+    /* LAYOUT */
+    .wrap { max-width: var(--max-w); margin: 0 auto; padding: 0 2rem; }
+    section { padding: 5rem 0; }
+    .divider { width: 40px; height: 1px; background: var(--border-m); margin: 0 auto; }
+
+    /* TYPOGRAPHY */
+    .h-xl { font-family: var(--serif); font-size: clamp(2.2rem, 5vw, 3.2rem); font-weight: 400; line-height: 1.15; letter-spacing: -0.02em; color: var(--charcoal); }
+    .h-xl em { font-style: italic; }
+    .h-lg { font-family: var(--serif); font-size: clamp(1.5rem, 3vw, 2rem); font-weight: 400; line-height: 1.25; letter-spacing: -0.01em; color: var(--charcoal); }
+    .h-lg em { font-style: italic; }
+    .h-md { font-family: var(--serif); font-size: 1.25rem; font-weight: 500; line-height: 1.3; color: var(--charcoal); }
+    .tag { font-family: var(--sans); font-size: 0.68rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; color: var(--stone-lt); }
+    .body-text { font-size: 0.95rem; line-height: 1.75; color: var(--stone); max-width: 540px; }
+    .body-text-sm { font-size: 0.82rem; line-height: 1.7; color: var(--stone-lt); }
+
+    /* BUTTONS */
+    .btn { display: inline-block; font-family: var(--sans); font-size: 0.72rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; text-decoration: none; padding: 0.75rem 1.8rem; border-radius: 2px; transition: all 0.2s; }
+    .btn-primary { background: var(--charcoal); color: var(--cream); }
+    .btn-primary:hover { background: var(--charcoal-lt); }
+    .btn-lg { padding: 1rem 2.5rem; font-size: 0.78rem; }
+
+    /* HERO — THE GATE */
+    .hero {
+      padding: 10rem 0 4rem;
+      text-align: center;
+    }
+    .hero .tag { margin-bottom: 1.5rem; }
+    .hero .h-xl { margin-bottom: 1.5rem; }
+    .hero .body-text { margin: 0 auto 2.5rem; text-align: center; }
+
+    /* WHAT THIS IS / ISN'T / WHO */
+    .clarity {
+      background: var(--linen);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+    }
+    .clarity-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 2rem;
+    }
+    .clarity-card {
+      text-align: center;
+      padding: 1.5rem 1rem;
+    }
+    .clarity-card .tag { margin-bottom: 0.75rem; }
+    .clarity-card .h-md { margin-bottom: 0.5rem; }
+    .clarity-card .body-text-sm { max-width: none; }
+
+    /* DELIVERABLES */
+    .deliverables { text-align: center; }
+    .deliverables .tag { margin-bottom: 0.8rem; }
+    .deliverables .h-lg { margin-bottom: 2.5rem; }
+    .del-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 1.5rem;
+      text-align: left;
+    }
+    .del-card {
+      padding: 1.5rem;
+      background: var(--linen);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+    .del-card .h-md { margin-bottom: 0.5rem; }
+    .del-card .body-text-sm { max-width: none; }
+
+    /* HOW IT WORKS */
+    .how-it-works {
+      background: var(--linen);
+      border-top: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      text-align: center;
+    }
+    .how-it-works .tag { margin-bottom: 0.8rem; }
+    .how-it-works .h-lg { margin-bottom: 2.5rem; }
+    .steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 1.5rem;
+      text-align: center;
+    }
+    .step-num {
+      font-family: var(--serif);
+      font-size: 2rem;
+      font-weight: 400;
+      color: var(--cream-deep);
+      margin-bottom: 0.5rem;
+    }
+    .step-title {
+      font-family: var(--serif);
+      font-size: 1rem;
+      font-weight: 500;
+      color: var(--charcoal);
+      margin-bottom: 0.35rem;
+    }
+    .step-desc {
+      font-size: 0.78rem;
+      color: var(--stone-lt);
+      line-height: 1.55;
+    }
+
+    /* BOTTOM CTA */
+    .bottom-cta {
+      text-align: center;
+      padding: 6rem 0;
+    }
+    .bottom-cta .h-lg { margin-bottom: 0.75rem; }
+    .bottom-cta .body-text { margin: 0 auto 2rem; text-align: center; }
+
+    /* FOOTER */
+    footer { padding: 3rem 0; text-align: center; border-top: 1px solid var(--border); }
+    .footer-brand { font-family: var(--serif); font-size: 0.9rem; color: var(--stone-lt); margin-bottom: 0.5rem; }
+    .footer-links { display: flex; gap: 1.5rem; justify-content: center; margin-bottom: 0.5rem; }
+    .footer-links a { font-size: 0.68rem; font-weight: 500; letter-spacing: 0.06em; text-transform: uppercase; color: var(--stone-lt); text-decoration: none; transition: color 0.2s; }
+    .footer-links a:hover { color: var(--charcoal); }
+    .footer-sig { font-family: var(--serif); font-size: 0.82rem; font-style: italic; color: var(--stone-lt); margin-top: 0.5rem; }
+
+    @media (max-width: 768px) {
+      .nav-links a:not(.nav-cta) { display: none; }
+      .hero { padding: 8rem 0 3rem; }
+      .clarity-grid { grid-template-columns: 1fr; }
+      .del-grid { grid-template-columns: 1fr; }
+      .steps { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    @keyframes fadeUp { from { opacity: 0; transform: translateY(16px); } to { opacity: 1; transform: translateY(0); } }
+    .hero .tag { animation: fadeUp 0.6s ease both; }
+    .hero .h-xl { animation: fadeUp 0.6s ease 0.1s both; }
+    .hero .body-text { animation: fadeUp 0.6s ease 0.2s both; }
+    .hero .btn { animation: fadeUp 0.6s ease 0.3s both; }
+  </style>
+</head>
+<body>
+
+  <!-- NAV -->
+  <nav>
+    <div class="nav-inner">
+      <a href="index.html" class="logo">Creative <em>Precision.</em></a>
+      <div class="nav-links">
+        <a href="beyond-the-tech.html">The Perspective</a>
+        <a href="playbooks.html">Playbooks</a>
+        <a href="assessment.html" class="nav-cta">Free Assessment</a>
+      </div>
+    </div>
+  </nav>
+
+  <!-- SECTION 1: THE GATE — Hero CTA -->
+  <section class="hero">
+    <div class="wrap">
+      <p class="tag">Reflect.</p>
+      <h1 class="h-xl">The questions most people around you<br><em>won't ask.</em></h1>
+      <p class="body-text">Most AI projects don't fail because of the technology. They fail because nobody asked the harder questions about the system around it. This is a 5-minute AI-powered conversation about your organization's AI posture. Not a quiz. Not a sales tool. A mirror.</p>
+      <a href="assessment.html" class="btn btn-primary btn-lg">Start the Assessment</a>
+    </div>
+  </section>
+
+  <!-- SECTION 2: WHAT THIS IS / ISN'T / WHO IT'S FOR -->
+  <section class="clarity">
+    <div class="wrap-wide" style="max-width: 960px; margin: 0 auto; padding: 0 2rem;">
+      <div class="clarity-grid">
+        <div class="clarity-card">
+          <p class="tag">What this is</p>
+          <p class="h-md">A thinking partner.</p>
+          <p class="body-text-sm">An AI that listens to how you describe your organization's AI challenges — then reflects back what it hears. Patterns you might not have named yet.</p>
+        </div>
+        <div class="clarity-card">
+          <p class="tag">What this isn't</p>
+          <p class="h-md">A lead generation form.</p>
+          <p class="body-text-sm">No gates. No required email. No sales follow-up. You get value whether or not you ever hear from me again.</p>
+        </div>
+        <div class="clarity-card">
+          <p class="tag">Who it's for</p>
+          <p class="h-md">AI leaders making decisions.</p>
+          <p class="body-text-sm">CTOs, VPs, Directors — anyone responsible for getting AI from ambition to production. If you're spending on AI but not sure it's working, this is for you.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 3: THREE DELIVERABLES -->
+  <section class="deliverables">
+    <div class="wrap-wide" style="max-width: 960px; margin: 0 auto; padding: 0 2rem;">
+      <p class="tag">What you get</p>
+      <h2 class="h-lg">Three things. <em>Five minutes.</em></h2>
+      <div class="del-grid">
+        <div class="del-card">
+          <p class="h-md">Governance Posture Score</p>
+          <p class="body-text-sm">Where your organization sits across strategy, risk, compliance, and operational readiness. Benchmarked against what mature AI organizations look like.</p>
+        </div>
+        <div class="del-card">
+          <p class="h-md">Gap Analysis</p>
+          <p class="body-text-sm">The specific areas where your current approach has blind spots — and which ones matter most based on your industry and scale.</p>
+        </div>
+        <div class="del-card">
+          <p class="h-md">Priority Roadmap</p>
+          <p class="body-text-sm">Three concrete next moves. Not a 90-page consulting deck. Three things you could start this week that would move the needle.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 4: HOW IT WORKS -->
+  <section class="how-it-works">
+    <div class="wrap-wide" style="max-width: 960px; margin: 0 auto; padding: 0 2rem;">
+      <p class="tag">How it works</p>
+      <h2 class="h-lg">Four steps. No <em>forms.</em></h2>
+      <div class="steps">
+        <div>
+          <div class="step-num">1</div>
+          <p class="step-title">Describe</p>
+          <p class="step-desc">Tell the AI about your current AI challenges in your own words. Type or use voice.</p>
+        </div>
+        <div>
+          <div class="step-num">2</div>
+          <p class="step-title">Reflect</p>
+          <p class="step-desc">The AI asks follow-up questions. Not a checklist — a conversation that adapts to what you share.</p>
+        </div>
+        <div>
+          <div class="step-num">3</div>
+          <p class="step-title">Score</p>
+          <p class="step-desc">Receive your governance posture score with specific strengths and gaps identified.</p>
+        </div>
+        <div>
+          <div class="step-num">4</div>
+          <p class="step-title">Act</p>
+          <p class="step-desc">Get your priority roadmap — three moves, this week, that change the trajectory.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- SECTION 5: BOTTOM CTA REPEAT -->
+  <section class="bottom-cta">
+    <div class="wrap">
+      <h2 class="h-lg">Ready to find out what you're <em>not seeing?</em></h2>
+      <p class="body-text">The assessment is free. The insights are yours to keep. No email required.</p>
+      <a href="assessment.html" class="btn btn-primary btn-lg">Start the Assessment</a>
+      <p class="body-text-sm" style="margin-top: 1rem; text-align: center;">Built on the Creative Precision Governance Fabric · NIST AI RMF · ISO 42001 · EU AI Act</p>
+    </div>
+  </section>
+
+  <!-- TRUST SIGNAL — For cold traffic -->
+  <section style="padding: 3.5rem 0; border-top: 1px solid var(--border);">
+    <div class="wrap" style="text-align: center;">
+      <div style="width: 56px; height: 56px; border-radius: 50%; background: var(--cream-deep); border: 2px solid var(--border-m); margin: 0 auto 1rem; display: flex; align-items: center; justify-content: center; font-family: var(--serif); font-size: 1.1rem; font-weight: 500; color: var(--stone);">GC</div>
+      <p style="font-family: var(--serif); font-size: 1.1rem; color: var(--charcoal); margin-bottom: 0.35rem;">Gordon Chan</p>
+      <p class="body-text-sm" style="max-width: 400px; margin: 0 auto 1.25rem; text-align: center;">14 years building AI systems, governance frameworks, and centers of excellence inside enterprises. This assessment is built on what I've shipped — not theory.</p>
+      <a href="index.html" class="btn btn-ghost" style="font-size: 0.68rem;">Explore Creative Precision</a>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer>
+    <div class="wrap">
+      <p class="footer-brand">Gordon Chan · Creative Precision</p>
+      <div class="footer-links">
+        <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
+        <a href="index.html">Home</a>
+        <a href="beyond-the-tech.html">The Perspective</a>
+      </div>
+      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
+    </div>
+  </footer>
+
+</body>
+</html>

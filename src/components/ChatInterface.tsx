@@ -1,9 +1,13 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Message, AppConfig, AssessmentEvent } from '../types';
-import { createChatSession, generateSpeech } from '../services/geminiService';
+import { createChatSession } from '../services/geminiService';
 import { CLOSE_SIGNAL_PHRASES } from '../constants';
-import { Mic, Send, MoreHorizontal, Square, Volume2, Loader2, AlertCircle } from 'lucide-react';
+import { Mic, Send, Square, Volume2, Loader2, AlertCircle } from 'lucide-react';
 import { GenerateContentResponse, Chat } from "@google/genai";
+
+import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
+import { useAudioVisualizer } from '../hooks/useAudioVisualizer';
+import { useTextToSpeech } from '../hooks/useTextToSpeech';
 
 interface ChatInterfaceProps {
   config: AppConfig;
@@ -11,79 +15,6 @@ interface ChatInterfaceProps {
   sessionId?: string;
   onTrackEvent?: (event: AssessmentEvent) => void;
 }
-
-// --- Audio Helpers ---
-function decode(base64: string) {
-  const binaryString = atob(base64);
-  const len = binaryString.length;
-  const bytes = new Uint8Array(len);
-  for (let i = 0; i < len; i++) {
-    bytes[i] = binaryString.charCodeAt(i);
-  }
-  return bytes;
-}
-
-async function decodeAudioData(
-  data: Uint8Array,
-  ctx: AudioContext,
-  sampleRate: number = 24000,
-  numChannels: number = 1,
-): Promise<AudioBuffer> {
-  const dataInt16 = new Int16Array(data.buffer);
-  const frameCount = dataInt16.length / numChannels;
-  const buffer = ctx.createBuffer(numChannels, frameCount, sampleRate);
-
-  for (let channel = 0; channel < numChannels; channel++) {
-    const channelData = buffer.getChannelData(channel);
-    for (let i = 0; i < frameCount; i++) {
-      channelData[i] = dataInt16[i * numChannels + channel] / 32768.0;
-    }
-  }
-  return buffer;
-}
-
-// --- Visualizer Helper: Organic Blob ---
-const drawBlob = (
-  ctx: CanvasRenderingContext2D,
-  width: number,
-  height: number,
-  volume: number,
-  time: number
-) => {
-  ctx.clearRect(0, 0, width, height);
-
-  const centerX = width / 2;
-  const centerY = height / 2;
-  const intensity = Math.min(1, volume / 50);
-  const baseRadius = 20 + (intensity * 15);
-
-  ctx.beginPath();
-
-  for (let i = 0; i <= 360; i += 10) {
-    const angle = (i * Math.PI) / 180;
-    const noise = Math.sin((i * 0.05) + (time * 0.005)) * (5 + (intensity * 10));
-    const r = baseRadius + noise;
-    const x = centerX + Math.cos(angle) * r;
-    const y = centerY + Math.sin(angle) * r;
-
-    if (i === 0) ctx.moveTo(x, y);
-    else ctx.lineTo(x, y);
-  }
-
-  ctx.closePath();
-
-  const gradient = ctx.createRadialGradient(centerX, centerY, baseRadius * 0.2, centerX, centerY, baseRadius * 2);
-  gradient.addColorStop(0, 'rgba(57, 85, 75, 0.8)');
-  gradient.addColorStop(1, 'rgba(77, 107, 94, 0.0)');
-
-  ctx.fillStyle = gradient;
-  ctx.fill();
-
-  ctx.beginPath();
-  ctx.arc(centerX, centerY, 4 + (intensity * 2), 0, Math.PI * 2);
-  ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#F0EDE6';
-  ctx.fill();
-};
 
 const containsCloseSignal = (text: string): boolean => {
   const lower = text.toLowerCase();
@@ -104,26 +35,33 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   // Refs for Logic
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
-  const recognitionRef = useRef<any>(null);
-  const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const inputRef = useRef('');
-  const voiceModeRef = useRef(false);
-  const voiceStatusRef = useRef<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
   const messagesRef = useRef<Message[]>([]);
+  const voiceModeRef = useRef(false);
 
-  // Audio Refs
-  const audioCtxRef = useRef<AudioContext | null>(null);
-  const sourceRef = useRef<AudioBufferSourceNode | null>(null);
-  const streamRef = useRef<MediaStream | null>(null);
-  const analyserRef = useRef<AnalyserNode | null>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const animationRef = useRef<number | null>(null);
 
-  // Audio Queue Refs
-  const audioQueueRef = useRef<AudioBuffer[]>([]);
-  const isPlayingQueueRef = useRef(false);
+  // Audio Queue Refs (for text buffering during chunks)
   const sentenceBufferRef = useRef('');
   const processedSentencesRef = useRef<Set<string>>(new Set());
+
+  // Custom Hooks
+  const { startVisualizer, stopVisualizer } = useAudioVisualizer();
+
+  const handleSpeechEnd = useCallback(() => {
+    if (voiceModeRef.current) {
+      startListening();
+    } else {
+      setVoiceStatus('idle');
+    }
+  }, []); // Needs startListening, defined via hook but circular if not careful
+
+  const { speak, stopPlayback } = useTextToSpeech({
+    voiceStatus,
+    setVoiceStatus,
+    voiceMode,
+    onSpeechEnd: handleSpeechEnd
+  });
 
   // --- Telemetry helper ---
   const track = useCallback((eventType: string, eventData?: Record<string, unknown>) => {
@@ -131,280 +69,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       onTrackEvent({ session_id: sessionId, event_type: eventType, event_data: eventData });
     }
   }, [onTrackEvent, sessionId]);
-
-  // --- 1. Initialization ---
-  useEffect(() => {
-    chatRef.current = createChatSession(config);
-    const initialMessages = [{ role: 'model' as const, text: config.initialGreeting }];
-    setMessages(initialMessages);
-    messagesRef.current = initialMessages;
-  }, [config]);
-
-  useEffect(() => {
-    inputRef.current = input;
-  }, [input]);
-
-  useEffect(() => {
-    voiceModeRef.current = voiceMode;
-  }, [voiceMode]);
-
-  useEffect(() => {
-    voiceStatusRef.current = voiceStatus;
-  }, [voiceStatus]);
-
-  useEffect(() => {
-    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [messages, interimInput, voiceStatus]);
-
-  // --- 2. Visualizer Loop ---
-  const startVisualizer = async () => {
-    try {
-      if (!streamRef.current) {
-        streamRef.current = await navigator.mediaDevices.getUserMedia({ audio: true });
-      }
-
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!audioCtxRef.current) {
-        audioCtxRef.current = new AudioContextClass();
-      }
-
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') await ctx.resume();
-
-      const source = ctx.createMediaStreamSource(streamRef.current);
-      const analyser = ctx.createAnalyser();
-      analyser.fftSize = 256;
-      source.connect(analyser);
-      analyserRef.current = analyser;
-
-      const animate = (time: number) => {
-        if (analyserRef.current && canvasRef.current) {
-          const bufferLength = analyserRef.current.frequencyBinCount;
-          const dataArray = new Uint8Array(bufferLength);
-          analyserRef.current.getByteFrequencyData(dataArray);
-
-          let sum = 0;
-          for (let i = 0; i < bufferLength; i++) sum += dataArray[i];
-          const avg = sum / bufferLength;
-
-          const canvasCtx = canvasRef.current.getContext('2d');
-          if (canvasCtx) {
-            drawBlob(canvasCtx, canvasRef.current.width, canvasRef.current.height, avg, time);
-          }
-        }
-        animationRef.current = requestAnimationFrame(animate);
-      };
-      animationRef.current = requestAnimationFrame(animate);
-
-    } catch (e) {
-      console.error("Visualizer setup failed", e);
-      setMicError("Microphone access needed for visualizer.");
-    }
-  };
-
-  const stopVisualizer = () => {
-    if (animationRef.current) cancelAnimationFrame(animationRef.current);
-    if (streamRef.current) {
-      streamRef.current.getTracks().forEach(t => t.stop());
-      streamRef.current = null;
-    }
-  };
-
-  // --- 3. Speech Recognition Logic ---
-  const startListening = useCallback(() => {
-    if (recognitionRef.current && voiceStatusRef.current === 'listening') return;
-
-    if (!recognitionRef.current) {
-      const SpeechRecognition = (window as any).SpeechRecognition || (window as any).webkitSpeechRecognition;
-      if (!SpeechRecognition) {
-        setMicError("Speech recognition not supported.");
-        return;
-      }
-      const recognition = new SpeechRecognition();
-      recognition.continuous = true;
-      recognition.interimResults = true;
-      recognition.lang = 'en-US';
-
-      recognition.onstart = () => {
-        if (voiceModeRef.current) {
-          setVoiceStatus('listening');
-          setMicError(null);
-        }
-      };
-
-      recognition.onend = () => {
-        if (voiceModeRef.current && voiceStatusRef.current !== 'speaking' && voiceStatusRef.current !== 'processing') {
-          setTimeout(() => {
-            if (voiceModeRef.current && voiceStatusRef.current !== 'speaking' && voiceStatusRef.current !== 'processing') {
-              try { recognition.start(); } catch (e) { /* ignore */ }
-            }
-          }, 300);
-        }
-      };
-
-      recognition.onerror = (event: any) => {
-        const err = event.error;
-        if (err === 'no-speech' || err === 'aborted' || !err) return;
-
-        console.error("Microphone error:", err);
-        if (err === 'not-allowed' || err === 'service-not-allowed') {
-          setMicError("Microphone blocked or not allowed.");
-          setVoiceMode(false);
-          setVoiceStatus('idle');
-        } else if (err === 'network') {
-          setMicError("Network error with speech recognition.");
-        }
-      };
-
-      recognition.onresult = (event: any) => {
-        let finalTrans = '';
-        let interimTrans = '';
-
-        for (let i = event.resultIndex; i < event.results.length; ++i) {
-          if (event.results[i].isFinal) {
-            finalTrans += event.results[i][0].transcript;
-          } else {
-            interimTrans += event.results[i][0].transcript;
-          }
-        }
-
-        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-
-        if (finalTrans) {
-          const current = inputRef.current;
-          const next = (current + ' ' + finalTrans).trim();
-          setInput(next);
-          inputRef.current = next;
-          setInterimInput('');
-
-          silenceTimerRef.current = setTimeout(() => {
-            handleSend(next);
-          }, 1200);
-        } else if (interimTrans) {
-          setInterimInput(interimTrans);
-          silenceTimerRef.current = setTimeout(() => {
-            const current = inputRef.current;
-            const combined = (current + ' ' + interimTrans).trim();
-            handleSend(combined);
-          }, 2000);
-        }
-      };
-
-      recognitionRef.current = recognition;
-    }
-
-    try {
-      recognitionRef.current.start();
-    } catch (e) {
-      // already started or starting
-    }
-  }, []);
-
-  const stopListening = useCallback(() => {
-    if (recognitionRef.current) {
-      recognitionRef.current.abort();
-    }
-    if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
-  }, []);
-
-
-  // --- 4. TTS Logic ---
-  const playNextInQueue = useCallback(async () => {
-    if (isPlayingQueueRef.current || audioQueueRef.current.length === 0) {
-      if (audioQueueRef.current.length === 0 && voiceStatusRef.current === 'speaking') {
-        setTimeout(() => {
-          if (audioQueueRef.current.length === 0 && voiceStatusRef.current === 'speaking') {
-            if (voiceModeRef.current) {
-              startListening();
-            } else {
-              setVoiceStatus('idle');
-            }
-          }
-        }, 100);
-      }
-      return;
-    }
-
-    isPlayingQueueRef.current = true;
-    setVoiceStatus('speaking');
-    const buffer = audioQueueRef.current.shift()!;
-
-    try {
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!audioCtxRef.current) audioCtxRef.current = new AudioContextClass();
-      const ctx = audioCtxRef.current;
-      if (ctx.state === 'suspended') await ctx.resume();
-
-      const source = ctx.createBufferSource();
-      source.buffer = buffer;
-      source.connect(ctx.destination);
-
-      source.onended = () => {
-        isPlayingQueueRef.current = false;
-        playNextInQueue();
-      };
-
-      sourceRef.current = source;
-      source.start();
-    } catch (e) {
-      console.error("Playback failed", e);
-      isPlayingQueueRef.current = false;
-      playNextInQueue();
-    }
-  }, [startListening]);
-
-  const queueSpeech = async (text: string) => {
-    if (!text.trim()) return;
-
-    try {
-      const base64 = await generateSpeech(text);
-      if (!base64) return;
-
-      const AudioContextClass = window.AudioContext || (window as any).webkitAudioContext;
-      if (!audioCtxRef.current) audioCtxRef.current = new AudioContextClass();
-      const ctx = audioCtxRef.current;
-
-      const bytes = decode(base64);
-      const buffer = await decodeAudioData(bytes, ctx);
-
-      audioQueueRef.current.push(buffer);
-      playNextInQueue();
-    } catch (e) {
-      console.error("Queueing speech failed", e);
-    }
-  };
-
-  const speak = async (text: string) => {
-    stopListening();
-    audioQueueRef.current = [];
-    isPlayingQueueRef.current = false;
-    if (sourceRef.current) {
-      try { sourceRef.current.stop(); } catch (e) { }
-    }
-    await queueSpeech(text);
-  };
-
-
-  // --- 5. Main Handlers ---
-  const handleToggleVoice = async () => {
-    if (voiceMode) {
-      setVoiceMode(false);
-      setVoiceStatus('idle');
-      stopListening();
-      stopVisualizer();
-      if (sourceRef.current) sourceRef.current.stop();
-    } else {
-      setVoiceMode(true);
-      await startVisualizer();
-
-      const lastMsg = messages[messages.length - 1];
-      if (lastMsg && lastMsg.role === 'model' && !lastMsg.isStreaming) {
-        await speak(lastMsg.text);
-      } else {
-        startListening();
-      }
-    }
-  };
 
   const handleSend = async (overrideText?: string) => {
     const textToSend = (overrideText || inputRef.current || input).trim();
@@ -418,11 +82,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
     sentenceBufferRef.current = '';
     processedSentencesRef.current.clear();
-    audioQueueRef.current = [];
-    isPlayingQueueRef.current = false;
-    if (sourceRef.current) {
-      try { sourceRef.current.stop(); } catch (e) { }
-    }
+    stopPlayback();
 
     if (voiceMode) {
       setVoiceStatus('processing');
@@ -461,7 +121,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         // Streaming TTS logic
         if (voiceModeRef.current) {
           sentenceBufferRef.current += text;
-
           const sentences = sentenceBufferRef.current.split(/(?<=[.!?])\s+/);
 
           if (sentences.length > 1) {
@@ -470,11 +129,10 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
               const sentence = sentences[i].trim();
               if (sentence) {
                 combinedSentence += (combinedSentence ? " " : "") + sentence;
-
                 if (combinedSentence.length > 20 || i === sentences.length - 2) {
                   if (!processedSentencesRef.current.has(combinedSentence)) {
                     processedSentencesRef.current.add(combinedSentence);
-                    queueSpeech(combinedSentence);
+                    speak(combinedSentence);
                     combinedSentence = "";
                   }
                 }
@@ -490,7 +148,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         const remaining = sentenceBufferRef.current.trim();
         if (!processedSentencesRef.current.has(remaining)) {
           processedSentencesRef.current.add(remaining);
-          queueSpeech(remaining);
+          speak(remaining);
         }
       }
 
@@ -510,13 +168,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         setIsTransitioning(true);
         track('assessment_complete', { message_count: messagesRef.current.length });
 
-        // Halt STT and clear TTS queues to prevent audio collisions during transition
         stopListening();
-        audioQueueRef.current = [];
-        isPlayingQueueRef.current = false;
-        if (sourceRef.current) {
-          try { sourceRef.current.stop(); } catch (e) { }
-        }
+        stopPlayback();
 
         setTimeout(() => {
           onComplete(messagesRef.current);
@@ -526,7 +179,75 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     } catch (error) {
       console.error("Chat error", error);
       setIsLoading(false);
-      if (voiceModeRef.current) {
+      if (voiceModeRef.current) startListening();
+    }
+  };
+
+  const { startListening, stopListening, silenceTimerRef } = useSpeechRecognition({
+    onTranscript: (interim, final) => {
+      if (final) {
+        const current = inputRef.current;
+        const next = (current + ' ' + final).trim();
+        setInput(next);
+        inputRef.current = next;
+        setInterimInput('');
+
+        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = setTimeout(() => {
+          handleSend(next);
+        }, 1200);
+      } else if (interim) {
+        setInterimInput(interim);
+        if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
+        silenceTimerRef.current = setTimeout(() => {
+          const current = inputRef.current;
+          const combined = (current + ' ' + interim).trim();
+          handleSend(combined);
+        }, 2000);
+      }
+    },
+    onMicError: setMicError,
+    voiceMode, setVoiceMode,
+    voiceStatus, setVoiceStatus
+  });
+
+
+  // --- 1. Initialization ---
+  useEffect(() => {
+    chatRef.current = createChatSession(config);
+    const initialMessages = [{ role: 'model' as const, text: config.initialGreeting }];
+    setMessages(initialMessages);
+    messagesRef.current = initialMessages;
+  }, [config]);
+
+  useEffect(() => {
+    inputRef.current = input;
+  }, [input]);
+
+  useEffect(() => {
+    messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  }, [messages, interimInput, voiceStatus]);
+
+  useEffect(() => {
+    voiceModeRef.current = voiceMode;
+  }, [voiceMode]);
+
+  // --- 5. Main Handlers ---
+  const handleToggleVoice = async () => {
+    if (voiceMode) {
+      setVoiceMode(false);
+      setVoiceStatus('idle');
+      stopListening();
+      stopVisualizer();
+      stopPlayback();
+    } else {
+      setVoiceMode(true);
+      await startVisualizer(canvasRef.current, setMicError);
+
+      const lastMsg = messages[messages.length - 1];
+      if (lastMsg && lastMsg.role === 'model' && !lastMsg.isStreaming) {
+        await speak(lastMsg.text);
+      } else {
         startListening();
       }
     }

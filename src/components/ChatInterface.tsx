@@ -258,100 +258,45 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const showFallbackLink = messageCount >= 6 && messages[messages.length - 1]?.role === 'model' && !messages[messages.length - 1]?.isStreaming;
 
   return (
-    <div style={{
-      display: 'flex',
-      flexDirection: 'column',
-      height: '100%',
-      overflow: 'hidden',
-      fontFamily: 'var(--sans)',
-    }}>
-
+    <div className="flex flex-col h-full overflow-hidden font-sans">
       {/* Chat Container */}
-      <div style={{
-        flex: 1,
-        display: 'flex',
-        flexDirection: 'column',
-        overflow: 'hidden',
-        background: 'var(--linen)',
-        border: '1px solid var(--border-m)',
-        borderRadius: '8px',
-        margin: '0.75rem 0',
-      }}>
+      <div className="flex-1 flex flex-col overflow-hidden bg-[#FEFDFB] border border-black/10 rounded-xl md:my-2">
 
         {/* Session Label */}
-        <div style={{
-          display: 'flex',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          gap: '0.5rem',
-          padding: '1.25rem 1rem 0.75rem',
-          flexShrink: 0,
-        }}>
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}>
-            <div style={{
-              width: '6px',
-              height: '6px',
-              borderRadius: '50%',
-              background: voiceStatus === 'listening' ? 'var(--charcoal)' : 'var(--accent)',
-              opacity: voiceStatus === 'listening' ? 1 : 0.5,
-              transition: 'all 0.3s',
-            }} />
-            <span style={{
-              fontSize: '0.78rem',
-              fontWeight: 500,
-              color: 'var(--stone)',
-              letterSpacing: '0.01em',
-              display: 'flex',
-              alignItems: 'center',
-              gap: '0.4rem',
-            }}>
+        <div className="flex items-center justify-between gap-2 px-4 md:px-6 pt-4 pb-3 shrink-0">
+          <div className="flex items-center gap-2">
+            <div
+              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${voiceStatus === 'listening' ? 'bg-[#2A2520] opacity-100' : 'bg-[#8B7355] opacity-50'}`}
+            />
+            <span className="text-[0.7rem] md:text-[0.78rem] font-medium text-[#6B6560] tracking-wide flex items-center gap-1.5">
               {isTransitioning ? 'Preparing your reflection...' :
-                voiceStatus === 'processing' ? <><Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Reflecting...</> :
-                  voiceStatus === 'speaking' ? <><Volume2 size={12} style={{ animation: 'pulse 2s infinite' }} /> Speaking...</> :
+                voiceStatus === 'processing' ? <><Loader2 size={12} className="animate-spin" /> Reflecting...</> :
+                  voiceStatus === 'speaking' ? <><Volume2 size={12} className="animate-pulse" /> Speaking...</> :
                     voiceStatus === 'listening' ? 'Listening...' :
                       'Reflection Session'}
             </span>
           </div>
 
-          <div style={{ display: 'flex', alignItems: 'center', gap: '0.75rem' }}>
+          <div className="flex items-center gap-3">
             {micError && (
-              <div style={{
-                display: 'flex', alignItems: 'center', gap: '0.25rem',
-                color: '#dc2626', fontSize: '0.7rem', background: '#fef2f2',
-                padding: '0.2rem 0.5rem', borderRadius: '4px',
-              }}>
-                <AlertCircle size={12} /> {micError}
+              <div className="flex flex-col md:flex-row items-center gap-1 text-red-600 text-[0.65rem] md:text-xs bg-red-50 py-1 px-2 rounded text-right">
+                <AlertCircle size={10} className="md:w-3 md:h-3" />
+                <span className="hidden leading-tight leading-t md:inline">{micError}</span>
+                <span className="md:hidden">Error</span>
               </div>
             )}
           </div>
         </div>
 
         {/* Messages */}
-        <div style={{
-          flex: 1, overflowY: 'auto', padding: '1rem 1.25rem',
-          display: 'flex', flexDirection: 'column', gap: '1.5rem',
-        }}>
+        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 flex flex-col gap-6">
           {messages.map((msg, idx) => (
-            <div key={idx} style={{
-              display: 'flex', flexDirection: 'column',
-              alignItems: msg.role === 'user' ? 'flex-end' : 'flex-start',
-            }}>
-              <div style={{ maxWidth: '85%' }}>
-                <div style={{
-                  fontFamily: 'var(--sans)', fontSize: '0.95rem', lineHeight: 1.7,
-                  color: msg.role === 'user' ? 'var(--stone)' : 'var(--charcoal)',
-                  ...(msg.role === 'user' ? {
-                    background: 'var(--linen)', border: '1px solid var(--border)',
-                    borderRadius: '12px 12px 2px 12px', padding: '0.85rem 1.1rem',
-                  } : {}),
-                }}>
+            <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
+              <div className="max-w-[92%] md:max-w-[85%]">
+                <div className={`font-sans text-[0.9rem] md:text-[0.95rem] leading-[1.6] md:leading-[1.7] ${msg.role === 'user' ? 'text-[#6B6560] bg-[#FEFDFB] border border-black/5 rounded-2xl rounded-br-sm px-3 md:px-4 py-2.5 md:py-3' : 'text-[#2A2520]'}`}>
                   {msg.text}
                   {msg.isStreaming && (
-                    <span style={{
-                      display: 'inline-block', width: '2px', height: '1em',
-                      marginLeft: '2px', background: 'var(--accent)',
-                      animation: 'pulse 1.5s infinite', verticalAlign: 'middle',
-                    }} />
+                    <span className="inline-block w-[2px] h-[1em] ml-[2px] bg-[#8B7355] animate-pulse align-middle" />
                   )}
                 </div>
               </div>
@@ -360,28 +305,21 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
           {/* Loading / Thinking State */}
           {(voiceStatus === 'processing' || (isLoading && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.text === '')) && (
-            <div style={{ display: 'flex', alignItems: 'center', gap: '0.5rem', color: 'var(--stone-lt)', padding: '0.5rem 0' }}>
-              <div style={{ display: 'flex', gap: '3px' }}>
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent)', animation: 'bounce 1s infinite', animationDelay: '-0.3s' }} />
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent)', animation: 'bounce 1s infinite', animationDelay: '-0.15s' }} />
-                <div style={{ width: '5px', height: '5px', borderRadius: '50%', background: 'var(--accent)', animation: 'bounce 1s infinite' }} />
+            <div className="flex items-center gap-2 text-[#9B9590] py-2">
+              <div className="flex gap-[3px]">
+                <div className="w-[5px] h-[5px] rounded-full bg-[#8B7355] animate-bounce" style={{ animationDelay: '-0.3s' }} />
+                <div className="w-[5px] h-[5px] rounded-full bg-[#8B7355] animate-bounce" style={{ animationDelay: '-0.15s' }} />
+                <div className="w-[5px] h-[5px] rounded-full bg-[#8B7355] animate-bounce" />
               </div>
-              <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.88rem', color: 'var(--stone-lt)' }}>Reflecting...</span>
+              <span className="font-serif italic text-[0.85rem] md:text-[0.88rem] text-[#9B9590]">Reflecting...</span>
             </div>
           )}
 
           {/* Transition indicator */}
           {isTransitioning && (
-            <div style={{
-              display: 'flex', flexDirection: 'column', alignItems: 'center',
-              gap: '0.75rem', padding: '2rem 0', color: 'var(--stone)',
-            }}>
-              <div style={{
-                width: '32px', height: '32px', borderRadius: '50%',
-                border: '2px solid var(--border-m)', borderTopColor: 'var(--charcoal)',
-                animation: 'spin 1s linear infinite',
-              }} />
-              <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.9rem' }}>
+            <div className="flex flex-col items-center gap-3 py-8 text-[#6B6560]">
+              <div className="w-8 h-8 rounded-full border-2 border-black/10 border-t-[#2A2520] animate-spin" />
+              <span className="font-serif italic text-[0.85rem] md:text-sm">
                 Synthesizing your reflection...
               </span>
             </div>
@@ -390,74 +328,43 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
           <div ref={messagesEndRef} />
         </div>
 
-        {/* Input Bar — v2 pill style */}
-        <div style={{
-          flexShrink: 0, padding: '0.75rem 1rem 1rem',
-          background: 'var(--linen)', borderTop: '1px solid var(--border)',
-          borderRadius: '0 0 8px 8px',
-        }}>
-          <div style={{
-            display: 'flex', alignItems: 'center', gap: '0.5rem',
-            background: 'white', border: '1px solid var(--border-m)',
-            borderRadius: '24px', padding: '0.6rem 0.6rem 0.6rem 1.25rem',
-            transition: 'border-color 0.2s',
-            opacity: isTransitioning ? 0.5 : 1,
-            pointerEvents: isTransitioning ? 'none' : 'auto',
-          }}>
+        {/* Input Bar */}
+        <div className="shrink-0 px-3 md:px-6 pb-4 pt-3 bg-[#FEFDFB] border-t border-black/5 rounded-b-xl">
+          <div className={`flex items-center gap-1 md:gap-2 bg-white border border-black/10 rounded-full py-1.5 md:py-2 pl-3 md:pl-5 pr-1.5 md:pr-2 transition-colors focus-within:border-[#8B7355] ${isTransitioning ? 'opacity-50 pointer-events-none' : ''}`}>
             <input
               type="text"
               value={interimInput || input}
               onChange={(e) => { setInput(e.target.value); }}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-              placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait for response...") : "Share your thoughts..."}
+              placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait...") : "Share your thoughts..."}
               disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking' || isTransitioning}
-              style={{
-                flex: 1, fontFamily: 'var(--sans)', fontSize: '0.9rem',
-                color: 'var(--charcoal)', background: 'none', border: 'none', outline: 'none',
-              }}
+              className="flex-1 font-sans text-[0.85rem] md:text-[0.9rem] text-[#2A2520] bg-transparent border-none outline-none placeholder:text-[#9B9590] min-w-0"
             />
 
             {/* Visualizer + Mic Button */}
-            <div style={{ position: 'relative', width: '36px', height: '36px', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
+            <div className="relative w-8 h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0">
               <canvas
                 ref={canvasRef}
                 width={80}
                 height={80}
-                style={{
-                  position: 'absolute', inset: 0, width: '100%', height: '100%',
-                  pointerEvents: 'none', transition: 'opacity 0.5s',
-                  opacity: voiceStatus === 'listening' ? 1 : 0,
-                }}
+                className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-500 ${voiceStatus === 'listening' ? 'opacity-100' : 'opacity-0'}`}
               />
               <button
                 onClick={handleToggleVoice}
-                style={{
-                  position: 'relative', zIndex: 10, width: '36px', height: '36px',
-                  borderRadius: '50%', border: 'none', cursor: 'pointer',
-                  display: 'flex', alignItems: 'center', justifyContent: 'center',
-                  transition: 'all 0.2s', background: 'none',
-                  color: voiceMode ? 'var(--charcoal)' : 'var(--stone-lt)', flexShrink: 0,
-                }}
+                className={`relative z-10 w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full border-none cursor-pointer transition-all duration-200 bg-transparent shrink-0 ${voiceMode ? 'text-[#2A2520]' : 'text-[#9B9590] hover:text-[#2A2520]'}`}
                 title={voiceMode ? "Stop Voice Mode" : "Start Voice Mode"}
               >
-                {voiceMode ? <Square size={16} fill="currentColor" /> : <Mic size={18} />}
+                {voiceMode ? <Square size={14} fill="currentColor" className="md:w-4 md:h-4" /> : <Mic size={16} className="md:w-[18px] md:h-[18px]" />}
               </button>
             </div>
 
-            {/* Send Button — charcoal circle */}
+            {/* Send Button */}
             <button
               onClick={() => handleSend()}
               disabled={(!input.trim() && !interimInput.trim()) || isLoading || isTransitioning}
-              style={{
-                width: '36px', height: '36px', borderRadius: '50%', border: 'none',
-                cursor: (!input.trim() && !interimInput.trim()) || isLoading || isTransitioning ? 'not-allowed' : 'pointer',
-                display: 'flex', alignItems: 'center', justifyContent: 'center',
-                transition: 'all 0.2s', background: 'var(--charcoal)',
-                color: 'var(--cream, #F4F1EB)', flexShrink: 0,
-                opacity: (!input.trim() && !interimInput.trim()) || isLoading || isTransitioning ? 0.5 : 1,
-              }}
+              className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full border-none transition-all duration-200 bg-[#2A2520] text-[#F4F1EB] shrink-0 ${(!input.trim() && !interimInput.trim()) || isLoading || isTransitioning ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#3A3530]'}`}
             >
-              <Send size={16} />
+              <Send size={14} className="md:w-4 md:h-4" />
             </button>
           </div>
         </div>
@@ -465,28 +372,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       </div>
 
       {/* Footer Label */}
-      <div style={{ textAlign: 'center', padding: '0.5rem 0 0.75rem', flexShrink: 0 }}>
+      <div className="text-center pb-2 pt-1 md:pb-3 md:pt-2 shrink-0">
         {showFallbackLink && !isTransitioning ? (
           <button
             onClick={() => onComplete(messages)}
-            style={{
-              fontFamily: 'var(--sans)', fontSize: '0.65rem', fontWeight: 500,
-              letterSpacing: '0.08em', textTransform: 'uppercase',
-              color: 'var(--stone-lt)', background: 'none', border: 'none',
-              cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '2px',
-              opacity: 0.6, transition: 'opacity 0.2s',
-            }}
-            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
-            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.6')}
+            className="font-sans text-[0.6rem] md:text-[0.65rem] font-medium tracking-widest uppercase text-[#9B9590] bg-transparent border-none cursor-pointer underline underline-offset-2 opacity-60 hover:opacity-100 transition-opacity duration-200 p-2"
           >
             Ready for your reflection? View results →
           </button>
         ) : (
-          <span style={{
-            fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em',
-            textTransform: 'uppercase', color: 'var(--stone-lt)', opacity: 0.5,
-          }}>
-            {isTransitioning ? 'Generating your reflection...' :
+          <span className="text-[0.55rem] md:text-[0.65rem] font-medium tracking-widest uppercase text-[#9B9590] opacity-50 px-2 block truncate">
+            {isTransitioning ? 'Generating reflection...' :
               voiceMode ? (voiceStatus === 'listening' ? "Speak naturally · I'll respond to silence" : "AI is thinking...") : "Reflect AI Assessment"}
           </span>
         )}

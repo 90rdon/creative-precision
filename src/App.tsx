@@ -101,7 +101,7 @@ const App: React.FC = () => {
         <div className="bg-sand-100 text-sand-900 font-sans selection:bg-sand-200 h-full w-full flex flex-col relative overflow-hidden">
 
             {/* Main Content Area */}
-            <main className="flex-1 overflow-hidden flex flex-col items-center px-6 pb-6 pt-4">
+            <main className="flex-1 overflow-hidden flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-2 md:pt-4">
                 {view === 'landing' && <Landing onStart={startAssessment} />}
 
                 {view === 'assessment' && (

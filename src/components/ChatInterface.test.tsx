@@ -66,7 +66,7 @@ describe('ChatInterface Component', () => {
         const input = screen.getByPlaceholderText('Share your thoughts...');
         fireEvent.change(input, { target: { value: 'This is my ambition' } });
 
-        const sendBtn = input.nextElementSibling?.nextElementSibling as HTMLElement;
+        const sendBtn = screen.getByRole('button', { name: "Send message" });
         fireEvent.click(sendBtn);
 
         await waitFor(() => {
@@ -113,7 +113,7 @@ describe('ChatInterface Component', () => {
         const input = screen.getByPlaceholderText('Share your thoughts...');
         fireEvent.change(input, { target: { value: 'Im ready' } });
 
-        const sendBtn = input.nextElementSibling?.nextElementSibling as HTMLElement;
+        const sendBtn = screen.getByRole('button', { name: "Send message" });
         fireEvent.click(sendBtn);
 
         await waitFor(() => {

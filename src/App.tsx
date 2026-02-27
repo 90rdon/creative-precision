@@ -98,34 +98,26 @@ const App: React.FC = () => {
     };
 
     return (
-        <div className="bg-sand-100 text-sand-900 font-sans selection:bg-sand-200 h-full w-full flex flex-col relative overflow-hidden">
+        <div className="min-h-screen bg-sand-100 text-sand-900 font-sans selection:bg-sand-200 py-4 md:py-8 px-4 w-full flex flex-col">
+            {view === 'landing' && <Landing onStart={startAssessment} />}
 
-            {/* Main Content Area */}
-            <main className="flex-1 overflow-hidden flex flex-col items-center px-4 md:px-6 pb-4 md:pb-6 pt-2 md:pt-4">
-                {view === 'landing' && <Landing onStart={startAssessment} />}
+            {view === 'assessment' && (
+                <ChatInterface
+                    config={config}
+                    onComplete={handleAssessmentComplete}
+                    sessionId={sessionId}
+                    onTrackEvent={handleTrackEvent}
+                />
+            )}
 
-                {view === 'assessment' && (
-                    <div className="h-full w-full max-w-4xl flex flex-col">
-                        <ChatInterface
-                            config={config}
-                            onComplete={handleAssessmentComplete}
-                            sessionId={sessionId}
-                            onTrackEvent={handleTrackEvent}
-                        />
-                    </div>
-                )}
-
-                {view === 'results' && (
-                    <div className="h-full overflow-y-auto w-full">
-                        <Results
-                            history={chatHistory}
-                            onRestart={handleRestart}
-                            sessionId={sessionId}
-                            onTrackEvent={handleTrackEvent}
-                        />
-                    </div>
-                )}
-            </main>
+            {view === 'results' && (
+                <Results
+                    history={chatHistory}
+                    onRestart={handleRestart}
+                    sessionId={sessionId}
+                    onTrackEvent={handleTrackEvent}
+                />
+            )}
 
             <ConfigPanel
                 isOpen={isConfigOpen}

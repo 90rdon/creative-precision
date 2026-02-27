@@ -258,134 +258,135 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const showFallbackLink = messageCount >= 6 && messages[messages.length - 1]?.role === 'model' && !messages[messages.length - 1]?.isStreaming;
 
   return (
-    <div className="flex flex-col h-full overflow-hidden font-sans">
-      {/* Chat Container */}
-      <div className="flex-1 flex flex-col overflow-hidden bg-[#FEFDFB] border border-black/10 rounded-xl md:my-2">
+    <div className="flex flex-col h-[85vh] max-w-4xl mx-auto w-full bg-sand-50 rounded-lg shadow-sm border border-stone-200 overflow-hidden relative font-sans">
 
-        {/* Session Label */}
-        <div className="flex items-center justify-between gap-2 px-4 md:px-6 pt-4 pb-3 shrink-0">
-          <div className="flex items-center gap-2">
-            <div
-              className={`w-1.5 h-1.5 rounded-full transition-all duration-300 ${voiceStatus === 'listening' ? 'bg-[#2A2520] opacity-100' : 'bg-[#8B7355] opacity-50'}`}
-            />
-            <span className="text-[0.7rem] md:text-[0.78rem] font-medium text-[#6B6560] tracking-wide flex items-center gap-1.5">
-              {isTransitioning ? 'Preparing your reflection...' :
-                voiceStatus === 'processing' ? <><Loader2 size={12} className="animate-spin" /> Reflecting...</> :
-                  voiceStatus === 'speaking' ? <><Volume2 size={12} className="animate-pulse" /> Speaking...</> :
-                    voiceStatus === 'listening' ? 'Listening...' :
-                      'Reflection Session'}
+      {/* Header */}
+      <div className="bg-white border-b border-stone-100 p-4 flex justify-between items-center z-20">
+        <div className="flex items-center gap-3">
+          <div className={`w-2 h-2 rounded-full transition-all duration-500 ${voiceStatus === 'listening' ? 'bg-forest-800 scale-125 shadow-sm' : voiceStatus === 'speaking' ? 'bg-sand-400' : 'bg-stone-300'}`} />
+          <span className="font-medium text-stone-500 transition-all duration-300 flex items-center gap-2 text-sm tracking-tight">
+            {isTransitioning ? 'Preparing your reflection...' :
+              voiceStatus === 'processing' ? <><Loader2 size={12} className="animate-spin" /> Reflecting...</> :
+                voiceStatus === 'speaking' ? <><Volume2 size={12} className="animate-pulse" /> Speaking...</> :
+                  voiceStatus === 'listening' ? (interimInput ? 'Listening...' : 'Listening...') :
+                    'Reflection Session'}
+          </span>
+        </div>
+
+        {micError && (
+          <div className="flex items-center gap-1 text-red-600 text-xs bg-red-50 px-2 py-1 rounded">
+            <AlertCircle size={12} /> {micError}
+          </div>
+        )}
+
+        {showFallbackLink && !isTransitioning && (
+          <button onClick={() => onComplete(messages)} className="py-1 px-4 text-xs font-medium border border-forest-800 rounded-full text-forest-800 hover:bg-forest-800 hover:text-white transition-colors cursor-pointer">
+            Generate Assessment
+          </button>
+        )}
+      </div>
+
+      {/* Messages */}
+      <div className="flex-1 overflow-y-auto p-4 md:p-6 space-y-8 bg-sand-50 scroll-smooth">
+        {messages.map((msg, idx) => (
+          <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'} animate-in fade-in slide-in-from-bottom-2 duration-500`}>
+            <div className={`max-w-[90%] md:max-w-[85%] ${msg.role === 'user' ? 'text-right' : 'text-left'}`}>
+              <div className={`
+                inline-block p-4 md:p-6 rounded-lg text-[15px] md:text-[16px] leading-relaxed relative tracking-wide
+                ${msg.role === 'user'
+                  ? 'bg-white text-sand-900 shadow-sm border border-stone-100'
+                  : 'text-sand-900 font-serif text-[18px] md:text-[20px] bg-transparent px-0'}
+              `}>
+                {msg.text}
+                {msg.isStreaming && <span className="inline-block w-1.5 h-4 ml-1 bg-forest-800 animate-pulse align-middle" />}
+              </div>
+            </div>
+          </div>
+        ))}
+        {/* Loading / Thinking State Visual */}
+        {(voiceStatus === 'processing' || (isLoading && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.text === '')) && (
+          <div className="flex flex-col items-start max-w-[85%] animate-in fade-in">
+            <div className="flex items-center gap-3 text-stone-400 p-2 font-serif italic text-lg">
+              <div className="flex gap-1">
+                <div className="w-1.5 h-1.5 bg-forest-500 rounded-full animate-bounce" style={{ animationDelay: '-0.3s' }} />
+                <div className="w-1.5 h-1.5 bg-forest-500 rounded-full animate-bounce" style={{ animationDelay: '-0.15s' }} />
+                <div className="w-1.5 h-1.5 bg-forest-500 rounded-full animate-bounce" />
+              </div>
+              <span className="text-forest-800/60">Reflecting...</span>
+            </div>
+          </div>
+        )}
+
+        {isTransitioning && (
+          <div className="flex flex-col items-center justify-center gap-3 py-8 text-stone-500 animate-in fade-in">
+            <div className="w-8 h-8 rounded-full border-2 border-stone-200 border-t-sand-900 animate-spin" />
+            <span className="font-serif italic text-lg">
+              Synthesizing your reflection...
             </span>
           </div>
+        )}
+        <div ref={messagesEndRef} />
+      </div>
 
-          <div className="flex items-center gap-3">
-            {micError && (
-              <div className="flex flex-col md:flex-row items-center gap-1 text-red-600 text-[0.65rem] md:text-xs bg-red-50 py-1 px-2 rounded text-right">
-                <AlertCircle size={10} className="md:w-3 md:h-3" />
-                <span className="hidden leading-tight leading-t md:inline">{micError}</span>
-                <span className="md:hidden">Error</span>
-              </div>
-            )}
-          </div>
-        </div>
+      {/* Input Area */}
+      <div className="p-3 md:p-6 bg-white border-t border-stone-100 z-20 transition-colors duration-500">
+        <div className="relative flex items-center gap-2">
+          <textarea
+            value={interimInput || input}
+            onChange={(e) => { setInput(e.target.value); }}
+            onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
+            placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait for response...") : "Share your thoughts..."}
+            className={`
+              w-full bg-sand-50 text-sand-900 placeholder:text-stone-400 rounded-lg py-3 md:py-4 pl-4 pr-16 md:pr-20 resize-none 
+              focus:outline-none focus:ring-1 focus:ring-forest-800 border-none max-h-32 min-h-[50px] md:min-h-[64px] transition-all duration-300 text-sm md:text-base
+              ${voiceStatus === 'listening' ? 'bg-forest-50/10 ring-1 ring-forest-100' : ''}
+              ${interimInput ? 'text-stone-500' : ''} 
+            `}
+            rows={1}
+            disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking' || isTransitioning}
+          />
 
-        {/* Messages */}
-        <div className="flex-1 overflow-y-auto px-4 md:px-6 py-4 flex flex-col gap-6">
-          {messages.map((msg, idx) => (
-            <div key={idx} className={`flex flex-col ${msg.role === 'user' ? 'items-end' : 'items-start'}`}>
-              <div className="max-w-[92%] md:max-w-[85%]">
-                <div className={`font-sans text-[0.9rem] md:text-[0.95rem] leading-[1.6] md:leading-[1.7] ${msg.role === 'user' ? 'text-[#6B6560] bg-[#FEFDFB] border border-black/5 rounded-2xl rounded-br-sm px-3 md:px-4 py-2.5 md:py-3' : 'text-[#2A2520]'}`}>
-                  {msg.text}
-                  {msg.isStreaming && (
-                    <span className="inline-block w-[2px] h-[1em] ml-[2px] bg-[#8B7355] animate-pulse align-middle" />
-                  )}
-                </div>
-              </div>
-            </div>
-          ))}
+          <div className="absolute right-2 md:right-3 flex items-center gap-1 md:gap-2">
 
-          {/* Loading / Thinking State */}
-          {(voiceStatus === 'processing' || (isLoading && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.text === '')) && (
-            <div className="flex items-center gap-2 text-[#9B9590] py-2">
-              <div className="flex gap-[3px]">
-                <div className="w-[5px] h-[5px] rounded-full bg-[#8B7355] animate-bounce" style={{ animationDelay: '-0.3s' }} />
-                <div className="w-[5px] h-[5px] rounded-full bg-[#8B7355] animate-bounce" style={{ animationDelay: '-0.15s' }} />
-                <div className="w-[5px] h-[5px] rounded-full bg-[#8B7355] animate-bounce" />
-              </div>
-              <span className="font-serif italic text-[0.85rem] md:text-[0.88rem] text-[#9B9590]">Reflecting...</span>
-            </div>
-          )}
-
-          {/* Transition indicator */}
-          {isTransitioning && (
-            <div className="flex flex-col items-center gap-3 py-8 text-[#6B6560]">
-              <div className="w-8 h-8 rounded-full border-2 border-black/10 border-t-[#2A2520] animate-spin" />
-              <span className="font-serif italic text-[0.85rem] md:text-sm">
-                Synthesizing your reflection...
-              </span>
-            </div>
-          )}
-
-          <div ref={messagesEndRef} />
-        </div>
-
-        {/* Input Bar */}
-        <div className="shrink-0 px-3 md:px-6 pb-4 pt-3 bg-[#FEFDFB] border-t border-black/5 rounded-b-xl">
-          <div className={`flex items-center gap-1 md:gap-2 bg-white border border-black/10 rounded-full py-1.5 md:py-2 pl-3 md:pl-5 pr-1.5 md:pr-2 transition-colors focus-within:border-[#8B7355] ${isTransitioning ? 'opacity-50 pointer-events-none' : ''}`}>
-            <input
-              type="text"
-              value={interimInput || input}
-              onChange={(e) => { setInput(e.target.value); }}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-              placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait...") : "Share your thoughts..."}
-              disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking' || isTransitioning}
-              className="flex-1 font-sans text-[0.85rem] md:text-[0.9rem] text-[#2A2520] bg-transparent border-none outline-none placeholder:text-[#9B9590] min-w-0"
-            />
-
-            {/* Visualizer + Mic Button */}
-            <div className="relative w-8 h-8 md:w-9 md:h-9 flex items-center justify-center shrink-0">
+            {/* Visualizer & Mic Button Container */}
+            <div className="relative w-10 h-10 md:w-12 md:h-12 flex items-center justify-center">
               <canvas
                 ref={canvasRef}
                 width={80}
                 height={80}
                 className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-500 ${voiceStatus === 'listening' ? 'opacity-100' : 'opacity-0'}`}
               />
+
               <button
                 onClick={handleToggleVoice}
-                className={`relative z-10 w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full border-none cursor-pointer transition-all duration-200 bg-transparent shrink-0 ${voiceMode ? 'text-[#2A2520]' : 'text-[#9B9590] hover:text-[#2A2520]'}`}
+                className={`
+                  relative z-10 p-2 md:p-2.5 rounded-full transition-all duration-300 border cursor-pointer
+                  ${voiceMode
+                    ? 'bg-transparent border-transparent text-forest-900 hover:scale-105'
+                    : 'bg-transparent border-transparent text-stone-400 hover:bg-stone-100 hover:text-sand-900'}
+                `}
                 title={voiceMode ? "Stop Voice Mode" : "Start Voice Mode"}
+                aria-label={voiceMode ? "Stop Voice Mode" : "Start Voice Mode"}
               >
-                {voiceMode ? <Square size={14} fill="currentColor" className="md:w-4 md:h-4" /> : <Mic size={16} className="md:w-[18px] md:h-[18px]" />}
+                {voiceMode ? <Square size={16} className="md:w-[18px] md:h-[18px]" fill="currentColor" /> : <Mic size={18} className="md:w-[20px] md:h-[20px]" />}
               </button>
             </div>
 
-            {/* Send Button */}
             <button
               onClick={() => handleSend()}
               disabled={(!input.trim() && !interimInput.trim()) || isLoading || isTransitioning}
-              className={`w-8 h-8 md:w-9 md:h-9 flex items-center justify-center rounded-full border-none transition-all duration-200 bg-[#2A2520] text-[#F4F1EB] shrink-0 ${(!input.trim() && !interimInput.trim()) || isLoading || isTransitioning ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer hover:bg-[#3A3530]'}`}
+              className="p-2 md:p-2.5 bg-forest-900 text-white rounded-full disabled:opacity-50 disabled:cursor-not-allowed hover:bg-black transition-colors cursor-pointer"
+              aria-label="Send message"
             >
-              <Send size={14} className="md:w-4 md:h-4" />
+              <Send size={16} className="md:w-[18px] md:h-[18px]" />
             </button>
           </div>
         </div>
-
-      </div>
-
-      {/* Footer Label */}
-      <div className="text-center pb-2 pt-1 md:pb-3 md:pt-2 shrink-0">
-        {showFallbackLink && !isTransitioning ? (
-          <button
-            onClick={() => onComplete(messages)}
-            className="font-sans text-[0.6rem] md:text-[0.65rem] font-medium tracking-widest uppercase text-[#9B9590] bg-transparent border-none cursor-pointer underline underline-offset-2 opacity-60 hover:opacity-100 transition-opacity duration-200 p-2"
-          >
-            Ready for your reflection? View results →
-          </button>
-        ) : (
-          <span className="text-[0.55rem] md:text-[0.65rem] font-medium tracking-widest uppercase text-[#9B9590] opacity-50 px-2 block truncate">
-            {isTransitioning ? 'Generating reflection...' :
-              voiceMode ? (voiceStatus === 'listening' ? "Speak naturally · I'll respond to silence" : "AI is thinking...") : "Reflect AI Assessment"}
+        <div className="text-center mt-2 md:mt-3 flex justify-center gap-4">
+          <span className="text-[10px] md:text-[11px] font-medium tracking-wide text-stone-400 uppercase">
+            {isTransitioning ? 'Generating reflection...' : voiceMode ? (voiceStatus === 'listening' ? "Speak naturally · I'll respond to silence" : "AI is thinking...") : "Reflect AI Assessment"}
           </span>
-        )}
+        </div>
       </div>
     </div>
   );

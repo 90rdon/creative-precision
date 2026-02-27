@@ -12,15 +12,15 @@ export const Landing: React.FC<LandingProps> = ({ onStart }) => {
       <div className="mb-8 p-3 rounded-full bg-white border border-stone-200 shadow-sm">
         <span className="text-xs font-medium uppercase tracking-widest text-stone-500 px-2">Executive Assessment</span>
       </div>
-      
+
       <h1 className="font-serif text-5xl md:text-7xl text-sand-900 mb-8 leading-[1.1] tracking-tight">
         The framework between <br />
         <span className="italic text-stone-600">investment</span> and <span className="italic text-stone-600">value</span>.
       </h1>
-      
+
       <p className="font-sans text-lg md:text-xl text-stone-600 max-w-2xl leading-relaxed mb-12">
-        This isn't a sales tool. There's no pitch at the end. 
-        This is a space for honest self-reflection — a thought partner that asks the questions most people around you won't.
+        Most AI pilots stall because of structural friction, not technical failure.
+        This is a space for honest diagnosis — a thought partner to help you find the actual bottleneck killing your AI ROI.
       </p>
 
       <Button onClick={onStart} icon={<ArrowRight size={16} />}>

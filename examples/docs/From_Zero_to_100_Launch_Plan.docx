@@ -1,0 +1,741 @@
+**FROM ZERO TO 100**
+
+90-Day Business Launch Plan
+
+Digital Products for AI Governance
+
+**Gordon Chan**
+
+February 2026
+
+**CONFIDENTIAL**
+
+*\"The discipline of constraint is not restriction --- it's
+precision.\"*
+
+**Executive Summary**
+
+This plan outlines a 90-day roadmap to launch a digital product business
+targeting AI/Data leaders at mid-market companies. The business sells
+governance frameworks, toolkits, and templates that help organizations
+move AI initiatives from pilot purgatory to production value.
+
++-----------------------------------------------------------------------+
+| **The Constraints (Our Reality)**                                     |
+|                                                                       |
+| • Budget: Under \$500 total (bootstrap only)                          |
+|                                                                       |
+| • LinkedIn: Under 1,000 connections                                   |
+|                                                                       |
+| • Network: Warm contacts exist but relationships have gone cold       |
+|                                                                       |
+| • IP: Partial --- existing frameworks need reworking into sellable    |
+| content                                                               |
+|                                                                       |
+| • Speaking: Not a current strength --- build toward it over time      |
+|                                                                       |
+| • Approach: Test small, validate ROI, then double down on what works  |
++-----------------------------------------------------------------------+
+
++-----------------------------------------------------------------------+
+| **The Target**                                                        |
+|                                                                       |
+| • 100 paid digital product customers in 90 days                       |
+|                                                                       |
+| • Primary buyer: AI Directors, VPs of Data/ML, CTOs at mid-market     |
+| companies                                                             |
+|                                                                       |
+| • Revenue model: Free lead magnet → low-ticket (\$47--\$297) →        |
+| consulting upsell                                                     |
++-----------------------------------------------------------------------+
+
++-----------------------------------------------------------------------+
+| **Honest Assessment: The 100-Customer Reality Check**                 |
+|                                                                       |
+| 100 paid customers in 90 days on a bootstrap budget with \<1K         |
+| LinkedIn is aggressive. Industry benchmarks suggest a 1--3%           |
+| conversion rate from free to paid. You need 3,300--10,000 people to   |
+| see your offer. This plan hits that exposure through multi-channel    |
+| "test and double-down." Achievable but requires disciplined daily     |
+| execution. No days off in Month 1.                                    |
++-----------------------------------------------------------------------+
+
+**Part I: Persona, Hook & Story**
+
+Before building a single product, you need a market identity that cuts
+through noise. Your positioning must be instantly different, memorably
+specific, and painfully relevant to your buyer's current situation.
+
+**1.1 The Buyer Persona**
+
+  --------------------- -------------------------------------------------
+  **Attribute**         **Detail**
+
+  **Title**             Director of AI/ML, VP of Data & Analytics, CTO,
+                        Head of AI Strategy
+
+  **Company**           Mid-market (\$50M--\$1B revenue), 200--5,000
+                        employees
+
+  **Pain State**        3--7 AI pilots, none in production. Board asking
+                        for ROI. Shadow AI spreading. No governance
+                        framework.
+
+  **Budget Reality**    Has AI budget but can't justify more without
+                        production wins. Will pay \$47--\$297 for toolkit
+                        that saves 40+ hours.
+
+  **Buying Trigger**    Board meeting in 60 days. New regulation.
+                        Competitor shipped AI. CTO asked \"where's our
+                        strategy?\"
+
+  **Where They Are**    LinkedIn, MLOps Slack, AI newsletters, local tech
+                        meetups, podcasts
+  --------------------- -------------------------------------------------
+
+**1.2 The Hook**
+
++-----------------------------------------------------------------------+
+| **Primary Hook (The Cocktail Party Test)**                            |
+|                                                                       |
+| \"I help AI leaders escape pilot purgatory. Most companies have 5 AI  |
+| experiments and zero in production. I sell the governance frameworks  |
+| and deployment playbooks that get AI from stuck to shipped.\"         |
++-----------------------------------------------------------------------+
+
+Supporting hooks:
+
+-   **LinkedIn bio:** \"AI governance practitioner. I built the
+    frameworks inside a real enterprise --- now I sell them so you don't
+    have to build from scratch.\"
+
+-   **Cold DM:** \"I noticed your company is hiring ML engineers but
+    doesn't have an AI governance lead. That's usually the sign you're
+    about to hit the scaling wall.\"
+
+-   **Community:** \"I open-sourced my risk tiering logic. It
+    auto-routes Low/Medium/High risk AI projects to the right authority.
+    Here's the framework.\"
+
+**1.3 The Origin Story**
+
++-----------------------------------------------------------------------+
+| **The Story Arc**                                                     |
+|                                                                       |
+| THE PROBLEM I LIVED: \"I spent years watching AI initiatives die ---  |
+| not because the technology failed, but because the organization       |
+| wasn't ready.\"                                                       |
+|                                                                       |
+| THE THING I BUILT: \"So I built the system myself. Inside a real      |
+| enterprise, with real stakeholders, real budgets, and real politics.  |
+| A complete governance framework --- risk tiering, two-gate            |
+| deployment, CoE charter, technical standards.\"                       |
+|                                                                       |
+| THE INSIGHT: \"95% of governance advice is either too academic to     |
+| implement or too rigid to let teams ship. The breakthrough is the     |
+| discipline of constraint --- governance that channels innovation      |
+| instead of blocking it.\"                                             |
+|                                                                       |
+| THE OFFER: \"Now I've packaged everything into toolkits any AI leader |
+| can deploy in weeks. You don't need to hire a \$300K governance lead  |
+| or pay a Big 4 firm \$500K. You need the playbook from someone who    |
+| already ran this play.\"                                              |
++-----------------------------------------------------------------------+
+
+**Note:** *The "discipline of constraint" is the subtle Ving Tsun
+thread. Philosophical enough to intrigue, practical enough to be
+credible, and uniquely yours. Let engagement data guide how much to
+amplify it.*
+
+**Part II: The Product Suite**
+
+The product architecture follows a tiered model designed to maximize
+acquisition at the top and revenue per customer at the bottom. Every
+tier delivers value AND qualifies the buyer for the next tier.
+
+**2.1 The Funnel Architecture**
+
+  ---------- --------------------- ---------------- ---------- --------------
+  **Tier**   **Product**           **Price**        **Goal**   **Volume**
+
+  **Tier 0** AI Governance         FREE (email      Lead       1,000+
+             Readiness Checklist   gate)            capture    
+
+  **Tier 1** AI Risk Tiering       \$47             First      60--80
+             Toolkit                                purchase   
+
+  **Tier 2** AI                    \$197--\$297     Core       30--50
+             Governance-in-a-Box                    revenue    
+
+  **Tier 3** 1:1 Implementation    \$500--\$2,500   Upsell     5--10
+             Call                                              
+  ---------- --------------------- ---------------- ---------- --------------
+
+**2.2 Product Details**
+
+**Tier 0: AI Governance Readiness Checklist (FREE)**
+
+A 2--3 page PDF scoring AI governance maturity across 5 dimensions:
+Strategy Alignment, Risk Framework, Technical Standards, Organizational
+Readiness, Deployment Infrastructure. Buyer fills it out, gets a score,
+sees their gaps. Those gaps are exactly what Tiers 1 and 2 solve.
+
+-   **Delivery:** Gated PDF via Carrd.co landing page + Mailchimp/Kit
+    email capture.
+
+-   **Build time:** 2--3 days.
+
+**Tier 1: AI Risk Tiering Toolkit (\$47)**
+
+Complete kit: Risk Assessment Questionnaire (adapted from your
+framework), scoring logic, risk tier thresholds, decision tree for
+routing projects, and quick-start implementation guide. An AI leader can
+deploy this within a week.
+
+-   **Deliverable:** Editable templates + Excel scoring sheet + 5-page
+    implementation guide.
+
+-   **Build time:** 5--7 days (adapting existing IP).
+
+**Tier 2: AI Governance-in-a-Box (\$197--\$297)**
+
+Everything in Tier 1 plus: CoE Charter template, Two-Gate Governance
+System docs, Technical Standards for AI/ML Lifecycle, Model Card
+template, AI Use Policy template, RACI matrix, 30-60-90 implementation
+roadmap. This replaces \$50K--\$200K in consulting fees.
+
+-   **Deliverable:** 10--15 editable templates + implementation guide +
+    optional video walkthroughs.
+
+-   **Build time:** 10--14 days for full suite.
+
+**Tier 3: Implementation Call (\$500--\$2,500)**
+
+60--90 minute 1:1 session customizing Governance-in-a-Box for the
+buyer's specific org. Some calls naturally convert to ongoing advisory
+at \$5K--15K. Zero build time --- you're selling expertise.
+
+**2.3 Pricing Psychology**
+
+\$47 is below the corporate card threshold --- impulse buy for someone
+with budget authority. \$197--\$297 is the \"save 100+ hours\" sweet
+spot. Always anchor against the alternative: \"This toolkit replaces
+what a Big 4 firm charges \$150K to deliver.\"
+
+**Part III: Channel Strategy --- Test & Double-Down**
+
+With bootstrap budget and small LinkedIn, you cannot spread thin. Run 4
+channel experiments in parallel during Month 1, measure at Week 3,
+double down on top 2 performers for Months 2--3.
+
+**3.1 The Four Channel Experiments**
+
+  ----------------- ------------------- ---------------- ----------------- -------------
+  **Channel**       **Tactic**          **Time/Week**    **Success         **Cost**
+                                                         Metric**          
+
+  **LinkedIn**      4 posts/week + 15   6--8 hrs/week    50+               \$0
+                    comments/day + 10                    connections/wk,   
+                    connection                           3+ DM convos      
+                    requests/day to ICP                                    
+
+  **Communities**   Join 2--3 AI        3--4 hrs/week    10+ DMs, 5+       \$0
+                    Slack/Discord                        leads/week        
+                    groups. Answer 2--3                                    
+                    questions/day.                                         
+                    Share free toolkit.                                    
+
+  **Network**       Personal outreach   3--4 hrs         15+ responses, 3+ \$0
+                    to 50 dormant       (front-loaded)   referrals         
+                    contacts in first 2                                    
+                    weeks. Reconnect +                                     
+                    share.                                                 
+
+  **Content/SEO**   2 long-form         4--5 hrs/week    500+              \$0
+                    articles on                          views/article, 3+ 
+                    LinkedIn + Substack                  inquiries         
+                    per month.                                             
+  ----------------- ------------------- ---------------- ----------------- -------------
+
+**3.2 Target Communities**
+
+-   **MLOps Community (Slack):** 15K+ members. ML engineer/leader
+    focused. Your governance frameworks fill a gap here.
+
+-   **Locally Optimistic (Slack):** Data leadership community. Directors
+    and VPs. Perfect ICP overlap.
+
+-   **r/MachineLearning & r/artificial:** Large but noisy. Best for
+    long-form expertise posts. One viral post = 500+ leads.
+
+-   **AI Leadership LinkedIn Groups:** Smaller but highly targeted
+    decision-makers with budget.
+
+-   **Austin AI Meetup (in-person):** Attend 1--2 as participant. Low
+    effort, high trust-building. Test ROI before committing.
+
+**3.3 Week 3 Channel Review**
+
+At Week 3, run a ruthless analysis: Which channel drove the most email
+signups? Which generated the most DM conversations with qualified
+buyers? Which felt sustainable for 12 more weeks? Kill the bottom 2,
+reallocate time to top 2. This is the strategy, not a failure.
+
+**3.4 Network Reactivation Playbook**
+
++-----------------------------------------------------------------------+
+| **The Reactivation Message**                                          |
+|                                                                       |
+| \"Hey \[Name\], it's been a while --- hope you're doing well. I've    |
+| been building something new and wanted to share it with people whose  |
+| opinion I trust.\"                                                    |
+|                                                                       |
+| \"I'm packaging the AI governance frameworks I built at Resultant     |
+| into toolkits that AI leaders can deploy without hiring a Big 4 firm. |
+| Risk tiering, CoE charters, deployment gates, technical standards --- |
+| all ready to customize.\"                                             |
+|                                                                       |
+| \"Would love your honest take: does this sound valuable? And if you   |
+| know anyone drowning in AI pilots with no governance, I'd appreciate  |
+| an intro.\"                                                           |
++-----------------------------------------------------------------------+
+
+This works because it asks for feedback and referrals, not a purchase.
+People help when you ask for advice.
+
+**3.5 Backup Accelerators (Break Glass If Needed)**
+
+If LinkedIn underperforms by Week 3, deploy these immediately:
+
+1.  **Reddit long-form posts:** A 1,000-word genuinely helpful post on
+    r/MachineLearning can generate 10,000+ views in 48 hours. Prepare
+    2--3 as emergency assets.
+
+2.  **Podcast guesting:** Your story is inherently interesting to AI
+    podcast hosts. Send 10 pitches to mid-tier shows (1K--10K
+    listeners). Even 2 appearances = 100--200 qualified leads.
+
+3.  **Newsletter swaps:** Find 2--3 newsletter authors in adjacent
+    spaces. Offer guest posts or swaps. Borrows existing trust at zero
+    cost.
+
+**Part IV: The 90-Day Execution Plan**
+
+**Month 1: Build & Launch (Days 1--30)**
+
+Pure execution. Build product, set up funnel, launch all 4 channels,
+reactivate network. No revenue goal --- goal is infrastructure and first
+leads.
+
+**Week 1: Foundation (Days 1--7)**
+
+1.  **Set up infrastructure:** Carrd.co (\$19/yr) + Mailchimp free
+    tier + Gumroad (free, transaction fees only).
+
+2.  **Build Tier 0 lead magnet:** AI Governance Readiness Checklist PDF.
+    Priority #1.
+
+3.  **Rewrite LinkedIn profile:** New headline, About section using hook
+    from Part I. Pin announcement post.
+
+4.  **Send first 20 reactivation messages:** Personal, not templated.
+
+5.  **Join 2 online communities:** Introduce yourself. Answer questions.
+    Do NOT pitch.
+
+**Week 2: First Product (Days 8--14)**
+
+1.  **Build Tier 1 (\$47):** Adapt Risk Assessment + tiering logic into
+    buyer-ready toolkit.
+
+2.  **Send remaining 30 reactivation messages.**
+
+3.  **Publish first article:** \"Why 95% of AI Pilots Never Reach
+    Production (And the Framework That Fixes It)\"
+
+4.  **Begin LinkedIn posting rhythm:** 4 posts/week. Tactical tips +
+    framework previews + pain-point content.
+
+5.  **Daily community engagement:** 30 min/day answering questions.
+
+**Weeks 3--4: Launch & Measure (Days 15--30)**
+
+-   Launch Tier 1 product. Announce on LinkedIn, communities, email
+    list.
+
+-   Start building Tier 2 (10--14 day build).
+
+-   Publish second article: \"How to Build an AI Center of Excellence in
+    90 Days\"
+
+-   Week 3 Channel Review: Analyze, kill bottom 2 channels, double down
+    on top 2.
+
+-   Collect first testimonials from early users.
+
++-----------------------------------------------------------------------+
+| **Month 1 Targets**                                                   |
+|                                                                       |
+| • Lead magnet downloads: 100--200                                     |
+|                                                                       |
+| • Email list: 100--200                                                |
+|                                                                       |
+| • Tier 1 sales: 5--15                                                 |
+|                                                                       |
+| • LinkedIn connections added: 150--200                                |
+|                                                                       |
+| • Community reputation: Known helpful contributor in 2 groups         |
++-----------------------------------------------------------------------+
+
+**Month 2: Scale What Works (Days 31--60)**
+
+1.  **Launch Tier 2 (\$197--\$297):** Governance-in-a-Box. 3-email
+    launch sequence to your list.
+
+2.  **Build email nurture sequence:** 5 automated emails. Deliver
+    checklist → war story → toolkit preview → testimonial → offer.
+
+3.  **Double down on winning channel:** If LinkedIn works, go to 5--6
+    posts/week. If communities work, become a regular.
+
+4.  **Publish 2 more long-form articles.**
+
+5.  **Explore 1 podcast appearance:** Pitch 5--10 AI podcasts. You don't
+    need polish --- you need a good story.
+
+6.  **Austin meetup test:** Attend 1--2 events. Bring cards with landing
+    page URL. Goal: 5--10 connections each.
+
++-----------------------------------------------------------------------+
+| **Month 2 Targets**                                                   |
+|                                                                       |
+| • Email list: 400--600                                                |
+|                                                                       |
+| • Tier 1 cumulative: 25--40                                           |
+|                                                                       |
+| • Tier 2 sales: 10--20                                                |
+|                                                                       |
+| • First Tier 3 inquiry: 1--3                                          |
+|                                                                       |
+| • LinkedIn connections: 400--500 total                                |
+|                                                                       |
+| • First organic referral                                              |
++-----------------------------------------------------------------------+
+
+**Month 3: Compound & Convert (Days 61--90)**
+
+1.  **Launch Tier 3:** Email every Tier 2 buyer: \"Want me to walk you
+    through customizing it? 60 min, \$500.\"
+
+2.  **Run free webinar:** \"From Pilot Purgatory to Production Value.\"
+    Promote to full email list + LinkedIn + communities.
+
+3.  **Activate referral program:** \"Know someone drowning in AI pilots?
+    Send this link, you both get 20% off.\"
+
+4.  **Content machine:** 4--6 posts/week. Repurpose best performers into
+    threads and community discussions.
+
+5.  **Strategic partnerships:** Reach out to 3--5 complementary
+    consultants. Cross-referral agreements.
+
+6.  **B2B2B expansion:** If direct sales plateau, sell to AI consultants
+    who deploy your toolkit across their clients.
+
++-----------------------------------------------------------------------+
+| **Month 3 Cumulative Targets**                                        |
+|                                                                       |
+| • Email list: 800--1,200                                              |
+|                                                                       |
+| • Tier 1 customers: 50--70                                            |
+|                                                                       |
+| • Tier 2 customers: 30--50                                            |
+|                                                                       |
+| • Tier 3 clients: 5--10                                               |
+|                                                                       |
+| • TOTAL PAID CUSTOMERS: 85--130 (target: 100)                         |
+|                                                                       |
+| • ESTIMATED REVENUE: \$10,000--\$25,000 (excl. Tier 3 consulting)     |
++-----------------------------------------------------------------------+
+
+**Part V: Daily Operating Rhythm**
+
+  ----------------- ------------------------------------ -------------------
+  **Time Block**    **Activity**                         **Duration**
+
+  **Morning**       Community engagement: answer 2--3    30 min
+                    questions with depth                 
+
+  **Mid-Morning**   LinkedIn: post, engage 15 ICP posts, 45 min
+                    send 10 connection requests          
+
+  **Late Morning**  Product building / content writing   2--3 hours
+                    (deep work block)                    
+
+  **Afternoon**     DM follow-ups, email responses,      30 min
+                    network conversations                
+
+  **Late            Long-form content / email sequences  1--2 hours
+  Afternoon**       / product refinement                 
+
+  **Evening**       Review metrics. Plan tomorrow's      15 min
+                    post.                                
+  ----------------- ------------------------------------ -------------------
+
+Total: 5--7 hours/day. Full-time effort Month 1, scaling to 4--5 hours
+in Months 2--3 as systems compound.
+
+**Part VI: Tools & Budget**
+
+  ------------------ ---------------------- ------------- ----------------
+  **Tool**           **Purpose**            **Cost**      **Priority**
+
+  **Carrd.co**       Landing page + email   \$19/year     **MUST HAVE**
+                     capture                              
+
+  **Mailchimp/Kit    Email list +           \$0           **MUST HAVE**
+  (free)**           automations                          
+
+  **Gumroad**        Payments + product     \$0 (tx fee)  **MUST HAVE**
+                     delivery                             
+
+  **Canva (free)**   PDF design for         \$0           NICE TO HAVE
+                     products                             
+
+  **Substack         Newsletter + long-form \$0           RECOMMENDED
+  (free)**           content                              
+
+  **Zoom (free)**    Webinars + Tier 3      \$0           MONTH 2+
+                     calls                                
+
+  **Cal.com (free)** Scheduling for calls   \$0           MONTH 2+
+  ------------------ ---------------------- ------------- ----------------
+
+**Total cost:** \$19--\$50 for 90 days. Well under \$500 budget.
+
+**Part VII: Weekly Metrics Dashboard**
+
+  ---------------------- ---------------- ---------------- -----------------
+  **Metric**             **Month 1**      **Month 2**      **Month 3**
+
+  **Email list size**    200              600              1,200
+
+  **Lead magnet          30--50           50--80           80--120
+  downloads/wk**                                           
+
+  **Tier 1 sales         5--15            25--40           50--70
+  (cumulative)**                                           
+
+  **Tier 2 sales         0                10--20           30--50
+  (cumulative)**                                           
+
+  **LinkedIn             300+             500+             800+
+  connections**                                            
+
+  **DM                   5--10            10--15           15--20
+  conversations/week**                                     
+
+  **Testimonials         2--3             8--12            15--20
+  collected**                                              
+
+  **Organic referrals**  0                2--5             10--15
+  ---------------------- ---------------- ---------------- -----------------
+
+**Part VIII: Reflection & Stress-Test**
+
+Three rounds of critical judgment applied to this plan, identifying
+weaknesses and incorporating fixes.
+
+**Reflection 1: Is 100 Customers Realistic?**
+
+**Challenge:** 100 paid customers in 90 days with \<1K LinkedIn, \$500
+budget, and no audience is in the top 5% of bootstrap outcomes.
+
+**Assessment:** The math works IF the funnel performs at benchmarks. You
+need \~5,000--8,000 impressions. At 2% free-to-paid conversion, 100
+customers requires \~5,000 lead magnet downloads OR \~800 highly
+targeted leads at 12% conversion.
+
+**Strengthening:** Multiple acquisition channels hit the exposure
+threshold. Honest range is 60--130 customers. Even at 60, you've proven
+product-market fit and built a sustainable engine. 100 remains the North
+Star.
+
+**Reflection 2: Is the Product Differentiated Enough?**
+
+**Challenge:** AI governance templates exist online. Why pay for yours?
+
+**Assessment:** What exists is either academic NIST frameworks nobody
+can implement, or vendor-locked compliance checklists. Nothing fills the
+gap between theory and Monday-morning implementation. Your
+practitioner-built, enterprise-tested toolkit is genuinely unique.
+
+**Fix:** Every product page leads with "practitioner, not theorist." Add
+3--4 redacted template screenshots as visual proof. Include a "Peek
+Inside" section on landing page.
+
+**Reflection 3: What If LinkedIn Doesn't Work?**
+
+**Challenge:** \<1K connections means limited organic reach. Algorithm
+favors large audiences.
+
+**Assessment:** Biggest risk in the plan. Mitigated by the
+test-and-double-down framework + backup accelerators (Reddit, podcasts,
+newsletter swaps).
+
+**Fix:** Prepare 2--3 Reddit posts and 5 podcast pitches by end of Week
+2, deployable immediately if LinkedIn underperforms at Week 3 review.
+
+**Reflection 4: Pricing Concerns**
+
+**Challenge:** Too cheap to be taken seriously, or caught in
+procurement?
+
+**Assessment:** \$47--\$297 is deliberately under the corporate card
+threshold. No procurement needed. Counter "too cheap" with aggressive
+value anchoring.
+
+**Fix:** Every product page: "Replaces what a Big 4 charges \$150K to
+build." + "Saves 120+ hours." Raise prices in Month 3 based on demand.
+
+**Reflection 5: Cold Network Risk**
+
+**Challenge:** Dormant relationships have 10--20% response rate.
+
+**Assessment:** 15% of 50 = 7--8 conversations. 30% referral rate = 2--3
+warm intros. Low volume but high quality.
+
+**Fix:** Message asks for advice/referrals, not sales (higher response
+rate). Offer first 10 respondents free Tier 1 product for testimonials.
+Early social proof \> early revenue.
+
+**Part IX: Risk Register**
+
+  ---------------- ---------------- --------------------- -----------------------
+  **Risk**         **Likelihood**   **Impact**            **Mitigation**
+
+  **LinkedIn no    **HIGH**         Primary channel       Reddit posts, podcast
+  traction**                        underperforms         pitches, community
+                                                          focus, newsletter swaps
+
+  **Low            **MEDIUM**       List grows but sales  Improve nurture
+  free-to-paid                      stall                 sequence, add previews,
+  conversion**                                            A/B pricing, launch
+                                                          pricing urgency
+
+  **Product        **LOW**          Returns, negative     30-day guarantee.
+  quality                           reviews               Aggressive feedback
+  concerns**                                              from first 10. Iterate
+                                                          fast.
+
+  **Solo burnout** **HIGH**         Quality drops,        Protect deep work.
+                                    momentum lost         Sundays off. Batch
+                                                          content. Automate
+                                                          emails early.
+
+  **Market too     **LOW**          Not enough buyers at  Expand to AI
+  niche**                           price point           consultants (B2B2B) who
+                                                          resell to their
+                                                          clients.
+  ---------------- ---------------- --------------------- -----------------------
+
+**Part X: Post-Reflection --- Refined Strategic Priorities**
+
+1.  **Lead with "practitioner, not theorist" everywhere.** This is your
+    unfair advantage.
+
+2.  **Prepare backup content by Week 2.** Reddit posts + podcast pitches
+    ready to deploy if LinkedIn fails.
+
+3.  **Add template previews to landing page.** Visual proof converts
+    skeptics.
+
+4.  **First 10 customers get free product for testimonials.** Trade
+    \$470 for social proof worth \$10K+ in future sales.
+
+5.  **Anchor every price against alternatives.** \"\$297 vs. \$150K from
+    Big 4\" on every page.
+
+6.  **Protect deep work blocks ruthlessly.** Content and product
+    building in the morning. Always.
+
+7.  **Plan B2B2B expansion for Month 3.** Sell to consultants who deploy
+    across their client base.
+
+**Part XI: The First 7 Days**
+
+If the 90-day plan feels overwhelming, start here:
+
+**Day 1 (Monday)**
+
+-   AM: Set up Carrd landing page with email capture. Write headline +
+    3-sentence value prop.
+
+-   PM: Draft AI Governance Readiness Checklist. Outline 5 scoring
+    dimensions.
+
+-   EVE: Rewrite LinkedIn headline and About. Send first 5 reactivation
+    messages.
+
+**Day 2 (Tuesday)**
+
+-   AM: Finish Readiness Checklist PDF in Canva.
+
+-   PM: Set up Mailchimp/Kit. Connect to Carrd. Test full flow
+    end-to-end.
+
+-   EVE: First LinkedIn post. Comment on 15 ICP posts. Send 5 more
+    reactivation messages.
+
+**Day 3 (Wednesday)**
+
+-   AM: Join 2 communities (MLOps Slack, Locally Optimistic). Introduce
+    self. Answer 2--3 questions.
+
+-   PM: Begin adapting Risk Assessment into Tier 1 product.
+
+-   EVE: LinkedIn post #2. Send 10 more reactivation messages.
+
+**Day 4 (Thursday)**
+
+-   AM: Continue Tier 1 build. Draft quick-start implementation guide.
+
+-   PM: Set up Gumroad product page. Write description using hook from
+    Part I.
+
+-   EVE: LinkedIn post #3 (preview Risk Tiering framework). Community:
+    30 min.
+
+**Day 5 (Friday)**
+
+-   AM: Finalize Tier 1 files. Upload to Gumroad. Test purchase flow.
+
+-   PM: Draft long-form article #1: \"Why 95% of AI Pilots Never Reach
+    Production.\"
+
+-   EVE: LinkedIn post #4. Send remaining reactivation messages. Review
+    week metrics.
+
+**Days 6--7 (Weekend)**
+
+-   Saturday: Finish and publish article. Share in communities. Light
+    engagement.
+
+-   Sunday: Weekly metrics review. Plan next week's content. Rest.
+
+**Final Word**
+
+This plan is designed for one person with limited resources but deep
+expertise and willingness to execute with discipline. The 90-day window
+is tight but achievable because you're not building from theory ---
+you're productizing experience you already have.
+
+The single most important thing: ship imperfectly and iterate fast. Your
+first landing page won't be perfect. Your first product will have gaps.
+Your first posts will get 50 views. The compounding effect of daily,
+consistent execution is what gets you to 100 customers. Not perfection
+on day one.
+
+*The discipline of constraint is not restriction --- it's precision.
+Channel your energy through the narrowest possible path and strike
+directly at the target.*

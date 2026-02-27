@@ -1,13 +1,15 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
-import { Message, AppConfig } from '../types';
+import { Message, AppConfig, AssessmentEvent } from '../types';
 import { createChatSession, generateSpeech } from '../services/geminiService';
-import { Button } from './Button';
-import { Mic, Send, MoreHorizontal, Square, Volume2, Loader2, AlertCircle, Sparkles } from 'lucide-react';
+import { CLOSE_SIGNAL_PHRASES } from '../constants';
+import { Mic, Send, MoreHorizontal, Square, Volume2, Loader2, AlertCircle } from 'lucide-react';
 import { GenerateContentResponse, Chat } from "@google/genai";
 
 interface ChatInterfaceProps {
   config: AppConfig;
   onComplete: (history: Message[]) => void;
+  sessionId?: string;
+  onTrackEvent?: (event: AssessmentEvent) => void;
 }
 
 // --- Audio Helpers ---
@@ -50,19 +52,15 @@ const drawBlob = (
 ) => {
   ctx.clearRect(0, 0, width, height);
 
-  // Base settings
   const centerX = width / 2;
   const centerY = height / 2;
-  // Volume usually 0-255. Normalize to 0-1 for scaling.
   const intensity = Math.min(1, volume / 50);
   const baseRadius = 20 + (intensity * 15);
 
   ctx.beginPath();
 
-  // Create a blob shape using sine waves
   for (let i = 0; i <= 360; i += 10) {
     const angle = (i * Math.PI) / 180;
-    // Noise factor based on time and angle
     const noise = Math.sin((i * 0.05) + (time * 0.005)) * (5 + (intensity * 10));
     const r = baseRadius + noise;
     const x = centerX + Math.cos(angle) * r;
@@ -74,22 +72,25 @@ const drawBlob = (
 
   ctx.closePath();
 
-  // Gradient Fill
   const gradient = ctx.createRadialGradient(centerX, centerY, baseRadius * 0.2, centerX, centerY, baseRadius * 2);
-  gradient.addColorStop(0, 'rgba(57, 85, 75, 0.8)'); // Forest-800
-  gradient.addColorStop(1, 'rgba(77, 107, 94, 0.0)'); // Forest-500 transparent
+  gradient.addColorStop(0, 'rgba(57, 85, 75, 0.8)');
+  gradient.addColorStop(1, 'rgba(77, 107, 94, 0.0)');
 
   ctx.fillStyle = gradient;
   ctx.fill();
 
-  // Inner Core
   ctx.beginPath();
   ctx.arc(centerX, centerY, 4 + (intensity * 2), 0, Math.PI * 2);
   ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg').trim() || '#F0EDE6';
   ctx.fill();
 };
 
-export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete }) => {
+const containsCloseSignal = (text: string): boolean => {
+  const lower = text.toLowerCase();
+  return CLOSE_SIGNAL_PHRASES.some(phrase => lower.includes(phrase));
+};
+
+export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete, sessionId, onTrackEvent }) => {
   // UI State
   const [messages, setMessages] = useState<Message[]>([]);
   const [input, setInput] = useState('');
@@ -98,15 +99,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const [voiceMode, setVoiceMode] = useState(false);
   const [voiceStatus, setVoiceStatus] = useState<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
   const [micError, setMicError] = useState<string | null>(null);
+  const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Refs for Logic
   const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const recognitionRef = useRef<any>(null);
   const silenceTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const inputRef = useRef(''); // Syncs with input state for closures
-  const voiceModeRef = useRef(false); // Syncs with voiceMode state for robust callbacks
+  const inputRef = useRef('');
+  const voiceModeRef = useRef(false);
   const voiceStatusRef = useRef<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
+  const messagesRef = useRef<Message[]>([]);
 
   // Audio Refs
   const audioCtxRef = useRef<AudioContext | null>(null);
@@ -122,10 +125,19 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const sentenceBufferRef = useRef('');
   const processedSentencesRef = useRef<Set<string>>(new Set());
 
+  // --- Telemetry helper ---
+  const track = useCallback((eventType: string, eventData?: Record<string, unknown>) => {
+    if (onTrackEvent && sessionId) {
+      onTrackEvent({ session_id: sessionId, event_type: eventType, event_data: eventData });
+    }
+  }, [onTrackEvent, sessionId]);
+
   // --- 1. Initialization ---
   useEffect(() => {
     chatRef.current = createChatSession(config);
-    setMessages([{ role: 'model', text: config.initialGreeting }]);
+    const initialMessages = [{ role: 'model' as const, text: config.initialGreeting }];
+    setMessages(initialMessages);
+    messagesRef.current = initialMessages;
   }, [config]);
 
   useEffect(() => {
@@ -200,7 +212,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
   // --- 3. Speech Recognition Logic ---
   const startListening = useCallback(() => {
-    // If we are already listening, don't restart
     if (recognitionRef.current && voiceStatusRef.current === 'listening') return;
 
     if (!recognitionRef.current) {
@@ -215,7 +226,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       recognition.lang = 'en-US';
 
       recognition.onstart = () => {
-        console.log("🎙️ Microphone started listening");
         if (voiceModeRef.current) {
           setVoiceStatus('listening');
           setMicError(null);
@@ -223,14 +233,9 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       };
 
       recognition.onend = () => {
-        console.log("🛑 Microphone stopped listening");
-        // Robust restart logic:
-        // If voice mode is still ON, and we aren't currently speaking or processing,
-        // then the browser stopped listening unexpectedly (silence timeout). Restart it.
         if (voiceModeRef.current && voiceStatusRef.current !== 'speaking' && voiceStatusRef.current !== 'processing') {
           setTimeout(() => {
             if (voiceModeRef.current && voiceStatusRef.current !== 'speaking' && voiceStatusRef.current !== 'processing') {
-              console.log("🔄 Restarting microphone loop...");
               try { recognition.start(); } catch (e) { /* ignore */ }
             }
           }, 300);
@@ -239,10 +244,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
       recognition.onerror = (event: any) => {
         const err = event.error;
-        // Handle common non-fatal errors silently
-        if (err === 'no-speech' || err === 'aborted' || !err) {
-          return;
-        }
+        if (err === 'no-speech' || err === 'aborted' || !err) return;
 
         console.error("Microphone error:", err);
         if (err === 'not-allowed' || err === 'service-not-allowed') {
@@ -269,24 +271,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
 
         if (finalTrans) {
-          console.log("🎤 Final Voice Input:", finalTrans);
           const current = inputRef.current;
           const next = (current + ' ' + finalTrans).trim();
           setInput(next);
           inputRef.current = next;
           setInterimInput('');
 
-          // Fast debounce (1.2s) for final results -> Feels snappy
           silenceTimerRef.current = setTimeout(() => {
-            console.log("🚀 Sending message due to final silence detection");
             handleSend(next);
           }, 1200);
         } else if (interimTrans) {
-          console.log("👂 Interim Voice Input:", interimTrans);
           setInterimInput(interimTrans);
-          // Slower debounce (2s) for interim (mid-thought pauses)
           silenceTimerRef.current = setTimeout(() => {
-            console.log("🚀 Sending message due to interim silence detection");
             const current = inputRef.current;
             const combined = (current + ' ' + interimTrans).trim();
             handleSend(combined);
@@ -316,11 +312,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const playNextInQueue = useCallback(async () => {
     if (isPlayingQueueRef.current || audioQueueRef.current.length === 0) {
       if (audioQueueRef.current.length === 0 && voiceStatusRef.current === 'speaking') {
-        // Only set to idle if we were actually speaking and the queue is now empty
-        // But wait a tiny bit to ensure no more chunks are coming
         setTimeout(() => {
           if (audioQueueRef.current.length === 0 && voiceStatusRef.current === 'speaking') {
-            console.log("🔊 Queue empty, finished speaking");
             if (voiceModeRef.current) {
               startListening();
             } else {
@@ -362,7 +355,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
   const queueSpeech = async (text: string) => {
     if (!text.trim()) return;
-    console.log("🎵 Queuing speech for:", text.substring(0, 30) + "...");
 
     try {
       const base64 = await generateSpeech(text);
@@ -383,9 +375,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   };
 
   const speak = async (text: string) => {
-    // Legacy full-text speak (used for greeting or fallback)
     stopListening();
-    audioQueueRef.current = []; // Clear queue
+    audioQueueRef.current = [];
     isPlayingQueueRef.current = false;
     if (sourceRef.current) {
       try { sourceRef.current.stop(); } catch (e) { }
@@ -397,23 +388,17 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   // --- 5. Main Handlers ---
   const handleToggleVoice = async () => {
     if (voiceMode) {
-      // Turn Off
-      console.log("⏹️ Voice mode toggled OFF");
       setVoiceMode(false);
       setVoiceStatus('idle');
       stopListening();
       stopVisualizer();
       if (sourceRef.current) sourceRef.current.stop();
     } else {
-      // Turn On
-      console.log("▶️ Voice mode toggled ON");
       setVoiceMode(true);
       await startVisualizer();
 
-      // Feature: Speak the last message (greeting) if it exists and hasn't been spoken
       const lastMsg = messages[messages.length - 1];
       if (lastMsg && lastMsg.role === 'model' && !lastMsg.isStreaming) {
-        console.log("🗣️ Speaking previous message on toggle");
         await speak(lastMsg.text);
       } else {
         startListening();
@@ -423,17 +408,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
   const handleSend = async (overrideText?: string) => {
     const textToSend = (overrideText || inputRef.current || input).trim();
-    console.log("📤 Handling Send:", textToSend);
     if (!textToSend || !chatRef.current) return;
 
-    // Reset UI for processing
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     setInput('');
     inputRef.current = '';
     setInterimInput('');
     setIsLoading(true);
 
-    // Reset streaming state
     sentenceBufferRef.current = '';
     processedSentencesRef.current.clear();
     audioQueueRef.current = [];
@@ -448,22 +430,31 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     }
 
     const userMsg: Message = { role: 'user', text: textToSend };
-    setMessages(prev => [...prev, userMsg]);
+    setMessages(prev => {
+      const newMessages = [...prev, userMsg];
+      messagesRef.current = newMessages;
+      track('message_sent', { message_count: newMessages.length, text_length: textToSend.length });
+      return newMessages;
+    });
 
     try {
       const streamResult = await chatRef.current.sendMessageStream({ message: userMsg.text });
 
       let fullText = '';
-      setMessages(prev => [...prev, { role: 'model', text: '', isStreaming: true }]);
+      setMessages(prev => {
+        const updated = [...prev, { role: 'model' as const, text: '', isStreaming: true }];
+        messagesRef.current = updated;
+        return updated;
+      });
 
       for await (const chunk of streamResult) {
         const text = (chunk as GenerateContentResponse).text || '';
         fullText += text;
 
-        // Update UI
         setMessages(prev => {
           const copy = [...prev];
           copy[copy.length - 1] = { role: 'model', text: fullText, isStreaming: true };
+          messagesRef.current = copy;
           return copy;
         });
 
@@ -471,7 +462,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         if (voiceModeRef.current) {
           sentenceBufferRef.current += text;
 
-          // Split by sentence boundaries but keep the boundary
           const sentences = sentenceBufferRef.current.split(/(?<=[.!?])\s+/);
 
           if (sentences.length > 1) {
@@ -481,7 +471,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
               if (sentence) {
                 combinedSentence += (combinedSentence ? " " : "") + sentence;
 
-                // If combined sentence is long enough (e.g. > 20 chars) or it's the last complete one
                 if (combinedSentence.length > 20 || i === sentences.length - 2) {
                   if (!processedSentencesRef.current.has(combinedSentence)) {
                     processedSentencesRef.current.add(combinedSentence);
@@ -491,7 +480,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
                 }
               }
             }
-            // Keep the last (potentially incomplete) sentence AND any leftover combined text
             sentenceBufferRef.current = (combinedSentence ? combinedSentence + " " : "") + sentences[sentences.length - 1];
           }
         }
@@ -506,13 +494,34 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         }
       }
 
+      // Finalize the streamed message
       setMessages(prev => {
         const copy = [...prev];
         copy[copy.length - 1] = { role: 'model', text: fullText, isStreaming: false };
+        messagesRef.current = copy;
         return copy;
       });
 
       setIsLoading(false);
+      track('ai_responded', { text_length: fullText.length });
+
+      // --- Close signal detection ---
+      if (containsCloseSignal(fullText)) {
+        setIsTransitioning(true);
+        track('assessment_complete', { message_count: messagesRef.current.length });
+
+        // Halt STT and clear TTS queues to prevent audio collisions during transition
+        stopListening();
+        audioQueueRef.current = [];
+        isPlayingQueueRef.current = false;
+        if (sourceRef.current) {
+          try { sourceRef.current.stop(); } catch (e) { }
+        }
+
+        setTimeout(() => {
+          onComplete(messagesRef.current);
+        }, 3000);
+      }
 
     } catch (error) {
       console.error("Chat error", error);
@@ -524,7 +533,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   };
 
   // --- Render ---
-  const isReadyForResults = messages.length > 4 && messages[messages.length - 1].role === 'model';
+  const messageCount = messages.filter(m => m.role === 'user').length;
+  const showFallbackLink = messageCount >= 6 && messages[messages.length - 1]?.role === 'model' && !messages[messages.length - 1]?.isStreaming;
 
   return (
     <div style={{
@@ -574,10 +584,11 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
               alignItems: 'center',
               gap: '0.4rem',
             }}>
-              {voiceStatus === 'processing' ? <><Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Reflecting...</> :
-                voiceStatus === 'speaking' ? <><Volume2 size={12} style={{ animation: 'pulse 2s infinite' }} /> Speaking...</> :
-                  voiceStatus === 'listening' ? 'Listening...' :
-                    'Reflection Session'}
+              {isTransitioning ? 'Preparing your reflection...' :
+                voiceStatus === 'processing' ? <><Loader2 size={12} style={{ animation: 'spin 1s linear infinite' }} /> Reflecting...</> :
+                  voiceStatus === 'speaking' ? <><Volume2 size={12} style={{ animation: 'pulse 2s infinite' }} /> Speaking...</> :
+                    voiceStatus === 'listening' ? 'Listening...' :
+                      'Reflection Session'}
             </span>
           </div>
 
@@ -590,23 +601,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
               }}>
                 <AlertCircle size={12} /> {micError}
               </div>
-            )}
-
-            {isReadyForResults && (
-              <button
-                onClick={() => onComplete(messages)}
-                style={{
-                  fontFamily: 'var(--sans)', fontSize: '0.68rem', fontWeight: 600,
-                  letterSpacing: '0.06em', textTransform: 'uppercase',
-                  background: 'var(--charcoal)', color: 'var(--cream, #F4F1EB)',
-                  border: 'none', padding: '0.45rem 1rem', borderRadius: '2px',
-                  cursor: 'pointer', transition: 'background 0.2s',
-                }}
-                onMouseEnter={(e) => (e.currentTarget.style.background = 'var(--charcoal-lt)')}
-                onMouseLeave={(e) => (e.currentTarget.style.background = 'var(--charcoal)')}
-              >
-                Generate Assessment
-              </button>
             )}
           </div>
         </div>
@@ -654,6 +648,24 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
               <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.88rem', color: 'var(--stone-lt)' }}>Reflecting...</span>
             </div>
           )}
+
+          {/* Transition indicator */}
+          {isTransitioning && (
+            <div style={{
+              display: 'flex', flexDirection: 'column', alignItems: 'center',
+              gap: '0.75rem', padding: '2rem 0', color: 'var(--stone)',
+            }}>
+              <div style={{
+                width: '32px', height: '32px', borderRadius: '50%',
+                border: '2px solid var(--border-m)', borderTopColor: 'var(--charcoal)',
+                animation: 'spin 1s linear infinite',
+              }} />
+              <span style={{ fontFamily: 'var(--serif)', fontStyle: 'italic', fontSize: '0.9rem' }}>
+                Synthesizing your reflection...
+              </span>
+            </div>
+          )}
+
           <div ref={messagesEndRef} />
         </div>
 
@@ -668,6 +680,8 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
             background: 'white', border: '1px solid var(--border-m)',
             borderRadius: '24px', padding: '0.6rem 0.6rem 0.6rem 1.25rem',
             transition: 'border-color 0.2s',
+            opacity: isTransitioning ? 0.5 : 1,
+            pointerEvents: isTransitioning ? 'none' : 'auto',
           }}>
             <input
               type="text"
@@ -675,7 +689,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
               onChange={(e) => { setInput(e.target.value); }}
               onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
               placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait for response...") : "Share your thoughts..."}
-              disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking'}
+              disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking' || isTransitioning}
               style={{
                 flex: 1, fontFamily: 'var(--sans)', fontSize: '0.9rem',
                 color: 'var(--charcoal)', background: 'none', border: 'none', outline: 'none',
@@ -712,14 +726,14 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
             {/* Send Button — charcoal circle */}
             <button
               onClick={() => handleSend()}
-              disabled={(!input.trim() && !interimInput.trim()) || isLoading}
+              disabled={(!input.trim() && !interimInput.trim()) || isLoading || isTransitioning}
               style={{
                 width: '36px', height: '36px', borderRadius: '50%', border: 'none',
-                cursor: (!input.trim() && !interimInput.trim()) || isLoading ? 'not-allowed' : 'pointer',
+                cursor: (!input.trim() && !interimInput.trim()) || isLoading || isTransitioning ? 'not-allowed' : 'pointer',
                 display: 'flex', alignItems: 'center', justifyContent: 'center',
                 transition: 'all 0.2s', background: 'var(--charcoal)',
                 color: 'var(--cream, #F4F1EB)', flexShrink: 0,
-                opacity: (!input.trim() && !interimInput.trim()) || isLoading ? 0.5 : 1,
+                opacity: (!input.trim() && !interimInput.trim()) || isLoading || isTransitioning ? 0.5 : 1,
               }}
             >
               <Send size={16} />
@@ -731,14 +745,31 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
       {/* Footer Label */}
       <div style={{ textAlign: 'center', padding: '0.5rem 0 0.75rem', flexShrink: 0 }}>
-        <span style={{
-          fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em',
-          textTransform: 'uppercase', color: 'var(--stone-lt)', opacity: 0.5,
-        }}>
-          {voiceMode ? (voiceStatus === 'listening' ? "Speak naturally · I'll respond to silence" : "AI is thinking...") : "Reflect AI Assessment"}
-        </span>
+        {showFallbackLink && !isTransitioning ? (
+          <button
+            onClick={() => onComplete(messages)}
+            style={{
+              fontFamily: 'var(--sans)', fontSize: '0.65rem', fontWeight: 500,
+              letterSpacing: '0.08em', textTransform: 'uppercase',
+              color: 'var(--stone-lt)', background: 'none', border: 'none',
+              cursor: 'pointer', textDecoration: 'underline', textUnderlineOffset: '2px',
+              opacity: 0.6, transition: 'opacity 0.2s',
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.opacity = '1')}
+            onMouseLeave={(e) => (e.currentTarget.style.opacity = '0.6')}
+          >
+            Ready for your reflection? View results →
+          </button>
+        ) : (
+          <span style={{
+            fontSize: '0.65rem', fontWeight: 500, letterSpacing: '0.1em',
+            textTransform: 'uppercase', color: 'var(--stone-lt)', opacity: 0.5,
+          }}>
+            {isTransitioning ? 'Generating your reflection...' :
+              voiceMode ? (voiceStatus === 'listening' ? "Speak naturally · I'll respond to silence" : "AI is thinking...") : "Reflect AI Assessment"}
+          </span>
+        )}
       </div>
     </div>
   );
 };
-

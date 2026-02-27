@@ -79,7 +79,7 @@ describe('ChatInterface Component', () => {
     it('can toggle voice mode on and off', async () => {
         render(<ChatInterface config={DEFAULT_CONFIG} onComplete={vi.fn()} sessionId="123" />);
 
-        const micBtn = screen.getByTitle('Start Voice Mode');
+        const micBtn = screen.getByRole('button', { name: 'Start Voice Mode' });
 
         // Turn ON
         fireEvent.click(micBtn);
@@ -90,14 +90,14 @@ describe('ChatInterface Component', () => {
 
         // The button title changes to Stop Voice Mode
         await waitFor(() => {
-            expect(screen.getByTitle('Stop Voice Mode')).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Stop Voice Mode' })).toBeInTheDocument();
         });
 
-        const stopMicBtn = screen.getByTitle('Stop Voice Mode');
+        const stopMicBtn = screen.getByRole('button', { name: 'Stop Voice Mode' });
         fireEvent.click(stopMicBtn);
 
         await waitFor(() => {
-            expect(screen.getByTitle('Start Voice Mode')).toBeInTheDocument();
+            expect(screen.getByRole('button', { name: 'Start Voice Mode' })).toBeInTheDocument();
         });
     });
 

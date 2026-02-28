@@ -9,13 +9,13 @@ describe('Constants', () => {
 
     it('should contain expected close signal phrases', () => {
         expect(CLOSE_SIGNAL_PHRASES).toContain('let me synthesize');
-        expect(CLOSE_SIGNAL_PHRASES).toContain('let me pull together');
+        expect(CLOSE_SIGNAL_PHRASES).toContain('let me step back to see forward');
     });
 
     it('should export DEFAULT_CONFIG with the correct modelName and instruction structure', () => {
         expect(DEFAULT_CONFIG).toHaveProperty('modelName', 'gemini-3-flash-preview');
         expect(DEFAULT_CONFIG.systemInstruction).toContain('You are Reflect');
-        expect(DEFAULT_CONFIG.systemInstruction).toContain('THE 7-MOMENT JOURNEY:');
-        expect(DEFAULT_CONFIG.systemInstruction).toContain('MOMENT 7 — CLOSE:');
+        expect(DEFAULT_CONFIG.systemInstruction).toContain('THE 3-STAGE DIAGNOSTIC JOURNEY');
+        expect(DEFAULT_CONFIG.systemInstruction).toContain('STAGE 3 — FRICTION');
     });
 });

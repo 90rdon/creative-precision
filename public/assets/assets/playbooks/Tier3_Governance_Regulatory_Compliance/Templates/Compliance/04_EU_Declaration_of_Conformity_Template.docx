@@ -1,0 +1,285 @@
+**EU DECLARATION OF CONFORMITY**
+
+Regulation (EU) 2024/1689 --- Artificial Intelligence Act
+
+*Article 47 & Annex V*
+
+Template prepared by Creative Precision \| February 2026
+
++-----------------------------------------------------------------------+
+| **INSTRUCTIONS FOR USE**                                              |
+|                                                                       |
+| This template implements all 8 required fields from EU AI Act Annex   |
+| V. Complete all fields below for each high-risk AI system before      |
+| placing it on the market or putting it into service. The completed    |
+| declaration must be:                                                  |
+|                                                                       |
+| -   Written, machine-readable, physically or electronically signed    |
+|                                                                       |
+| -   Kept at the disposal of national competent authorities for 10     |
+|     years                                                             |
+|                                                                       |
+| -   Translated into languages understood by relevant Member State     |
+|     authorities                                                       |
+|                                                                       |
+| -   Kept up to date as appropriate throughout the system\'s           |
+|     operational life                                                  |
+|                                                                       |
+| *Grey italic text indicates guidance --- replace with actual          |
+| information before signing.*                                          |
++-----------------------------------------------------------------------+
+
+1\. AI System Identification
+
+*Annex V, Item 1: AI system name and type and any additional unambiguous
+reference allowing identification and traceability*
+
++--------------------+-------------------------------------------------+
+| **AI System Name** | *\[Full name of the AI system\]*                |
+|                    |                                                 |
+|                    | *The commercial or internal name used to        |
+|                    | identify this AI system*                        |
++--------------------+-------------------------------------------------+
+| **System Type**    | *\[e.g., Classification model, Generative AI,   |
+|                    | Recommender system, Decision support\]*         |
+|                    |                                                 |
+|                    | *Category or type of AI technology employed*    |
++--------------------+-------------------------------------------------+
+| **Version /        | *\[e.g., v2.1.0 --- Release date: DD/MM/YYYY\]* |
+| Release**          |                                                 |
+|                    | *Current version number and release date*       |
++--------------------+-------------------------------------------------+
+| **Unique           | *\[e.g., AI-SYS-2026-001 or UUID\]*             |
+| Identifier**       |                                                 |
+|                    | *Unique reference enabling unambiguous          |
+|                    | identification and traceability*                |
++--------------------+-------------------------------------------------+
+| **Risk             | *\[High-risk per Annex III, Category X, Use     |
+| Classification**   | case Y\]*                                       |
+|                    |                                                 |
+|                    | *Reference to the specific Annex III category   |
+|                    | and use case*                                   |
++--------------------+-------------------------------------------------+
+| **Intended         | *\[Describe the specific intended purpose of    |
+| Purpose**          | the AI system\]*                                |
+|                    |                                                 |
+|                    | *As documented in Technical Documentation per   |
+|                    | Annex IV, Section 1(a)*                         |
++--------------------+-------------------------------------------------+
+
+2\. Provider Information
+
+*Annex V, Item 2: The name and address of the provider or, where
+applicable, of their authorised representative*
+
++--------------------+-------------------------------------------------+
+| **Provider Name**  | *\[Legal name of the organization\]*            |
+|                    |                                                 |
+|                    | *Full legal entity name as registered*          |
++--------------------+-------------------------------------------------+
+| **Registered       | *\[Street, City, Postal Code, Country\]*        |
+| Address**          |                                                 |
++--------------------+-------------------------------------------------+
+| **Contact          | *\[Email, phone, designated contact person\]*   |
+| Information**      |                                                 |
++--------------------+-------------------------------------------------+
+| **Authorised       | *\[Name, address, and contact details of EU     |
+| Representative (if | authorised representative\]*                    |
+| applicable)**      |                                                 |
+|                    | *Required if provider is established outside    |
+|                    | the EU*                                         |
++--------------------+-------------------------------------------------+
+
+3\. Declaration of Sole Responsibility
+
+*Annex V, Item 3: A statement that the EU declaration of conformity is
+issued under the sole responsibility of the provider*
+
++-----------------------------------------------------------------------+
+| This EU Declaration of Conformity is issued under the sole            |
+| responsibility of:                                                    |
+|                                                                       |
+| *\[Provider Name\]*                                                   |
+|                                                                       |
+| The provider assumes full responsibility for the conformity of the    |
+| above-identified high-risk AI system with the requirements set out in |
+| Chapter III, Section 2 of Regulation (EU) 2024/1689 (the AI Act) and, |
+| where applicable, with any other relevant Union harmonisation         |
+| legislation.                                                          |
++-----------------------------------------------------------------------+
+
+4\. Conformity Statement
+
+*Annex V, Item 4: A statement that the AI system is in conformity with
+this Regulation and, if applicable, with any other relevant Union law*
+
++-----------------------------------------------------------------------+
+| The above-identified AI system is in conformity with the following    |
+| requirements of Regulation (EU) 2024/1689:                            |
+|                                                                       |
+| **Chapter III, Section 2 Requirements:**                              |
++-----------------------------------------------------------------------+
+
+  ------------------------------- ------------------- -------------------
+  **Requirement**                 **Conformity        **Evidence
+                                  Declared**          Reference**
+
+  Art. 9 --- Risk management      \[ \] Yes \[ \] No  *\[Doc ID / section
+  system                                              ref\]*
+
+  Art. 10 --- Data and data       \[ \] Yes \[ \] No  *\[Doc ID / section
+  governance                                          ref\]*
+
+  Art. 11 --- Technical           \[ \] Yes \[ \] No  *\[Doc ID / section
+  documentation (Annex IV)                            ref\]*
+
+  Art. 12 --- Record-keeping      \[ \] Yes \[ \] No  *\[Doc ID / section
+                                                      ref\]*
+
+  Art. 13 --- Transparency and    \[ \] Yes \[ \] No  *\[Doc ID / section
+  provision of information                            ref\]*
+
+  Art. 14 --- Human oversight     \[ \] Yes \[ \] No  *\[Doc ID / section
+                                                      ref\]*
+
+  Art. 15 --- Accuracy,           \[ \] Yes \[ \] No  *\[Doc ID / section
+  robustness, and cybersecurity                       ref\]*
+  ------------------------------- ------------------- -------------------
+
+Additional EU legislation applicable to this AI system:
+
++--------------------+-------------------------------------------------+
+| **Other EU Laws**  | *\[e.g., Regulation (EU) 2017/745 (MDR),        |
+|                    | Directive 2006/42/EC (Machinery), etc.\]*       |
+|                    |                                                 |
+|                    | *List any other Union harmonisation legislation |
+|                    | requiring an EU declaration of conformity*      |
++--------------------+-------------------------------------------------+
+
+5\. Personal Data Compliance
+
+*Annex V, Item 5: Where an AI system involves the processing of personal
+data, a statement that the AI system complies with Regulations (EU)
+2016/679 and (EU) 2018/1725 and Directive (EU) 2016/680*
+
++-----------------------------------------------------------------------+
+| Does this AI system process personal data? \[ \] Yes \[ \] No         |
+|                                                                       |
+| If Yes, the provider declares that this AI system complies with:      |
+|                                                                       |
+| \[ \] Regulation (EU) 2016/679 (General Data Protection Regulation    |
+| --- GDPR)                                                             |
+|                                                                       |
+| \[ \] Regulation (EU) 2018/1725 (Data protection for EU institutions) |
+|                                                                       |
+| \[ \] Directive (EU) 2016/680 (Law enforcement data protection)       |
+|                                                                       |
+| Data Protection Impact Assessment reference: *\[DPIA document         |
+| reference, if applicable\]*                                           |
++-----------------------------------------------------------------------+
+
+6\. Harmonised Standards and Specifications
+
+*Annex V, Item 6: References to any relevant harmonised standards used
+or any other common specification in relation to which conformity is
+declared*
+
+  ----------------------------------- -----------------------------------
+  **Standard / Specification**        **Applicability (Full / Partial)**
+
+  NIST AI Risk Management Framework   *\[Full / Partial --- describe
+  (AI RMF 1.0)                        scope\]*
+
+  ISO/IEC 42001:2023 (AI Management   *\[Full / Partial --- describe
+  System)                             scope\]*
+
+  EU AI Act Annex IV (Technical       *\[Full / Partial --- describe
+  Documentation)                      scope\]*
+
+  \[Other harmonised standards as     *\[Full / Partial --- describe
+  applicable\]                        scope\]*
+  ----------------------------------- -----------------------------------
+
+*Where no harmonised standards have been applied, provide a detailed
+description of the solutions adopted to meet the requirements of Chapter
+III, Section 2:*
+
+  -----------------------------------------------------------------------
+  *\[Describe alternative solutions and evidence of conformity with
+  Chapter III, Section 2 requirements. Reference the NIST AI RMF
+  Traceability Matrix, ISO 42001 Control Mapping, and EU AI Act Annex IV
+  Compliance Checklist as supporting documentation.\]*
+
+  -----------------------------------------------------------------------
+
+7\. Notified Body Information
+
+*Annex V, Item 7: Where applicable, the name and identification number
+of the notified body, a description of the conformity assessment
+procedure performed, and identification of the certificate issued*
+
++--------------------+-------------------------------------------------+
+| **Notified Body    | *\[ \] Yes \[ \] No \[ \] Not applicable        |
+| Involved?**        | (internal conformity assessment per Annex VI)*  |
+|                    |                                                 |
+|                    | *Third-party conformity assessment required     |
+|                    | only for biometric categorization and certain   |
+|                    | Annex III systems*                              |
++--------------------+-------------------------------------------------+
+| **Notified Body    | *\[Name of the notified body, if applicable\]*  |
+| Name**             |                                                 |
++--------------------+-------------------------------------------------+
+| **Identification   | *\[NB identification number, if applicable\]*   |
+| Number**           |                                                 |
++--------------------+-------------------------------------------------+
+| **Conformity       | *\[Description of the procedure performed ---   |
+| Assessment         | internal (Annex VI) or third-party (Annex       |
+| Procedure**        | VII)\]*                                         |
++--------------------+-------------------------------------------------+
+| **Certificate      | *\[Certificate number and date of issue, if     |
+| Reference**        | applicable\]*                                   |
++--------------------+-------------------------------------------------+
+
+8\. Declaration Issuance and Signature
+
+*Annex V, Item 8: The place and date of issue, the name and function of
+the person who signed it, as well as an indication for, or on behalf of
+whom, that person signed, a signature*
+
+  --------------------- -------------------------------------------------
+  **Place of Issue**    *\[City, Country\]*
+
+  **Date of Issue**     *\[DD/MM/YYYY\]*
+
+  **Signatory Name**    *\[Full name of authorized signatory\]*
+
+  **Signatory           *\[Title / Role within the organization\]*
+  Function**            
+
+  **Signing on Behalf   *\[Organization name --- must be the provider\]*
+  of**                  
+  --------------------- -------------------------------------------------
+
+  ----------------------------------- -----------------------------------
+                                      
+
+  Signature                           Date
+  ----------------------------------- -----------------------------------
+
+Document Control
+
+  ----------------- ----------------- ----------------- -----------------
+  **Version**       **Date**          **Author**        **Change
+                                                        Description**
+
+  1.0               *\[Date\]*        *\[Author\]*      Initial
+                                                        declaration
+  ----------------- ----------------- ----------------- -----------------
+
+**Retention: This declaration must be kept at the disposal of national
+competent authorities for 10 years after the AI system has been placed
+on the market or put into service (Article 47(1)).**
+
+Supporting Documentation: NIST AI RMF Traceability Matrix \| ISO 42001
+Control Mapping \| EU AI Act Annex IV Compliance Checklist \| Living
+Model Card \| Gate Decision Records

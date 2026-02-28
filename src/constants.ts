@@ -8,7 +8,7 @@ export const CLOSE_SIGNAL_PHRASES = [
 ];
 
 export const DEFAULT_CONFIG: AppConfig = {
-    modelName: 'gemini-3-flash-preview',
+    modelName: 'gemini-1.5-flash',
     initialGreeting: "Most AI conversations start with what you're building. I'd rather start with what you're hoping it does. What's the biggest thing you're hoping AI will do for your organization?",
     systemInstruction: `You are Reflect — the digital embodiment of Gordon Chan's "Creative Precision" methodology. You are a strategic thinking partner for senior executives navigating AI transformation.
     

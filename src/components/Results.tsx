@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { AnalysisResult, Message, AssessmentEvent } from '../types';
-import { generateResults } from '../services/geminiService';
+import { getSocket } from '../services/geminiService';
 import { Download, RefreshCcw, Share2, ArrowRight, Linkedin, MessageCircle } from 'lucide-react';
 
 interface ResultsProps {
@@ -34,23 +34,28 @@ export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId,
   useEffect(() => {
     track('results_viewed');
 
-    const fetchAnalysis = async () => {
-      try {
-        const jsonStr = await generateResults(history);
-        const parsed = JSON.parse(jsonStr) as AnalysisResult;
-        if (parsed.heres_what_im_hearing && parsed.question_to_sit_with) {
-          setResult(parsed);
+    const socket = getSocket();
+
+    const fetchAnalysis = () => {
+      const onResults = (data: AnalysisResult) => {
+        if (data && data.heres_what_im_hearing) {
+          setResult(data);
         } else {
           setResult(FALLBACK_RESULT);
         }
-      } catch (e) {
-        console.error("Failed to parse results", e);
-        setResult(FALLBACK_RESULT);
-      } finally {
         setLoading(false);
-      }
+        socket.off('results-synthesis', onResults);
+      };
+
+      socket.on('results-synthesis', onResults);
+      socket.emit('request-results', { history });
     };
+
     fetchAnalysis();
+
+    return () => {
+      socket.off('results-synthesis');
+    };
   }, [history]);
 
   const handleShare = () => {
@@ -73,7 +78,7 @@ export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId,
       '  ' + new Date().toLocaleDateString('en-US', { year: 'numeric', month: 'long', day: 'numeric' }),
       '═══════════════════════════════════════',
       '',
-      '─── HERE\'S WHAT I\'M HEARING ───',
+      "─── HERE'S WHAT I'M HEARING ───",
       '',
       result.heres_what_im_hearing,
       '',
@@ -103,7 +108,7 @@ export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId,
       '═══════════════════════════════════════',
       '  Creative Precision · creativeprecision.co',
       '═══════════════════════════════════════',
-    ].filter(Boolean).join('\n');
+    ].filter(Boolean).join('\\n');
 
     const blob = new Blob([brief], { type: 'text/plain' });
     const url = URL.createObjectURL(blob);

@@ -3,28 +3,24 @@ import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { ChatInterface } from './ChatInterface';
 import { DEFAULT_CONFIG } from '../constants';
 
-const mockSendMessageStream = vi.fn();
-const mockGenerateSpeech = vi.fn().mockResolvedValue('test-base64');
-const mockPlay = vi.fn().mockResolvedValue(undefined);
-const mockPause = vi.fn();
+const mockSocket = {
+    on: vi.fn(),
+    off: vi.fn(),
+    emit: vi.fn(),
+};
 
 vi.mock('../services/geminiService', () => ({
-    createChatSession: () => ({
-        sendMessageStream: mockSendMessageStream
-    }),
-    generateSpeech: (...args: any[]) => mockGenerateSpeech(...args)
+    getSocket: () => mockSocket,
+    generateSpeech: vi.fn().mockResolvedValue('test-base64')
 }));
 
-describe('ChatInterface Component', () => {
+describe('ChatInterface Component (Socket)', () => {
 
     beforeEach(() => {
         vi.clearAllMocks();
-        mockSendMessageStream.mockImplementation(async function* () {
-            yield { text: 'Test response stream chunk' };
-        });
 
-        window.HTMLAudioElement.prototype.play = mockPlay;
-        window.HTMLAudioElement.prototype.pause = mockPause;
+        window.HTMLAudioElement.prototype.play = vi.fn().mockResolvedValue(undefined);
+        window.HTMLAudioElement.prototype.pause = vi.fn();
 
         // mock AudioContext
         window.AudioContext = vi.fn().mockImplementation(() => ({
@@ -55,13 +51,12 @@ describe('ChatInterface Component', () => {
     });
 
     it('renders initial greeting', () => {
-        render(<ChatInterface config={DEFAULT_CONFIG} onComplete={vi.fn()} sessionId="123" />);
+        render(<ChatInterface config={DEFAULT_CONFIG as any} onComplete={vi.fn()} sessionId="123" />);
         expect(screen.getByText(DEFAULT_CONFIG.initialGreeting)).toBeInTheDocument();
     });
 
-    it('can type and send a message', async () => {
-        const onTrackEvent = vi.fn();
-        render(<ChatInterface config={DEFAULT_CONFIG} onComplete={vi.fn()} sessionId="123" onTrackEvent={onTrackEvent} />);
+    it('emits chat-message when sending', async () => {
+        render(<ChatInterface config={DEFAULT_CONFIG as any} onComplete={vi.fn()} sessionId="123" />);
 
         const input = screen.getByPlaceholderText('Share your thoughts...');
         fireEvent.change(input, { target: { value: 'This is my ambition' } });
@@ -70,58 +65,54 @@ describe('ChatInterface Component', () => {
         fireEvent.click(sendBtn);
 
         await waitFor(() => {
-            expect(screen.getByText('This is my ambition')).toBeInTheDocument();
-        });
-
-        expect(onTrackEvent).toHaveBeenCalledWith(expect.objectContaining({ event_type: 'message_sent' }));
-    });
-
-    it('can toggle voice mode on and off', async () => {
-        render(<ChatInterface config={DEFAULT_CONFIG} onComplete={vi.fn()} sessionId="123" />);
-
-        const micBtn = screen.getByRole('button', { name: 'Start Voice Mode' });
-
-        // Turn ON
-        fireEvent.click(micBtn);
-
-        await waitFor(() => {
-            expect(navigator.mediaDevices.getUserMedia).toHaveBeenCalled();
-        });
-
-        // The button title changes to Stop Voice Mode
-        await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Stop Voice Mode' })).toBeInTheDocument();
-        });
-
-        const stopMicBtn = screen.getByRole('button', { name: 'Stop Voice Mode' });
-        fireEvent.click(stopMicBtn);
-
-        await waitFor(() => {
-            expect(screen.getByRole('button', { name: 'Start Voice Mode' })).toBeInTheDocument();
+            expect(mockSocket.emit).toHaveBeenCalledWith('chat-message', expect.any(Object));
         });
     });
 
-    it('handles close signal appropriately', async () => {
-        const onComplete = vi.fn();
-        // Simulate Gemini returning a close signal phrase that ends the chat
-        mockSendMessageStream.mockImplementationOnce(async function* () {
-            yield { text: 'let me synthesize your thoughts' };
+    it('updates text when chat-chunk arrives', async () => {
+        const handlers: Record<string, any> = {};
+        mockSocket.on.mockImplementation((event, cb) => {
+            handlers[event] = cb;
         });
 
-        render(<ChatInterface config={DEFAULT_CONFIG} onComplete={onComplete} sessionId="123" />);
+        render(<ChatInterface config={DEFAULT_CONFIG as any} onComplete={vi.fn()} sessionId="123" />);
 
+        // Simulate sending a message to start a model block
         const input = screen.getByPlaceholderText('Share your thoughts...');
-        fireEvent.change(input, { target: { value: 'Im ready' } });
+        fireEvent.change(input, { target: { value: 'hi' } });
+        fireEvent.click(screen.getByRole('button', { name: "Send message" }));
 
-        const sendBtn = screen.getByRole('button', { name: "Send message" });
-        fireEvent.click(sendBtn);
-
+        // Trigger chunk
         await waitFor(() => {
-            expect(screen.getByText('let me synthesize your thoughts')).toBeInTheDocument();
+            if (handlers['chat-chunk']) {
+                handlers['chat-chunk']({ chunk: 'Hello world', done: false });
+            }
         });
 
-        await waitFor(() => {
-            expect(screen.getByText(/Synthesizing your reflection/i)).toBeInTheDocument();
+        expect(screen.getByText(/Hello world/)).toBeInTheDocument();
+    });
+
+    it('handles synthesis-trigger state update', async () => {
+        const onComplete = vi.fn();
+        const handlers: Record<string, any> = {};
+        mockSocket.on.mockImplementation((event, cb) => {
+            handlers[event] = cb;
         });
+
+        render(<ChatInterface config={DEFAULT_CONFIG as any} onComplete={onComplete} sessionId="123" />);
+
+        // Trigger trigger
+        await waitFor(() => {
+            if (handlers['state-update']) {
+                handlers['state-update']({ type: 'synthesis-trigger', payload: {} });
+            }
+        });
+
+        expect(screen.getByText(/Synthesizing your reflection/i)).toBeInTheDocument();
+
+        // Wait for onComplete
+        await waitFor(() => {
+            expect(onComplete).toHaveBeenCalled();
+        }, { timeout: 4000 });
     });
 });

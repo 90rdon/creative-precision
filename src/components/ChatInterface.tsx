@@ -1,9 +1,7 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Message, AppConfig, AssessmentEvent } from '../types';
-import { createChatSession } from '../services/geminiService';
-import { CLOSE_SIGNAL_PHRASES } from '../constants';
-import { Mic, Send, Square, Volume2, Loader2, AlertCircle } from 'lucide-react';
-import { GenerateContentResponse, Chat } from "@google/genai";
+import { getSocket } from '../services/geminiService';
+import { Mic, Send, Square, Loader2, AlertCircle } from 'lucide-react';
 
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioVisualizer } from '../hooks/useAudioVisualizer';
@@ -15,11 +13,6 @@ interface ChatInterfaceProps {
   sessionId?: string;
   onTrackEvent?: (event: AssessmentEvent) => void;
 }
-
-const containsCloseSignal = (text: string): boolean => {
-  const lower = text.toLowerCase();
-  return CLOSE_SIGNAL_PHRASES.some(phrase => lower.includes(phrase));
-};
 
 export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete, sessionId, onTrackEvent }) => {
   // UI State
@@ -33,7 +26,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const [isTransitioning, setIsTransitioning] = useState(false);
 
   // Refs for Logic
-  const chatRef = useRef<Chat | null>(null);
   const messagesEndRef = useRef<HTMLDivElement>(null);
   const inputRef = useRef('');
   const messagesRef = useRef<Message[]>([]);
@@ -54,7 +46,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     } else {
       setVoiceStatus('idle');
     }
-  }, []); // Needs startListening, defined via hook but circular if not careful
+  }, []);
 
   const { speak, stopPlayback } = useTextToSpeech({
     voiceStatus,
@@ -72,7 +64,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
 
   const handleSend = async (overrideText?: string) => {
     const textToSend = (overrideText || inputRef.current || input).trim();
-    if (!textToSend || !chatRef.current) return;
+    if (!textToSend) return;
 
     if (silenceTimerRef.current) clearTimeout(silenceTimerRef.current);
     setInput('');
@@ -94,93 +86,18 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       const newMessages = [...prev, userMsg];
       messagesRef.current = newMessages;
       track('message_sent', { message_count: newMessages.length, text_length: textToSend.length });
+
+      const socket = getSocket();
+      socket.emit('chat-message', { messages: newMessages });
+
       return newMessages;
     });
 
-    try {
-      const streamResult = await chatRef.current.sendMessageStream({ message: userMsg.text });
-
-      let fullText = '';
-      setMessages(prev => {
-        const updated = [...prev, { role: 'model' as const, text: '', isStreaming: true }];
-        messagesRef.current = updated;
-        return updated;
-      });
-
-      for await (const chunk of streamResult) {
-        const text = (chunk as GenerateContentResponse).text || '';
-        fullText += text;
-
-        setMessages(prev => {
-          const copy = [...prev];
-          copy[copy.length - 1] = { role: 'model', text: fullText, isStreaming: true };
-          messagesRef.current = copy;
-          return copy;
-        });
-
-        // Streaming TTS logic
-        if (voiceModeRef.current) {
-          sentenceBufferRef.current += text;
-          const sentences = sentenceBufferRef.current.split(/(?<=[.!?])\s+/);
-
-          if (sentences.length > 1) {
-            let combinedSentence = "";
-            for (let i = 0; i < sentences.length - 1; i++) {
-              const sentence = sentences[i].trim();
-              if (sentence) {
-                combinedSentence += (combinedSentence ? " " : "") + sentence;
-                if (combinedSentence.length > 20 || i === sentences.length - 2) {
-                  if (!processedSentencesRef.current.has(combinedSentence)) {
-                    processedSentencesRef.current.add(combinedSentence);
-                    speak(combinedSentence);
-                    combinedSentence = "";
-                  }
-                }
-              }
-            }
-            sentenceBufferRef.current = (combinedSentence ? combinedSentence + " " : "") + sentences[sentences.length - 1];
-          }
-        }
-      }
-
-      // Process any remaining text in the buffer
-      if (voiceModeRef.current && sentenceBufferRef.current.trim()) {
-        const remaining = sentenceBufferRef.current.trim();
-        if (!processedSentencesRef.current.has(remaining)) {
-          processedSentencesRef.current.add(remaining);
-          speak(remaining);
-        }
-      }
-
-      // Finalize the streamed message
-      setMessages(prev => {
-        const copy = [...prev];
-        copy[copy.length - 1] = { role: 'model', text: fullText, isStreaming: false };
-        messagesRef.current = copy;
-        return copy;
-      });
-
-      setIsLoading(false);
-      track('ai_responded', { text_length: fullText.length });
-
-      // --- Close signal detection ---
-      if (containsCloseSignal(fullText)) {
-        setIsTransitioning(true);
-        track('assessment_complete', { message_count: messagesRef.current.length });
-
-        stopListening();
-        stopPlayback();
-
-        setTimeout(() => {
-          onComplete(messagesRef.current);
-        }, 3000);
-      }
-
-    } catch (error) {
-      console.error("Chat error", error);
-      setIsLoading(false);
-      if (voiceModeRef.current) startListening();
-    }
+    setMessages(prev => {
+      const updated = [...prev, { role: 'model' as const, text: '', isStreaming: true }];
+      messagesRef.current = updated;
+      return updated;
+    });
   };
 
   const { startListening, stopListening, silenceTimerRef } = useSpeechRecognition({
@@ -211,14 +128,100 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     voiceStatus, setVoiceStatus
   });
 
-
   // --- 1. Initialization ---
   useEffect(() => {
-    chatRef.current = createChatSession(config);
     const initialMessages = [{ role: 'model' as const, text: config.initialGreeting }];
     setMessages(initialMessages);
     messagesRef.current = initialMessages;
   }, [config]);
+
+  // --- 2. Socket Listeners ---
+  useEffect(() => {
+    const socket = getSocket();
+
+    const onChatChunk = (data: { chunk: string, done: boolean }) => {
+      if (!data.done) {
+        setMessages(prev => {
+          const copy = [...prev];
+          const lastIndex = copy.length - 1;
+          const currentText = copy[lastIndex].text || '';
+          copy[lastIndex] = { role: 'model', text: currentText + data.chunk, isStreaming: true };
+          messagesRef.current = copy;
+          return copy;
+        });
+
+        if (voiceModeRef.current) {
+          sentenceBufferRef.current += data.chunk;
+          const sentences = sentenceBufferRef.current.split(/(?<=[.!?])\s+/);
+
+          if (sentences.length > 1) {
+            let combinedSentence = "";
+            for (let i = 0; i < sentences.length - 1; i++) {
+              const sentence = sentences[i].trim();
+              if (sentence) {
+                combinedSentence += (combinedSentence ? " " : "") + sentence;
+                if (combinedSentence.length > 20 || i === sentences.length - 2) {
+                  if (!processedSentencesRef.current.has(combinedSentence)) {
+                    processedSentencesRef.current.add(combinedSentence);
+                    speak(combinedSentence);
+                    combinedSentence = "";
+                  }
+                }
+              }
+            }
+            sentenceBufferRef.current = (combinedSentence ? combinedSentence + " " : "") + sentences[sentences.length - 1];
+          }
+        }
+      } else {
+        // Done
+        setIsLoading(false);
+        setMessages(prev => {
+          const copy = [...prev];
+          const lastIndex = copy.length - 1;
+          const fullText = copy[lastIndex].text;
+          copy[lastIndex] = { ...copy[lastIndex], isStreaming: false };
+          messagesRef.current = copy;
+          track('ai_responded', { text_length: fullText?.length || 0 });
+          return copy;
+        });
+
+        if (voiceModeRef.current && sentenceBufferRef.current.trim()) {
+          const remaining = sentenceBufferRef.current.trim();
+          if (!processedSentencesRef.current.has(remaining)) {
+            processedSentencesRef.current.add(remaining);
+            speak(remaining);
+          }
+        }
+      }
+    };
+
+    const onStateUpdate = (data: { type: string, payload: any }) => {
+      if (data.type === 'synthesis-trigger') {
+        setIsTransitioning(true);
+        track('assessment_complete', { message_count: messagesRef.current.length });
+        stopListening();
+        stopPlayback();
+        setTimeout(() => {
+          onComplete(messagesRef.current);
+        }, 3000);
+      } else if (data.type === 'error') {
+        setIsLoading(false);
+        setMicError(data.payload.message || 'An unexpected error occurred.');
+      } else if (data.type === 'thinking' || data.type === 'generating') {
+        setIsLoading(true);
+      } else if (data.type === 'idle') {
+        setIsLoading(false);
+      }
+    };
+
+    socket.on('chat-chunk', onChatChunk);
+    socket.on('state-update', onStateUpdate);
+
+    return () => {
+      socket.off('chat-chunk', onChatChunk);
+      socket.off('state-update', onStateUpdate);
+    };
+  }, []);
 
   useEffect(() => {
     inputRef.current = input;
@@ -280,7 +283,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
             </div>
           ))}
 
-          {(voiceStatus === 'processing' || (isLoading && messages[messages.length - 1]?.isStreaming && messages[messages.length - 1]?.text === '')) && (
+          {(voiceStatus === 'processing' || (isLoading && (messages[messages.length - 1]?.text === '' || messages[messages.length - 1]?.isStreaming))) && (
             <div className="message message-ai">
               <p className="flex items-center gap-2 italic" style={{ color: '#9B9590' }}>
                 <Loader2 size={14} className="animate-spin" /> Thinking...
@@ -303,55 +306,207 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
               </button>
             </div>
           )}
-
           <div ref={messagesEndRef} />
         </div>
 
-        <div className="input-bar">
-          <div className="input-wrapper">
+        <div className="input-area">
+          <div className="input-box">
             <input
               type="text"
-              value={interimInput || input}
-              onChange={(e) => { setInput(e.target.value); }}
-              onKeyDown={(e) => e.key === 'Enter' && !e.shiftKey && (e.preventDefault(), handleSend())}
-              placeholder={voiceMode ? (voiceStatus === 'listening' ? "Listening..." : "Wait for response...") : "Share your thoughts..."}
-              aria-label="Type your response"
-              disabled={isLoading || voiceStatus === 'processing' || voiceStatus === 'speaking' || isTransitioning}
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              onKeyDown={(e) => e.key === 'Enter' && handleSend()}
+              placeholder={voiceMode ? (voiceStatus === 'listening' ? "I'm listening..." : "Thinking...") : "Share your thoughts..."}
+              disabled={isLoading || isTransitioning}
             />
 
-            <div className="relative flex items-center justify-center w-9 h-9">
-              <canvas
-                ref={canvasRef}
-                width={36}
-                height={36}
-                className={`absolute inset-0 w-full h-full pointer-events-none transition-opacity duration-500 rounded-full ${voiceStatus === 'listening' ? 'opacity-100' : 'opacity-0'}`}
-                style={{ backgroundColor: voiceStatus === 'listening' ? 'rgba(42,37,32,0.06)' : 'transparent' }}
-              />
+            <div className="input-actions">
               <button
-                className={`input-btn btn-mic relative z-10`}
-                style={{ color: voiceMode ? '#2A2520' : '' }}
-                aria-label={voiceMode ? "Stop Voice Mode" : "Start Voice Mode"}
+                className={`action-btn ${voiceMode ? 'active' : ''}`}
                 onClick={handleToggleVoice}
+                title={voiceMode ? "Disable voice mode" : "Enable voice mode"}
               >
-                {voiceMode ? <Square size={16} fill="currentColor" /> : <Mic size={18} />}
+                {voiceMode ? <Square size={18} fill="currentColor" /> : <Mic size={18} />}
+              </button>
+
+              <button
+                className="action-btn send-btn"
+                onClick={() => handleSend()}
+                disabled={!input.trim() || isLoading || isTransitioning}
+                title="Send message"
+              >
+                <Send size={18} />
               </button>
             </div>
-
-            <button
-              onClick={() => handleSend()}
-              disabled={(!input.trim() && !interimInput.trim()) || isLoading || isTransitioning}
-              className="input-btn btn-send cursor-pointer disabled:opacity-50 disabled:cursor-not-allowed"
-              aria-label="Send message"
-            >
-              <Send size={16} />
-            </button>
           </div>
+
+          {voiceMode && (
+            <div className="voice-visualizer">
+              <canvas ref={canvasRef} width={200} height={40} />
+              {interimInput && <div className="interim-text">{interimInput}</div>}
+            </div>
+          )}
         </div>
       </div>
 
-      <div className="assess-footer">
-        <p>Reflect AI Assessment</p>
-      </div>
+      <style>{`
+        .chat-container {
+          display: flex;
+          flex-direction: column;
+          height: 100%;
+          background: #FDFCFB;
+          max-width: 800px;
+          margin: 0 auto;
+          position: relative;
+        }
+        
+        .session-label {
+          display: flex;
+          align-items: center;
+          padding: 1.5rem 2rem;
+          border-bottom: 1px solid rgba(42,37,32,0.05);
+        }
+        
+        .session-dot {
+          width: 6px;
+          height: 6px;
+          background: #2A2520;
+          border-radius: 50%;
+          margin-right: 12px;
+        }
+        
+        .session-text {
+          font-family: 'Newsreader', serif;
+          font-style: italic;
+          font-size: 1.1rem;
+          color: #2A2520;
+          opacity: 0.6;
+        }
+        
+        .messages {
+          flex: 1;
+          overflow-y: auto;
+          padding: 2rem;
+          display: flex;
+          flex-direction: column;
+          gap: 2rem;
+        }
+        
+        .message {
+          max-width: 85%;
+          line-height: 1.7;
+          font-size: 1.05rem;
+        }
+        
+        .message-ai {
+          align-self: flex-start;
+          color: #2A2520;
+          font-family: 'Inter', sans-serif;
+        }
+        
+        .message-user {
+          align-self: flex-end;
+          background: #F5F3F0;
+          padding: 1rem 1.5rem;
+          border-radius: 1.5rem 1.5rem 0 1.5rem;
+          color: #2A2520;
+          font-family: 'Inter', sans-serif;
+        }
+        
+        .input-area {
+          padding: 2rem;
+          background: #FDFCFB;
+        }
+        
+        .input-box {
+          position: relative;
+          background: #FFFFFF;
+          border: 1px solid rgba(42,37,32,0.12);
+          border-radius: 1.5rem;
+          padding: 0.5rem 0.5rem 0.5rem 1.5rem;
+          display: flex;
+          align-items: center;
+          transition: all 0.3s ease;
+          box-shadow: 0 4px 20px rgba(42,37,32,0.04);
+        }
+        
+        .input-box:focus-within {
+          border-color: #2A2520;
+          box-shadow: 0 4px 25px rgba(42,37,32,0.08);
+        }
+        
+        input {
+          flex: 1;
+          border: none;
+          outline: none;
+          font-family: 'Inter', sans-serif;
+          font-size: 1rem;
+          color: #2A2520;
+          background: transparent;
+          padding: 0.75rem 0;
+        }
+        
+        input::placeholder {
+          color: #9B9590;
+        }
+        
+        .input-actions {
+          display: flex;
+          gap: 0.5rem;
+        }
+        
+        .action-btn {
+          width: 40px;
+          height: 40px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          color: #9B9590;
+          transition: all 0.2s ease;
+          cursor: pointer;
+        }
+        
+        .action-btn:hover {
+          background: #F5F3F0;
+          color: #2A2520;
+        }
+        
+        .action-btn.active {
+          background: #2A2520;
+          color: #FFFFFF;
+        }
+        
+        .send-btn {
+          background: #F5F3F0;
+          color: #2A2520;
+        }
+        
+        .send-btn:hover:not(:disabled) {
+          background: #2A2520;
+          color: #FFFFFF;
+        }
+        
+        .send-btn:disabled {
+          opacity: 0.5;
+          cursor: not-allowed;
+        }
+        
+        .voice-visualizer {
+          margin-top: 1rem;
+          display: flex;
+          flex-direction: column;
+          align-items: center;
+        }
+        
+        .interim-text {
+          font-size: 0.9rem;
+          color: #9B9590;
+          font-style: italic;
+          margin-top: 0.5rem;
+          text-align: center;
+        }
+      `}</style>
     </>
   );
 };

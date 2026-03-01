@@ -1,0 +1,179 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: openclaw
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tailscale-sa
+  namespace: openclaw
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tailscale-role
+  namespace: openclaw
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "create", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tailscale-rb
+  namespace: openclaw
+subjects:
+- kind: ServiceAccount
+  name: tailscale-sa
+  namespace: openclaw
+roleRef:
+  kind: Role
+  name: tailscale-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: openclaw
+  namespace: openclaw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: openclaw
+  template:
+    metadata:
+      labels:
+        app: openclaw
+    spec:
+      serviceAccountName: tailscale-sa
+      initContainers:
+      - name: copy-ts-bin
+        image: tailscale/tailscale:latest
+        command: ["sh", "-c", "cp /usr/local/bin/tailscale /shared/bin/tailscale"]
+        volumeMounts:
+        - name: shared-bin
+          mountPath: /shared/bin
+      - name: copy-docker-bin
+        image: docker:latest
+        command: ["sh", "-c", "cp /usr/local/bin/docker /shared/bin/docker"]
+        volumeMounts:
+        - name: shared-bin
+          mountPath: /shared/bin
+      containers:
+      - name: openclaw
+        image: ghcr.io/phioranex/openclaw-docker:latest
+        imagePullPolicy: Always
+        securityContext:
+          runAsUser: 0
+        command: ["sh", "-c", "echo 'waiting for tailscale socket...'; while [ ! -S /var/run/tailscale/tailscaled.sock ]; do sleep 1; done; echo 'sockets found, starting openclaw'; node /app/dist/index.js gateway --allow-unconfigured"]
+        ports:
+        - containerPort: 18790
+        env:
+        - name: GEMINI_API_KEY
+          value: ""
+        - name: NVIDIA_API_KEY
+          value: ""
+        - name: OPENROUTER_API_KEY
+          value: ""
+        - name: TELEGRAM_BOT_TOKEN
+          value: ""
+        - name: NANO_BANANA_PRO_API_KEY
+          value: ""
+        - name: NOTION_API_KEY
+          value: ""
+        - name: SAG_API_KEY
+          value: ""
+        - name: NODE_ENV
+          value: "production"
+        - name: OPENCLAW_SKIP_SERVICE_CHECK
+          value: "true"
+        - name: PATH
+          value: "/home/linuxbrew/.linuxbrew/bin:/app/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/shared/bin"
+        - name: TS_SOCKET
+          value: "/var/run/tailscale/tailscaled.sock"
+        - name: DOCKER_HOST
+          value: "tcp://localhost:2375"
+        volumeMounts:
+        - name: openclaw-config
+          mountPath: /root/.openclaw
+        - name: openclaw-workspace
+          mountPath: /root/.openclaw/workspace
+        - name: ts-socket
+          mountPath: /var/run/tailscale
+        - name: dind-socket
+          mountPath: /var/run/dind
+        - name: shared-bin
+          mountPath: /shared/bin
+
+      - name: tailscale
+        image: tailscale/tailscale:latest
+        env:
+        - name: TS_AUTHKEY
+          valueFrom:
+            secretKeyRef:
+              name: tailscale-auth
+              key: TS_AUTHKEY
+        - name: TS_HOSTNAME
+          value: "openclaw-kube"
+        - name: TS_USERSPACE
+          value: "true"
+        - name: TS_ACCEPT_DNS
+          value: "true"
+        - name: TS_STATE_DIR
+          value: /root/.openclaw/tailscale
+        - name: TS_STATEDIR
+          value: /root/.openclaw/tailscale
+        - name: TS_SOCKET
+          value: "/var/run/tailscale/tailscaled.sock"
+        volumeMounts:
+        - name: openclaw-config
+          mountPath: /root/.openclaw
+        - name: ts-socket
+          mountPath: /var/run/tailscale
+
+      - name: dind
+        image: docker:dind
+        securityContext:
+          privileged: true
+        env:
+        - name: DOCKER_TLS_CERTDIR
+          value: ""
+        volumeMounts:
+        - name: dind-socket
+          mountPath: /var/run
+        - name: openclaw-workspace
+          mountPath: /root/.openclaw/workspace
+        - name: docker-graph-storage
+          mountPath: /var/lib/docker
+
+      volumes:
+      - name: openclaw-config
+        hostPath:
+          path: /Volumes/9_0rdon-ssd/9_0rdon/Projects/creative-precision/openclaw_data
+          type: DirectoryOrCreate
+      - name: openclaw-workspace
+        emptyDir: {}
+      - name: ts-socket
+        emptyDir: {}
+      - name: dind-socket
+        emptyDir: {}
+      - name: shared-bin
+        emptyDir: {}
+      - name: docker-graph-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: openclaw
+  namespace: openclaw
+spec:
+  type: LoadBalancer
+  selector:
+    app: openclaw
+  ports:
+  - port: 18790
+    targetPort: 18790

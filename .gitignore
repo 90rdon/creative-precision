@@ -32,4 +32,24 @@ dist/
 build/
 .env
 
-# examples/
+# Kubernetes
+.lima/
+k8s/kubeconfig.yaml
+
+# OpenClaw
+openclaw_data/identity/
+openclaw_data/credentials/
+openclaw_data/devices/
+openclaw_data/memory/*.sqlite
+openclaw_data/logs/
+openclaw_data/tailscale/
+openclaw_data/docker/
+openclaw_data/sandbox/
+openclaw_data/sandboxes/
+openclaw_data/telegram/
+openclaw_data/update-check.json
+!openclaw_data/openclaw.json
+
+# Logs
+server/logs/
+*.log

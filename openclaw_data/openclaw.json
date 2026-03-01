@@ -1,0 +1,231 @@
+{
+  "meta": {
+    "lastTouchedVersion": "2026.2.26",
+    "lastTouchedAt": "2026-03-01T15:53:00.574Z"
+  },
+  "env": {
+    "NVIDIA_NIM_THINKING": "true",
+    "NVIDIA_NIM_AGENT_MODE": "true",
+    "OPENCLAW_MAP_DEVELOPER_TO_SYSTEM": "true"
+  },
+  "models": {
+    "mode": "merge",
+    "providers": {
+      "custom-integrate-api-nvidia-com": {
+        "baseUrl": "https://integrate.api.nvidia.com/v1",
+        "apiKey": "${NVIDIA_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "qwen/qwen3.5-397b-a17b",
+            "name": "Qwen 3.5",
+            "reasoning": true,
+            "input": [
+              "text",
+              "image"
+            ],
+            "contextWindow": 256000,
+            "maxTokens": 8192
+          },
+          {
+            "id": "moonshotai/kimi-k2.5",
+            "name": "moonshotai/kimi-k2.5",
+            "reasoning": true,
+            "input": [
+              "text"
+            ],
+            "cost": {
+              "input": 0,
+              "output": 0,
+              "cacheRead": 0,
+              "cacheWrite": 0
+            },
+            "contextWindow": 131072,
+            "maxTokens": 8192
+          }
+        ]
+      },
+      "openrouter": {
+        "baseUrl": "https://openrouter.ai/api/v1",
+        "apiKey": "${OPENROUTER_API_KEY}",
+        "api": "openai-completions",
+        "models": [
+          {
+            "id": "meta-llama/llama-3.3-70b-instruct:free",
+            "name": "Llama 3.3 70B (Free)",
+            "contextWindow": 128000
+          },
+          {
+            "id": "google/gemma-3-4b-it:free",
+            "name": "Gemma 3 4B (Free)",
+            "contextWindow": 32768
+          },
+          {
+            "id": "qwen/qwen3-vl-30b-a3b-thinking",
+            "name": "Qwen3 VL 30B Thinking",
+            "reasoning": true,
+            "contextWindow": 131072
+          },
+          {
+            "id": "z-ai/glm-4.5-air:free",
+            "name": "GLM 4.5 Air (Free)",
+            "reasoning": true,
+            "contextWindow": 131072
+          }
+        ]
+      }
+    }
+  },
+  "agents": {
+    "defaults": {
+      "model": {
+        "primary": "custom-integrate-api-nvidia-com/moonshotai/kimi-k2.5",
+        "fallbacks": [
+          "openrouter/meta-llama/llama-3.3-70b-instruct:free",
+          "openrouter/z-ai/glm-4.5-air:free",
+          "openrouter/qwen/qwen3-vl-30b-a3b-thinking",
+          "openrouter/google/gemma-3-4b-it:free"
+        ]
+      },
+      "models": {
+        "custom-integrate-api-nvidia-com/moonshotai/kimi-k2.5": {
+          "alias": "kimi-k2.5"
+        },
+        "custom-integrate-api-nvidia-com/qwen/qwen3.5-397b-a17b": {
+          "alias": "qwen3.5"
+        },
+        "openrouter/meta-llama/llama-3.3-70b-instruct:free": {
+          "alias": "llama-3.3-or"
+        },
+        "openrouter/z-ai/glm-4.5-air:free": {
+          "alias": "glm-4.5-air"
+        },
+        "openrouter/qwen/qwen3-vl-30b-a3b-thinking": {
+          "alias": "qwen3-vl-30b-a3b-thinking"
+        },
+        "openrouter/google/gemma-3-4b-it:free": {
+          "alias": "gemma-3-4b-it"
+        }
+      },
+      "workspace": "/root/.openclaw/workspace",
+      "sandbox": {
+        "mode": "all"
+      },
+      "compaction": {
+        "mode": "safeguard"
+      },
+      "maxConcurrent": 4,
+      "subagents": {
+        "maxConcurrent": 8
+      }
+    }
+  },
+  "messages": {
+    "ackReactionScope": "group-mentions"
+  },
+  "commands": {
+    "native": "auto",
+    "nativeSkills": "auto",
+    "restart": true
+  },
+  "hooks": {
+    "internal": {
+      "enabled": true,
+      "entries": {
+        "boot-md": {
+          "enabled": true
+        },
+        "bootstrap-extra-files": {
+          "enabled": true
+        },
+        "command-logger": {
+          "enabled": true
+        },
+        "session-memory": {
+          "enabled": true
+        }
+      }
+    }
+  },
+  "channels": {
+    "telegram": {
+      "enabled": true,
+      "dmPolicy": "pairing",
+      "botToken": "${TELEGRAM_BOT_TOKEN}",
+      "groups": {
+        "-1003873447811": {
+          "requireMention": false
+        },
+        "*": {
+          "requireMention": true
+        }
+      },
+      "groupPolicy": "allowlist",
+      "streaming": "partial"
+    }
+  },
+  "gateway": {
+    "port": 18790,
+    "mode": "local",
+    "bind": "auto",
+    "auth": {
+      "mode": "token",
+      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83",
+      "allowTailscale": true
+    },
+    "controlUi": {
+      "allowInsecureAuth": false,
+      "allowedOrigins": [
+        "http://localhost:18790",
+        "http://127.0.0.1:18790",
+        "http://openclaw-kube:18790",
+        "https://openclaw-kube:18790",
+        "https://openclaw-kube.tail4bf23a.ts.net",
+        "*"
+      ]
+    },
+    "trustedProxies": [
+      "127.0.0.1",
+      "10.0.0.0/8",
+      "100.64.0.0/10",
+      "172.16.0.0/12",
+      "192.168.0.0/16"
+    ],
+    "tailscale": {
+      "mode": "serve",
+      "resetOnExit": true
+    },
+    "nodes": {
+      "denyCommands": [
+        "canvas.present",
+        "canvas.hide",
+        "canvas.navigate",
+        "canvas.eval",
+        "canvas.snapshot"
+      ]
+    }
+  },
+  "skills": {
+    "install": {
+      "nodeManager": "npm"
+    },
+    "entries": {
+      "nano-banana-pro": {
+        "apiKey": "${NANO_BANANA_PRO_API_KEY}"
+      },
+      "notion": {
+        "apiKey": "${NOTION_API_KEY}"
+      },
+      "sag": {
+        "apiKey": "${SAG_API_KEY}"
+      }
+    }
+  },
+  "plugins": {
+    "entries": {
+      "telegram": {
+        "enabled": true
+      }
+    }
+  }
+}

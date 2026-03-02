@@ -39,7 +39,7 @@ We test variables holding everything else constant. In v0.1, we focus on the hig
 
 We will not wait months to adjust. We operate on a weekly sprint cycle:
 1.  **Gather:** Aggregate quantitative (drop-offs, clicks) and qualitative (transcript themes) data every Friday.
-2.  **Analyze (The Ralph Loop):** Run the data through our PM/PMM/Executive archetype lens. Why did Variant B fail? Did the CTO archetype smell fluff?
+2.  **Analyze (The Continuous GTM Synthesis):** Run the data through our PM/PMM/Executive archetype lens. Why did Variant B fail? Did the CTO archetype smell fluff?
 3.  **Deploy:** Push prompt updates, UI copy changes, or landing page tweaks by Monday morning.
 
 ## 5. The Golden Rule of the Experiment

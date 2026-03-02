@@ -35,12 +35,12 @@ src/
 ```
 
 ## `.specify/` Directory (Product Brain)
-Contains the product strategy, experiment framework, and Ralph Loop validation docs:
+Contains the product strategy, experiment framework, and Continuous GTM Synthesis validation docs:
 - `memory/soul.md` — philosophical/brand core
 - `memory/constitution.md` — product principles, tech stack, success metrics
 - `memory/plan.md` — phased build-out plan
 - `memory/experiment_framework.md` — V0.1 experiment & A/B testing strategy
-- `memory/strategic_review_loop.md` — Ralph Loop executive critique sessions
+- `memory/strategic_review_loop.md` — Continuous GTM Synthesis executive critique sessions
 - `memory/elite_startup_validation_loop.md` — YC/PLG validation
 - `memory/scientific_funnel_architecture.md` — E2E funnel telemetry design
 - `memory/game_theory_experiment_design.md` — data architecture for native telemetry

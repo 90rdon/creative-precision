@@ -9,12 +9,18 @@ export async function archiveQuietSession(sessionId: string) {
 
         // Move to supabase if configure
         if (supabase) {
-            await supabase.from('assessment_sessions').upsert({
+            const { error } = await supabase.from('assessment_sessions').upsert({
                 id: sessionId,
                 transcript: session.history || [],
                 status: 'quiet',
                 updated_at: new Date().toISOString()
             });
+
+            if (error) {
+                console.error("Supabase archival error:", error.message, error.details);
+            } else {
+                console.log(`[Tier 2] Successfully archived session ${sessionId} to Supabase`);
+            }
         }
 
         // Optionally delete from redis if purely cold

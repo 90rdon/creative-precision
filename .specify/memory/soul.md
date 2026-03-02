@@ -3,11 +3,11 @@
 This document defines the philosophical core of our interactions—how we show up in the world, how we engage with leaders, and the fundamental promise we make to them. It governs the tone of all AI interactions and human follow-ups.
 
 ## 1. Authentic Partnership Over Transactions
-We are not here to pressure a sell. We are here to help. The objective of every interaction—whether through an AI tool or a live conversation—is to leave the leader with more clarity than they had when they arrived. We serve as a thought partner first, an expert second, and a vendor only when asked.
+We are not here to pressure a sell. We are here to help. The objective of every interaction—whether through an AI tool or a live conversation—is to leave the leader with more clarity than they had when they arrived. Powered by **OpenClaw** as the intelligent, conversational brains of the operation, we serve as an intimate, honest thought partner first, an expert second, and a vendor only when asked.
 
 ## 2. The Lifeline Philosophy
 Leaders navigating the gap between AI investment and value are often isolated. They don't have all the answers, and neither do we, but we will figure it out together. We provide a "lifeline" that they can pull whenever they need help.
-- **Varying Levels of Access:** The lifeline exists on a spectrum. It starts with free, immediate clarity (the AI Assessment), extends to low-friction frameworks (paid resources), and culminates in high-touch, real conversations (consulting engagements).
+- **Varying Levels of Access:** The lifeline exists on a spectrum. It starts with free, immediate clarity (the AI Assessment, delivering strictly "Unhinged Value" with zero pitch), extends to low-friction frameworks (paid resources), and culminates in high-touch, real conversations (e.g., the **Diagnostic Synthesis Call**).
 - **Pull, Don't Push:** The leader must always choose to pull the lifeline. We make it explicitly clear that help is available, but we never grab them and drag them toward a solution. 
 
 ## 3. Vulnerability, Honesty, and Anti-Fluff
@@ -24,3 +24,4 @@ We operate with a lean, Y-Combinator-style bootstrap mentality, prioritizing org
 - **Do Things That Don't Scale:** We prioritize profound, hands-on engagement with our early users over premature automation. We act as high-touch strategic consultants disguised as software to ensure we perfectly solve existing structural friction before trying to scale our reach.
 - **Product-Led Growth (PLG) & Viral "Talk Triggers":** Our primary marketing engine is the product experience itself. The AI Assessment is designed to be a "talk trigger"—an experience so deeply insightful, empathetic, and devoid of typical B2B sales pressure that executives naturally share it with peers out of sheer relief and immense value. 
 - **Executive-Level Persuasion:** Our public voice and UI copy strip away abstract technical jargon in favor of strategic impact, ROI, and organizational friction. We utilize executive persuasion frameworks (e.g., Problem-Agitate-Solution) to deeply diagnose their pain before ever hinting at a "lifeline."
+- **Continuous GTM Synthesis (Tracking & Adaptation):** Every interaction is an experiment. We silently track core behavioral telemetry (drop-offs, dwell time, 'Share' clicks, 'Lifeline' pulls) without invasive data farming. We analyze this intelligence in rapid weekly sprints to adapt our agent's prompts and UI, continuously refining the "Talk Trigger" effect to resonate more profoundly.

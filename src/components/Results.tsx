@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { AnalysisResult, Message, AssessmentEvent } from '../types';
 import { getSocket } from '../services/geminiService';
 import { Download, RefreshCcw, Share2, ArrowRight, Linkedin, MessageCircle } from 'lucide-react';
@@ -11,12 +11,12 @@ interface ResultsProps {
 }
 
 const FALLBACK_RESULT: AnalysisResult = {
-  heres_what_im_hearing: "You described an organization that has the ambition and the budget to make AI work — but something structural keeps pulling you back to pilot mode. The tools are there, the intent is there, but the bridge between experiment and production keeps washing out.",
-  pattern_worth_examining: "The Proof-of-Concept Death Spiral — your organization proves AI can work in isolated tests, but the path from proof to production requires organizational changes nobody has been asked to own. So you prove it again. And again.",
-  question_to_sit_with: "If your AI pilots keep succeeding but never scaling — is the problem really technical, or is it that nobody in your organization has the mandate to change how work actually gets done?",
+  heres_what_im_hearing: "You described an organization aiming to scale AI, but encountering systemic friction. The ambition and tools are present, yet the structural realities of deployment, compliance, and process keep pulling initiatives back into pilot mode.",
+  pattern_worth_examining: "The Governance Gap — your organization proves AI can work in isolated tests, but the path from proof to production requires organizational changes and a unified framework that hasn't been fully adopted.",
+  question_to_sit_with: "If your AI pilots keep succeeding but aren't scaling — is the problem technological, or is your current governance framework simply not designed for the speed of AI?",
   the_close: {
-    sit_with_it: "Take this question to your leadership team this week. The conversation it sparks will tell you more than any consultant could.",
-    keep_thinking: "Follow Creative Precision on LinkedIn for ongoing strategic perspective on AI transformation — the kind of thinking that doesn't fit in a vendor pitch.",
+    sit_with_it: "Take this question to your leadership team this week. The resulting conversation will be more revealing than any vendor pitch.",
+    keep_thinking: "Follow Creative Precision on LinkedIn for ongoing strategic perspective on AI transformation and governance that scales.",
     real_conversation: "If this reflection surfaced something worth exploring further, we're happy to think alongside you. Not a pitch, not a demo — just a thinking partner. Calendar link below.",
   },
 };
@@ -24,6 +24,7 @@ const FALLBACK_RESULT: AnalysisResult = {
 export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId, onTrackEvent }) => {
   const [result, setResult] = useState<AnalysisResult | null>(null);
   const [loading, setLoading] = useState(true);
+  const hasFetched = useRef(false);
 
   const track = (eventType: string, eventData?: Record<string, unknown>) => {
     if (onTrackEvent && sessionId) {
@@ -32,6 +33,8 @@ export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId,
   };
 
   useEffect(() => {
+    if (hasFetched.current) return;
+    hasFetched.current = true;
     track('results_viewed');
 
     const socket = getSocket();
@@ -48,7 +51,7 @@ export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId,
       };
 
       socket.on('results-synthesis', onResults);
-      socket.emit('request-results', { history });
+      socket.emit('request-results', { history, sessionId });
     };
 
     fetchAnalysis();
@@ -61,7 +64,7 @@ export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId,
   const handleShare = () => {
     track('share_clicked');
     const shareText = result
-      ? `"${result.question_to_sit_with}"\n\nFrom a Reflect AI Assessment — free strategic diagnostic for AI leaders.\n${window.location.origin}${window.location.pathname}?utm_source=viral_share`
+      ? `"${result.question_to_sit_with}"\n\nFrom a Reflect AI Assessment — free strategic diagnostic for AI leaders.\n${window.location.origin}/assessment.html?utm_source=viral_share`
       : '';
     navigator.clipboard.writeText(shareText).then(() => {
       alert('Copied to clipboard — share it with your team.');
@@ -134,155 +137,168 @@ export const Results: React.FC<ResultsProps> = ({ history, onRestart, sessionId,
   if (!result) return null;
 
   return (
-    <div className="max-w-3xl mx-auto px-6 py-16 animate-in slide-in-from-bottom-8 duration-700">
+    <div style={{ animation: 'fadeIn 0.8s ease 0s forwards', width: '100%' }}>
 
       {/* Header */}
-      <div className="mb-16 text-center">
-        <p className="text-xs font-sans font-medium tracking-widest text-stone-400 uppercase mb-4">Your Reflection</p>
-        <h1 className="font-serif text-4xl md:text-5xl text-sand-900 leading-tight">Strategic Assessment</h1>
-        <div className="w-12 h-px bg-stone-300 mx-auto mt-6" />
-      </div>
-
-      {/* Section 1: Here's What I'm Hearing */}
-      <section className="mb-16">
-        <p className="text-xs font-sans font-bold tracking-widest text-stone-400 uppercase mb-6">Here's What I'm Hearing</p>
-        <div className="font-serif text-xl md:text-2xl leading-relaxed text-stone-700 italic space-y-4">
-          {result.heres_what_im_hearing.split('\n').filter(Boolean).map((p, i) => (
-            <p key={i}>"{p.replace(/^[""]|[""]$/g, '')}"</p>
-          ))}
+      <section style={{ padding: '4rem 0', background: 'var(--linen)' }}>
+        <div className="wrap" style={{ textAlign: 'center' }}>
+          <p className="tag" style={{ marginBottom: '1rem' }}>Your Reflection</p>
+          <h1 className="h-xl">Strategic Assessment</h1>
         </div>
       </section>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-stone-200 mb-16" />
+      {/* Section 1: Here's What I'm Hearing */}
+      <section style={{ padding: '4rem 0', background: 'var(--cream)' }}>
+        <div className="wrap">
+          <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+            <p className="tag" style={{ marginBottom: '1.5rem', textAlign: 'center' }}>Here's What I'm Hearing</p>
+            <div className="h-lg" style={{ fontStyle: 'italic', color: 'var(--charcoal)', gap: '1.5rem', display: 'flex', flexDirection: 'column', textAlign: 'center' }}>
+              {result.heres_what_im_hearing.split('\n').filter(Boolean).map((p, i) => (
+                <p key={i} style={{ fontSize: '1.35rem', lineHeight: '1.5' }}>"{p.replace(/^[""]|[""]$/g, '')}"</p>
+              ))}
+            </div>
+          </div>
+        </div>
+      </section>
 
       {/* Section 2: A Pattern Worth Examining */}
-      <section className="mb-16 relative pl-6">
-        <div className="absolute top-0 left-0 w-1 h-full bg-sand-900 rounded-full" />
-        <p className="text-xs font-sans font-bold tracking-widest text-sand-900 uppercase mb-6">A Pattern Worth Examining</p>
-        <p className="font-sans text-lg leading-relaxed text-stone-600">
-          {result.pattern_worth_examining}
-        </p>
+      <section style={{ padding: '4rem 0', background: 'var(--linen)' }}>
+        <div className="wrap">
+          <div style={{ maxWidth: '820px', margin: '0 auto' }}>
+            <div style={{ position: 'relative', paddingLeft: '2rem', paddingBottom: '0.5rem' }}>
+              <div style={{ position: 'absolute', top: 0, left: 0, width: '4px', height: '100%', background: 'var(--charcoal)', borderRadius: '4px' }} />
+              <p className="tag" style={{ color: 'var(--charcoal)', marginBottom: '1.25rem' }}>A Pattern Worth Examining</p>
+              <p className="body-text" style={{ maxWidth: '100%', fontSize: '1.05rem', color: 'var(--charcoal-lt)' }}>
+                {result.pattern_worth_examining}
+              </p>
+            </div>
+          </div>
+        </div>
       </section>
-
-      {/* Divider */}
-      <div className="w-full h-px bg-stone-200 mb-16" />
 
       {/* Section 3: A Question to Sit With — HERO element */}
-      <section className="mb-16 py-12 text-center">
-        <p className="text-xs font-sans font-bold tracking-widest text-stone-400 uppercase mb-8">A Question to Sit With</p>
-        <blockquote className="font-serif text-2xl md:text-3xl lg:text-4xl leading-snug text-sand-900 max-w-2xl mx-auto">
-          "{result.question_to_sit_with}"
-        </blockquote>
-        <p className="text-stone-400 text-sm mt-8 font-sans">
-          The answer to this question is worth more than any framework.
-        </p>
+      <section style={{ padding: '5rem 0', background: 'var(--charcoal)', color: 'var(--linen)', textAlign: 'center' }}>
+        <div className="wrap">
+          <p className="tag" style={{ marginBottom: '2rem', color: 'var(--stone)' }}>A Question to Sit With</p>
+          <blockquote className="h-xl" style={{ fontSize: '2.1rem', maxWidth: '640px', margin: '0 auto', lineHeight: '1.3', color: 'var(--linen)' }}>
+            "{result.question_to_sit_with}"
+          </blockquote>
+          <p className="body-text-sm" style={{ marginTop: '2.5rem', maxWidth: '100%', color: 'var(--stone)' }}>
+            The answer to this question is worth more than any framework.
+          </p>
+        </div>
       </section>
 
-      {/* Divider */}
-      <div className="w-full h-px bg-stone-200 mb-16" />
-
       {/* Section 4: What Now? — Three pathways */}
-      <section className="mb-16">
-        <p className="text-xs font-sans font-bold tracking-widest text-stone-400 uppercase mb-8 text-center">What Now?</p>
+      <section style={{ padding: '6rem 0 3rem', background: 'var(--cream)' }}>
+        <div className="wrap">
+          <p className="tag" style={{ textAlign: 'center', marginBottom: '3rem' }}>What Now?</p>
 
-        <div className="grid md:grid-cols-3 gap-6">
-          {/* Sit With It */}
-          <div className="bg-white border border-stone-200 rounded-xl p-6 flex flex-col">
-            <h3 className="font-sans font-semibold text-sand-900 text-sm mb-3">Sit With It</h3>
-            <p className="font-sans text-stone-500 text-sm leading-relaxed flex-1">
-              {result.the_close.sit_with_it}
-            </p>
+          <div className="del-grid" style={{ marginBottom: '3rem' }}>
+            {/* Sit With It */}
+            <div className="del-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--linen)' }}>
+              <p className="h-md" style={{ marginBottom: '0.75rem' }}>Sit With It</p>
+              <p className="body-text-sm" style={{ flex: 1, marginBottom: '2rem' }}>
+                {result.the_close.sit_with_it}
+              </p>
+              <button
+                onClick={handleShare}
+                style={{ padding: 0, background: 'none', border: 'none', cursor: 'pointer', color: 'var(--stone)', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 500, fontFamily: 'var(--sans)' }}
+              >
+                <Share2 size={16} /> <span style={{ transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--charcoal)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--stone)'}>Share with your team</span>
+              </button>
+            </div>
+
+            {/* Keep Thinking */}
+            <div className="del-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--linen)' }}>
+              <p className="h-md" style={{ marginBottom: '0.75rem' }}>Keep Thinking</p>
+              <p className="body-text-sm" style={{ flex: 1, marginBottom: '2rem' }}>
+                {result.the_close.keep_thinking}
+              </p>
+              <a
+                href="https://www.linkedin.com/company/creative-precision"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track('lifeline_clicked', { type: 'linkedin' })}
+                style={{ color: 'var(--stone)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 500, fontFamily: 'var(--sans)' }}
+              >
+                <Linkedin size={16} /> <span style={{ transition: 'color 0.2s' }} onMouseOver={(e) => e.currentTarget.style.color = 'var(--charcoal)'} onMouseOut={(e) => e.currentTarget.style.color = 'var(--stone)'}>Follow on LinkedIn</span>
+              </a>
+            </div>
+
+            {/* A Real Conversation */}
+            <div className="del-card" style={{ display: 'flex', flexDirection: 'column', background: 'var(--linen)' }}>
+              <p className="h-md" style={{ marginBottom: '0.75rem' }}>A Real Conversation</p>
+              <p className="body-text-sm" style={{ flex: 1, marginBottom: '2rem' }}>
+                {result.the_close.real_conversation.replace(/Here's a link to my calendar:? ?\[?calendar link\]?/ig, '').replace(/\[calendar link\]/ig, '')}
+              </p>
+              <a
+                href="https://calendly.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                onClick={() => track('lifeline_clicked', { type: 'calendar' })}
+                style={{ color: 'var(--charcoal)', textDecoration: 'none', display: 'flex', alignItems: 'center', gap: '8px', fontSize: '0.8rem', fontWeight: 600, fontFamily: 'var(--sans)' }}
+              >
+                <MessageCircle size={16} /> <span>Book a thinking session</span> <ArrowRight size={12} style={{ opacity: 0.6 }} />
+              </a>
+            </div>
+          </div>
+
+          {result.template_recommendation && (
+            <div style={{ maxWidth: '820px', margin: '4rem auto 0' }}>
+              <div className="del-card" style={{ background: 'var(--linen)' }}>
+                <p className="tag" style={{ marginBottom: '1.25rem' }}>Recommended Next Step</p>
+                <p className="h-md" style={{ marginBottom: '0.5rem', display: 'flex', alignItems: 'center', gap: '0.75rem', flexWrap: 'wrap' }}>
+                  {result.template_recommendation.name}
+                  <span className="tier-badge badge-soon" style={{ marginBottom: 0, padding: '0.15rem 0.5rem', fontSize: '0.62rem', border: '1px solid var(--border-m)' }}>{result.template_recommendation.tier}</span>
+                </p>
+                <p className="body-text-sm">{result.template_recommendation.reason}</p>
+              </div>
+            </div>
+          )}
+
+          <p className="body-text-sm" style={{ textAlign: 'center', fontStyle: 'italic', marginTop: '3rem', maxWidth: '100%' }}>
+            Not a pitch, not a demo — just a thinking partner.
+          </p>
+
+        </div>
+      </section>
+
+      {/* Footer Actions */}
+      <section style={{ padding: '3rem 0', background: 'var(--linen)', borderTop: '1px solid var(--border)' }}>
+        <div className="wrap" style={{ display: 'flex', flexDirection: 'column', alignItems: 'center', gap: '1.5rem' }}>
+          <div style={{ display: 'flex', gap: '1rem', justifyContent: 'center', flexWrap: 'wrap' }}>
             <button
               onClick={handleShare}
-              className="mt-4 flex items-center gap-2 text-xs font-sans font-medium text-stone-500 hover:text-sand-900 transition-colors"
+              className="btn btn-ghost"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
             >
-              <Share2 size={14} /> Share with your team
+              <Share2 size={14} />
+              Share
+            </button>
+            <button
+              onClick={handleDownload}
+              className="btn btn-ghost"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <Download size={14} />
+              Download Brief
+            </button>
+            <button
+              onClick={onRestart}
+              className="btn btn-primary"
+              style={{ display: 'flex', alignItems: 'center', gap: '0.5rem' }}
+            >
+              <RefreshCcw size={14} />
+              New Session
             </button>
           </div>
 
-          {/* Keep Thinking */}
-          <div className="bg-white border border-stone-200 rounded-xl p-6 flex flex-col">
-            <h3 className="font-sans font-semibold text-sand-900 text-sm mb-3">Keep Thinking</h3>
-            <p className="font-sans text-stone-500 text-sm leading-relaxed flex-1">
-              {result.the_close.keep_thinking}
-            </p>
-            <a
-              href="https://www.linkedin.com/company/creative-precision"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => track('lifeline_clicked', { type: 'linkedin' })}
-              className="mt-4 flex items-center gap-2 text-xs font-sans font-medium text-stone-500 hover:text-sand-900 transition-colors"
-            >
-              <Linkedin size={14} /> Follow on LinkedIn
-            </a>
-          </div>
-
-          {/* A Real Conversation */}
-          <div className="bg-sand-100 border border-stone-200 rounded-xl p-6 flex flex-col">
-            <h3 className="font-sans font-semibold text-sand-900 text-sm mb-3">A Real Conversation</h3>
-            <p className="font-sans text-stone-500 text-sm leading-relaxed flex-1">
-              {result.the_close.real_conversation}
-            </p>
-            <a
-              href="https://calendly.com"
-              target="_blank"
-              rel="noopener noreferrer"
-              onClick={() => track('lifeline_clicked', { type: 'calendar' })}
-              className="mt-4 flex items-center gap-2 text-xs font-sans font-medium text-sand-900 hover:text-black transition-colors"
-            >
-              <MessageCircle size={14} /> Book a thinking session <ArrowRight size={12} />
-            </a>
-          </div>
+          <p className="tag" style={{ maxWidth: '100%', textAlign: 'center', fontSize: '0.65rem', marginTop: '0.5rem' }}>
+            Confidential · Prepared by Reflect AI · Creative Precision
+          </p>
         </div>
-
-        <p className="text-center text-stone-400 text-xs mt-6 font-sans italic">
-          Not a pitch, not a demo — just a thinking partner.
-        </p>
       </section>
-
-      {/* Optional: Template Recommendation */}
-      {result.template_recommendation && (
-        <>
-          <div className="w-full h-px bg-stone-200 mb-12" />
-          <section className="mb-16 bg-stone-50 border border-stone-200 rounded-xl p-6">
-            <p className="text-xs font-sans font-bold tracking-widest text-stone-400 uppercase mb-3">Recommended Next Step</p>
-            <p className="font-sans font-medium text-sand-900 mb-1">
-              {result.template_recommendation.name}
-              <span className="text-xs text-stone-400 ml-2 font-normal">({result.template_recommendation.tier})</span>
-            </p>
-            <p className="font-sans text-stone-500 text-sm">{result.template_recommendation.reason}</p>
-          </section>
-        </>
-      )}
-
-      {/* Footer Actions */}
-      <div className="border-t border-stone-200 pt-8 flex flex-col items-center gap-4">
-        <div className="flex gap-3">
-          <button
-            onClick={handleShare}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-sans font-medium tracking-wide uppercase text-stone-500 border border-stone-200 rounded-lg hover:bg-stone-50 transition-colors"
-          >
-            <Share2 size={14} /> Share
-          </button>
-          <button
-            onClick={handleDownload}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-sans font-medium tracking-wide uppercase text-stone-500 border border-stone-200 rounded-lg hover:bg-stone-50 transition-colors"
-          >
-            <Download size={14} /> Download Brief
-          </button>
-          <button
-            onClick={onRestart}
-            className="flex items-center gap-2 px-4 py-2 text-xs font-sans font-medium tracking-wide uppercase text-stone-500 border border-stone-200 rounded-lg hover:bg-stone-50 transition-colors"
-          >
-            <RefreshCcw size={14} /> New Session
-          </button>
-        </div>
-
-        <p className="text-stone-400 text-xs tracking-widest uppercase mt-4">
-          Confidential · Prepared by Reflect AI · Creative Precision
-        </p>
-      </div>
 
     </div>
   );

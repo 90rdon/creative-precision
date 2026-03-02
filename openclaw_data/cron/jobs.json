@@ -1,4 +1,12 @@
 {
   "version": 1,
-  "jobs": []
+  "jobs": [
+    {
+      "id": "daily-gtm-synthesis",
+      "agent": "synthesizer",
+      "schedule": "0 8 * * *",
+      "prompt": "Run the daily Continuous GTM Synthesis. Read HEARTBEAT.md and execute all tasks, including generating the GTM report.",
+      "channel": "internal"
+    }
+  ]
 }

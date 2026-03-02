@@ -20,5 +20,5 @@
 ## Business Context
 - V0.1 is a living experiment — launched to gather behavioral signals
 - First 10 customers via hand-to-hand combat (LinkedIn DMs, network referrals)
-- Weekly "Ralph Loop" iteration cadence: Gather → Analyze → Deploy
+- Weekly "Continuous GTM Synthesis" iteration cadence: Gather → Analyze → Deploy
 - OMTM for weeks 1-2: Session Completion Rate (>30% target)

@@ -1,5 +1,7 @@
 import { GoogleGenAI, Type } from '@google/genai';
 import { Socket } from 'socket.io';
+import fs from 'fs';
+import path from 'path';
 import { APP_CONFIG, getSynthesisPrompt } from './prompts';
 
 let aiClient: GoogleGenAI | null = null;
@@ -50,8 +52,11 @@ export const handleChatStream = async (socket: Socket, messages: any[]) => {
 
         for await (const chunk of iterator) {
             try {
-                const chunkText = typeof chunk.text === 'function' ? chunk.text() : chunk.text;
+                let chunkText = typeof chunk.text === 'function' ? chunk.text() : chunk.text;
                 if (chunkText) {
+                    if (fullResponse.length === 0) {
+                        chunkText = chunkText.replace(/^(So |So, |So\.|So)/i, '');
+                    }
                     console.log(`[Stream] Chunk received: ${chunkText.substring(0, 10)}...`);
                     fullResponse += chunkText;
                     socket.emit('chat-chunk', { chunk: chunkText, done: false });
@@ -88,13 +93,27 @@ export const handleChatStream = async (socket: Socket, messages: any[]) => {
     }
 };
 
-export const handleSynthesisRequest = async (socket: Socket, history: any[]) => {
+export const handleSynthesisRequest = async (socket: Socket, history: any[], sessionId?: string) => {
     try {
         const ai = getGeminiClient();
         console.log("[Synthesis] Starting synthesis request...");
         socket.emit('state-update', { type: 'synthesizing', payload: {} });
 
         const transcript = history.map(m => `${m.role === 'user' ? 'EXECUTIVE' : 'REFLECT'}: ${m.text}`).join('\n');
+
+        // Log conversation transcript locally
+        const logsDir = path.join(process.cwd(), 'logs');
+        if (!fs.existsSync(logsDir)) {
+            fs.mkdirSync(logsDir, { recursive: true });
+        }
+        const logFileName = `transcript-${Date.now()}.txt`;
+        const logFilePath = path.join(logsDir, logFileName);
+        fs.writeFileSync(logFilePath, transcript, 'utf-8');
+        console.log(`\n=================== NEW SESSION ===================\n`);
+        console.log(`[Synthesis] Transcript locally saved to: ${logFilePath}\n`);
+        console.log(transcript);
+        console.log(`\n===================================================\n`);
+
         const prompt = getSynthesisPrompt(transcript);
 
         const synthesisResult = await ai.models.generateContent({
@@ -105,14 +124,21 @@ export const handleSynthesisRequest = async (socket: Socket, history: any[]) => 
             }
         });
 
-        const resultText = (synthesisResult as any).text ? (synthesisResult as any).text() : "{}";
+        const resultText = typeof (synthesisResult as any).text === 'function' ? (synthesisResult as any).text() : ((synthesisResult as any).text || "{}");
         console.log("[Synthesis] Response received.");
         const resultObj = JSON.parse(resultText);
         socket.emit('results-synthesis', resultObj);
         socket.emit('state-update', { type: 'synthesis-complete', payload: {} });
 
+        if (sessionId) {
+            import('../services/sessionService').then(({ archiveQuietSession }) => {
+                archiveQuietSession(sessionId).catch(err => console.error("Archive error", err));
+            });
+        }
+
     } catch (error) {
         console.error("Synthesis error", error);
+        socket.emit('results-synthesis', null); // Trigger fallback result
         socket.emit('state-update', { type: 'error', payload: { message: 'Failed to synthesize results' } });
     }
 };

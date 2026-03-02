@@ -25,7 +25,7 @@ Here is the honest assessment of where we are strong, and where our blind spots 
 ### Blind Spot 3: The Danger of "Fake" AI Therapy
 **The Reality:** We want the AI to be a thought partner. 
 **Best Practice (Customer Development 101):** Executives hate having their time wasted. If the AI acts too much like a generic chatbot asking "how does that make you feel?", we will lose them instantly.
-**The Fix:** (Already addressed in the Ralph Loop, but needs absolute reinforcement in the prompt engineering). The AI MUST be brutally operational. It must ask questions about data architecture, P&L, and compliance bottlenecks, not just "ambitions."
+**The Fix:** (Already addressed in the Continuous GTM Synthesis, but needs absolute reinforcement in the prompt engineering). The AI MUST be brutally operational. It must ask questions about data architecture, P&L, and compliance bottlenecks, not just "ambitions."
 
 ## Action Plan to Incorporate Feedback
 1. Add a **"Manual Go-To-Market (GTM)"** section to the `experiment_framework.md` to ensure we actively recruit our beta users.

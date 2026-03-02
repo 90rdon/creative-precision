@@ -88,7 +88,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       track('message_sent', { message_count: newMessages.length, text_length: textToSend.length });
 
       const socket = getSocket();
-      socket.emit('chat-message', { messages: newMessages });
+      socket.emit('chat-message', { messages: newMessages, sessionId });
 
       return newMessages;
     });

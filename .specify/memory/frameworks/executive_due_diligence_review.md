@@ -6,7 +6,7 @@
 
 ## Perspective 1: The Product Manager (Focus: Agility & Feedback Loops)
 
-**The Critique:** The plan to track UTMs, drop-offs, and pre-commitments is robust. However, tracking data is useless if the system architecture cannot react to it instantly. Right now, our "Ralph Loop" cadence relies on a weekly sprint to update code. If a CEO tells us on Tuesday that our "Moment 2" prompt sounds like a robot, we cannot wait until Monday to fix it. We lose 4 days of traffic.
+**The Critique:** The plan to track UTMs, drop-offs, and pre-commitments is robust. However, tracking data is useless if the system architecture cannot react to it instantly. Right now, our "Continuous GTM Synthesis" cadence relies on a weekly sprint to update code. If a CEO tells us on Tuesday that our "Moment 2" prompt sounds like a robot, we cannot wait until Monday to fix it. We lose 4 days of traffic.
 **The Vulnerability:** Hard-coding our AI prompts or Chat sequence logic directly into unchangeable compiled code creates a massive latency bottleneck for iteration.
 **The Fix (Required Agility):** 
 1.  **Configuration-Driven Prompts:** The AI system instructions and the 6 "Journey Moments" must be stored in simple, easily editable configuration files (or eventually a database), NOT buried deep in React components. This allows a non-engineer to test a new prompt tone in 5 minutes without a full deployment.

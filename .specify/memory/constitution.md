@@ -1,7 +1,7 @@
 # Project Constitution: Executive AI Assessment
 
 ## Purpose
-The Executive AI Assessment is a diagnostic and reflective tool designed to help VPs and non-technical executives identify the structural gaps between AI investment and AI value. It serves as a "thought partner" by asking sharp, uncomfortable questions that surfaces hidden organizational friction.
+The Executive AI Assessment is a diagnostic and reflective tool designed to help VPs and non-technical executives identify the structural gaps between AI investment and AI value. Powered by **OpenClaw** as the brains of the overall operation, it acts as a conversational bot to conduct an authentic, intimate, and honest assessment of the organization. By asking sharp, uncomfortable questions, it surfaces hidden organizational friction and provides a comprehensive feedback report.
 
 ## Core Principles
 1. **The Lifeline Promise**: We are here to help, not to pressure a sell. We offer varying levels of "lifelines" that users can pull when they need help, starting with pure value exchange.
@@ -14,11 +14,12 @@ The Executive AI Assessment is a diagnostic and reflective tool designed to help
 8. **Ownership of Insights**: Questions should be designed so that the user feels they discovered the insight themselves.
 9. **Product-Led Growth (PLG)**: The assessment must serve as a "talk trigger." Its sheer quality, lack of sales pressure, and deep executive empathy should compel users to share it organically.
 10. **Do Things That Don't Scale**: We obsess over early user delight. We will manually guide, support, and learn from initial users to achieve perfect product-market fit before automating our growth engines.
-11. **V0.1 is a Living Experiment**: We acknowledge that we don't have all the answers until the market speaks. We build rapid feedback loops and A/B testing mechanisms to listen to executive behavior—never farming for data, but observing friction points to continuously tune the value exchange.
+11. **Decoupled Results & Unhinged Value**: The assessment report must output strictly "Unhinged Value" (a heavily strategic, shareable diagnosis) with zero sales pitch. The only explicit offer is a V0.1 Lifeline presented as an optional **Diagnostic Synthesis Call** for high-touch, unscalable validation.
+12. **Continuous GTM Synthesis (Track, Monitor, Learn, Adapt)**: We treat the assessment as a living experiment. We intelligently and silently track core behavioral telemetry (UTM tags, drop-off points, dwell time, 'Share' clicks, 'Lifeline' pulls) without farming data. We analyze these signals in weekly sprints to deploy prompt and UI tweaks, maximizing the "Talk Trigger" effect.
 
 ## Tech Stack
 - **Frontend**: Vite + React + TypeScript + Tailwind CSS
-- **Backend/AI**: Google Gemini API via `@google/genai`
+- **Backend/AI**: OpenClaw cognitive engine (as the core brains/conversation bot) via a guarded proxy, interacting with LLMs like Gemini.
 - **Deployment**: AI Studio App framework
 
 ## Code Standards

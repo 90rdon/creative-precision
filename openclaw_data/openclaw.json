@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.26",
-    "lastTouchedAt": "2026-03-01T15:53:00.574Z"
+    "lastTouchedAt": "2026-03-01T22:13:07.295Z"
   },
   "env": {
     "NVIDIA_NIM_THINKING": "true",
@@ -108,17 +108,40 @@
         }
       },
       "workspace": "/root/.openclaw/workspace",
-      "sandbox": {
-        "mode": "all"
-      },
       "compaction": {
         "mode": "safeguard"
       },
       "maxConcurrent": 4,
       "subagents": {
         "maxConcurrent": 8
+      },
+      "sandbox": {
+        "mode": "all"
       }
-    }
+    },
+    "list": [
+      {
+        "id": "main"
+      },
+      {
+        "id": "expert",
+        "name": "expert",
+        "workspace": "/root/.openclaw/workspace-expert",
+        "agentDir": "/root/.openclaw/agents/expert/agent"
+      },
+      {
+        "id": "synthesizer",
+        "name": "synthesizer",
+        "workspace": "/root/.openclaw/workspace-synthesizer",
+        "agentDir": "/root/.openclaw/agents/synthesizer/agent"
+      },
+      {
+        "id": "engineer",
+        "name": "engineer",
+        "workspace": "/root/.openclaw/workspace-engineer",
+        "agentDir": "/root/.openclaw/agents/engineer/agent"
+      }
+    ]
   },
   "messages": {
     "ackReactionScope": "group-mentions"
@@ -126,7 +149,8 @@
   "commands": {
     "native": "auto",
     "nativeSkills": "auto",
-    "restart": true
+    "restart": true,
+    "ownerDisplay": "raw"
   },
   "hooks": {
     "internal": {
@@ -168,13 +192,7 @@
     "port": 18790,
     "mode": "local",
     "bind": "auto",
-    "auth": {
-      "mode": "token",
-      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83",
-      "allowTailscale": true
-    },
     "controlUi": {
-      "allowInsecureAuth": false,
       "allowedOrigins": [
         "http://localhost:18790",
         "http://127.0.0.1:18790",
@@ -182,7 +200,13 @@
         "https://openclaw-kube:18790",
         "https://openclaw-kube.tail4bf23a.ts.net",
         "*"
-      ]
+      ],
+      "allowInsecureAuth": false
+    },
+    "auth": {
+      "mode": "token",
+      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83",
+      "allowTailscale": true
     },
     "trustedProxies": [
       "127.0.0.1",

@@ -32,6 +32,8 @@ dist/
 build/
 .env
 
+examples/
+
 # Kubernetes
 .lima/
 k8s/kubeconfig.yaml
@@ -48,8 +50,17 @@ openclaw_data/sandbox/
 openclaw_data/sandboxes/
 openclaw_data/telegram/
 openclaw_data/update-check.json
+openclaw_data/agents/*/sessions/
+openclaw_data/openclaw.json.bak*
+**/.openclaw/
 !openclaw_data/openclaw.json
 
-# Logs
+# Logs & Coverage
 server/logs/
 *.log
+coverage/
+
+# Scratch & Sensitive Scripts
+server/migrate.ts
+server/test-supabase.ts
+server/test-supabase.js

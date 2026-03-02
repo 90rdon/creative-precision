@@ -134,6 +134,22 @@ export const handleSynthesisRequest = async (socket: Socket, history: any[], ses
             import('../services/sessionService').then(({ archiveQuietSession }) => {
                 archiveQuietSession(sessionId).catch(err => console.error("Archive error", err));
             });
+
+            // Log to executive_insights so the Synthesizer agent has data to read
+            import('../db').then(({ supabase }) => {
+                if (supabase) {
+                    supabase.from('executive_insights').insert({
+                        session_id: sessionId,
+                        sentiment_score: 'N/A', // Omitted from new prompt schema
+                        identified_market_trend: resultObj.bottleneck_diagnosis || 'Unknown',
+                        gtm_feedback_quote: resultObj.boardroom_insight || 'Unknown',
+                        analysis_notes: JSON.stringify(resultObj)
+                    }).then(({ error }) => {
+                        if (error) console.error("Failed to log executive insight:", error);
+                        else console.log(`[Tier 2] Successfully logged executive insight for ${sessionId}`);
+                    });
+                }
+            });
         }
 
     } catch (error) {

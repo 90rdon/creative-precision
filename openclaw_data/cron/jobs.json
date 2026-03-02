@@ -6,7 +6,12 @@
       "agent": "synthesizer",
       "schedule": "0 8 * * *",
       "prompt": "Run the daily Continuous GTM Synthesis. Read HEARTBEAT.md and execute all tasks, including generating the GTM report.",
-      "channel": "internal"
+      "state": {
+        "scheduleErrorCount": 3,
+        "lastError": "schedule error: Error: invalid cron schedule: expr is required"
+      },
+      "name": "Cron job",
+      "enabled": false
     }
   ]
 }

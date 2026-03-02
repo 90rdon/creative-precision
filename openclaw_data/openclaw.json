@@ -1,7 +1,7 @@
 {
   "meta": {
     "lastTouchedVersion": "2026.2.26",
-    "lastTouchedAt": "2026-03-01T22:13:07.295Z"
+    "lastTouchedAt": "2026-03-02T01:39:42.162Z"
   },
   "env": {
     "NVIDIA_NIM_THINKING": "true",
@@ -140,6 +140,12 @@
         "name": "engineer",
         "workspace": "/root/.openclaw/workspace-engineer",
         "agentDir": "/root/.openclaw/agents/engineer/agent"
+      },
+      {
+        "id": "simulator",
+        "name": "simulator",
+        "workspace": "/root/.openclaw/workspace-simulator",
+        "agentDir": "/root/.openclaw/agents/simulator/agent"
       }
     ]
   },

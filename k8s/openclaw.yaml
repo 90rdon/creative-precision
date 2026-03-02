@@ -62,6 +62,12 @@ spec:
         volumeMounts:
         - name: shared-bin
           mountPath: /shared/bin
+      - name: setup-mocks
+        image: alpine:latest
+        command: ['sh', '-c', "printf '#!/bin/sh\\nexit 0' > /shared/bin/systemctl && printf '#!/bin/sh\\nexit 0' > /shared/bin/loginctl && chmod +x /shared/bin/systemctl /shared/bin/loginctl"]
+        volumeMounts:
+        - name: shared-bin
+          mountPath: /shared/bin
       containers:
       - name: openclaw
         image: ghcr.io/phioranex/openclaw-docker:latest
@@ -90,6 +96,12 @@ spec:
           value: "production"
         - name: OPENCLAW_SKIP_SERVICE_CHECK
           value: "true"
+        - name: OPENCLAW_SKIP_SERVICE_CHECKS
+          value: "true"
+        - name: OPENCLAW_SKIP_HEALTH
+          value: "true"
+        - name: OPENCLAW_SKIP_DAEMON
+          value: "true"
         - name: PATH
           value: "/home/linuxbrew/.linuxbrew/bin:/app/node_modules/.bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/shared/bin"
         - name: TS_SOCKET
@@ -104,7 +116,7 @@ spec:
         - name: ts-socket
           mountPath: /var/run/tailscale
         - name: dind-socket
-          mountPath: /var/run/dind
+          mountPath: /run
         - name: shared-bin
           mountPath: /shared/bin
 
@@ -143,7 +155,7 @@ spec:
           value: ""
         volumeMounts:
         - name: dind-socket
-          mountPath: /var/run
+          mountPath: /run
         - name: openclaw-workspace
           mountPath: /root/.openclaw/workspace
         - name: docker-graph-storage

@@ -16,7 +16,7 @@ vi.mock('./client', () => ({
     OpenClawClient: {
         createThread: vi.fn(),
         addMessage: vi.fn(),
-        startStreamingRun: vi.fn(),
+        streamResponse: vi.fn(),
     }
 }));
 
@@ -131,9 +131,8 @@ describe('POST /api/assessment/message', () => {
         expect(res.status).toBe(404);
     });
 
-    it('should call addMessage + startStreamingRun and stream the response', async () => {
+    it('should call streamResponse and stream the response', async () => {
         vi.mocked(SessionManager.getThreadId).mockResolvedValue('thread_abc');
-        vi.mocked(OpenClawClient.addMessage).mockResolvedValue(undefined);
 
         // Simulate a readable stream that yields a single chunk
         const encoder = new TextEncoder();
@@ -144,15 +143,14 @@ describe('POST /api/assessment/message', () => {
                 controller.close();
             }
         });
-        vi.mocked(OpenClawClient.startStreamingRun).mockResolvedValue(mockStream as any);
+        vi.mocked(OpenClawClient.streamResponse).mockResolvedValue(mockStream as any);
 
         const res = await request(app)
             .post('/api/assessment/message')
             .send({ sessionId: 'session-valid', content: 'What is my bottleneck?' });
 
         expect(res.status).toBe(200);
-        expect(OpenClawClient.addMessage).toHaveBeenCalledWith('thread_abc', 'What is my bottleneck?');
-        expect(OpenClawClient.startStreamingRun).toHaveBeenCalledWith('thread_abc');
+        expect(OpenClawClient.streamResponse).toHaveBeenCalledWith('thread_abc', 'What is my bottleneck?');
         expect(res.text).toContain('Hello from OpenClaw');
     });
 });

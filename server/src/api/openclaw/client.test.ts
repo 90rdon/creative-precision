@@ -8,7 +8,7 @@ vi.stubGlobal('fetch', mockFetch);
 describe('OpenClawClient', () => {
     beforeEach(() => {
         vi.clearAllMocks();
-        process.env.OPENCLAW_API_ENDPOINT = 'http://localhost:18790/api/v1';
+        process.env.OPENCLAW_API_ENDPOINT = 'http://localhost:18790';
         process.env.OPENCLAW_TOKEN = 'test-token-abc';
     });
 
@@ -18,79 +18,63 @@ describe('OpenClawClient', () => {
     });
 
     describe('createThread', () => {
-        it('should POST to /threads and return the thread id', async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: true,
-                json: async () => ({ id: 'thread_abc123' })
-            });
-
+        it('should return a generated session ID string', async () => {
             const threadId = await OpenClawClient.createThread();
-
-            expect(threadId).toBe('thread_abc123');
-            const [url, opts] = mockFetch.mock.calls[0];
-            expect(url).toContain('/threads');
-            expect(opts.method).toBe('POST');
-            expect(opts.headers['Authorization']).toBe('Bearer test-token-abc');
-        });
-
-        it('should throw if the response is not ok', async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: false,
-                text: async () => 'Unauthorized'
-            });
-
-            await expect(OpenClawClient.createThread()).rejects.toThrow(/createThread failed/);
+            expect(threadId).toMatch(/^sess_\d+_\w+/);
         });
     });
 
-    describe('addMessage', () => {
-        it('should POST to /threads/:id/messages with correct body', async () => {
-            mockFetch.mockResolvedValueOnce({ ok: true });
-
-            await OpenClawClient.addMessage('thread_abc', 'Hello expert');
-
-            const [url, opts] = mockFetch.mock.calls[0];
-            expect(url).toContain('/threads/thread_abc/messages');
-            const body = JSON.parse(opts.body);
-            expect(body.role).toBe('user');
-            expect(body.content).toBe('Hello expert');
-        });
-
-        it('should throw on failed message add', async () => {
-            mockFetch.mockResolvedValueOnce({
-                ok: false,
-                text: async () => 'Not Found'
+    describe('streamResponse', () => {
+        it('should POST to /v1/responses with correct payload and headers', async () => {
+            // Mock a simple readable stream
+            const mockStream = new ReadableStream({
+                start(controller) {
+                    controller.enqueue(new TextEncoder().encode('data: {"type": "response.output_text.delta", "delta": "Hello"}\n'));
+                    controller.enqueue(new TextEncoder().encode('data: [DONE]\n'));
+                    controller.close();
+                }
             });
 
-            await expect(OpenClawClient.addMessage('invalid', 'test')).rejects.toThrow(/addMessage failed/);
-        });
-    });
-
-    describe('startStreamingRun', () => {
-        it('should POST to /threads/:id/runs with stream:true and return body', async () => {
-            const mockBody = {};
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                body: mockBody
+                body: mockStream
             });
 
-            const result = await OpenClawClient.startStreamingRun('thread_abc');
+            const stream = await OpenClawClient.streamResponse('session-123', 'Testing');
 
-            const [url, opts] = mockFetch.mock.calls[0];
-            expect(url).toContain('/threads/thread_abc/runs');
-            const body = JSON.parse(opts.body);
-            expect(body.stream).toBe(true);
-            expect(body.assistant_id).toBe('expert');
-            expect(result).toBe(mockBody);
+            expect(mockFetch).toHaveBeenCalledWith(
+                'http://localhost:18790/v1/responses',
+                expect.objectContaining({
+                    method: 'POST',
+                    headers: expect.objectContaining({
+                        'Authorization': 'Bearer test-token-abc',
+                        'Content-Type': 'application/json'
+                    }),
+                    body: JSON.stringify({
+                        model: 'expert',
+                        input: 'Testing',
+                        stream: true
+                    })
+                })
+            );
+
+            expect(stream).not.toBeNull();
+
+            // Verify streaming transformation
+            const reader = stream!.getReader();
+            const { value } = await reader.read();
+            expect(new TextDecoder().decode(value)).toBe('Hello');
         });
 
-        it('should throw if run start fails', async () => {
+        it('should throw if gateway returns non-ok status', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: false,
-                text: async () => 'Internal Server Error'
+                status: 403,
+                text: async () => 'Forbidden'
             });
 
-            await expect(OpenClawClient.startStreamingRun('thread_xyz')).rejects.toThrow(/startStreamingRun failed/);
+            await expect(OpenClawClient.streamResponse('s1', 'hi'))
+                .rejects.toThrow(/Gateway call failed \(403\): Forbidden/);
         });
     });
 });

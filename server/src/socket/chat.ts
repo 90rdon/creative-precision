@@ -4,12 +4,13 @@ import { redis, supabase } from '../db';
 
 export function handleChatConnection(io: Server, socket: Socket) {
     socket.on('chat-message', async (data) => {
-        console.log(`Received chat message for session: ${data.sessionId}`);
+        console.log(`Received chat message for session: ${data.sessionId} [Synthetic: ${!!data.isSynthetic}]`);
         if (data.sessionId && data.messages) {
             await redis.set(`session:${data.sessionId}`, JSON.stringify({ history: data.messages }), 'EX', 3600);
         }
 
         if (data.messages && Array.isArray(data.messages)) {
+            // Pass the isSynthetic flag if needed by backend processors
             await handleChatStream(socket, data.messages);
         }
     });
@@ -29,10 +30,11 @@ export function handleChatConnection(io: Server, socket: Socket) {
 
         if (supabase && data.payload) {
             const sessionId = data.payload.session_id || data.payload.sessionId || null;
+            const isSynthetic = data.payload.isSynthetic || false;
             const { error } = await supabase.from('assessment_events').insert({
                 session_id: sessionId,
                 event_type: data.payload.event_type || data.type,
-                payload: data.payload
+                payload: { ...data.payload, isSynthetic }
             });
 
             if (error) {

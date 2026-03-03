@@ -24,6 +24,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   const [voiceStatus, setVoiceStatus] = useState<'idle' | 'listening' | 'processing' | 'speaking'>('idle');
   const [micError, setMicError] = useState<string | null>(null);
   const [isTransitioning, setIsTransitioning] = useState(false);
+  const [currentSessionId, setCurrentSessionId] = useState<string | null>(null);
 
   // Refs for Logic
   const messagesEndRef = useRef<HTMLDivElement>(null);
@@ -86,10 +87,6 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       const newMessages = [...prev, userMsg];
       messagesRef.current = newMessages;
       track('message_sent', { message_count: newMessages.length, text_length: textToSend.length });
-
-      const socket = getSocket();
-      socket.emit('chat-message', { messages: newMessages, sessionId });
-
       return newMessages;
     });
 
@@ -98,6 +95,89 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       messagesRef.current = updated;
       return updated;
     });
+
+    try {
+      const response = await fetch('/api/assessment/message', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          sessionId: currentSessionId,
+          content: textToSend
+        })
+      });
+
+      if (!response.ok) throw new Error('Failed to send message');
+
+      const reader = response.body?.getReader();
+      if (!reader) throw new Error('No readable stream');
+
+      const decoder = new TextDecoder();
+      while (true) {
+        const { done, value } = await reader.read();
+        if (done) break;
+
+        const chunk = decoder.decode(value);
+
+        setMessages(prev => {
+          const copy = [...prev];
+          const lastIndex = copy.length - 1;
+          const currentText = copy[lastIndex].text || '';
+          copy[lastIndex] = { role: 'model', text: currentText + chunk, isStreaming: true };
+          messagesRef.current = copy;
+          return copy;
+        });
+
+        // Add voice mode support
+        if (voiceModeRef.current) {
+          sentenceBufferRef.current += chunk;
+          const sentences = sentenceBufferRef.current.split(/(?<=[.!?])\s+/);
+
+          if (sentences.length > 1) {
+            let combinedSentence = "";
+            for (let i = 0; i < sentences.length - 1; i++) {
+              const sentence = sentences[i].trim();
+              if (sentence) {
+                combinedSentence += (combinedSentence ? " " : "") + sentence;
+                if (combinedSentence.length > 20 || i === sentences.length - 2) {
+                  if (!processedSentencesRef.current.has(combinedSentence)) {
+                    processedSentencesRef.current.add(combinedSentence);
+                    speak(combinedSentence);
+                    combinedSentence = "";
+                  }
+                }
+              }
+            }
+            sentenceBufferRef.current = (combinedSentence ? combinedSentence + " " : "") + sentences[sentences.length - 1];
+          }
+        }
+      }
+
+      // Final voice mode cleanup
+      if (voiceModeRef.current && sentenceBufferRef.current.trim()) {
+        const remaining = sentenceBufferRef.current.trim();
+        if (!processedSentencesRef.current.has(remaining)) {
+          processedSentencesRef.current.add(remaining);
+          speak(remaining);
+        }
+      }
+
+      // Cleanup on done
+      setIsLoading(false);
+      setMessages(prev => {
+        const copy = [...prev];
+        const lastIndex = copy.length - 1;
+        const fullText = copy[lastIndex].text;
+        copy[lastIndex] = { ...copy[lastIndex], isStreaming: false };
+        messagesRef.current = copy;
+        track('ai_responded', { text_length: fullText?.length || 0 });
+        return copy;
+      });
+
+    } catch (err: any) {
+      console.error('Fetch streaming error:', err);
+      setIsLoading(false);
+      setMicError(err.message || 'Connection lost.');
+    }
   };
 
   const { startListening, stopListening, silenceTimerRef } = useSpeechRecognition({
@@ -133,68 +213,33 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
     const initialMessages = [{ role: 'model' as const, text: config.initialGreeting }];
     setMessages(initialMessages);
     messagesRef.current = initialMessages;
+
+    // Session Initialization
+    const initSession = async () => {
+      const savedSessionId = localStorage.getItem('expert_assessment_session_id');
+      try {
+        const response = await fetch('/api/assessment/init', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ browserSessionId: savedSessionId })
+        });
+        const data = await response.json();
+        if (data.sessionId) {
+          localStorage.setItem('expert_assessment_session_id', data.sessionId);
+          setCurrentSessionId(data.sessionId);
+        }
+      } catch (err) {
+        console.error('Failed to init session:', err);
+      }
+    };
+    initSession();
   }, [config]);
 
   // --- 2. Socket Listeners ---
   useEffect(() => {
     const socket = getSocket();
 
-    const onChatChunk = (data: { chunk: string, done: boolean }) => {
-      if (!data.done) {
-        setMessages(prev => {
-          const copy = [...prev];
-          const lastIndex = copy.length - 1;
-          const currentText = copy[lastIndex].text || '';
-          copy[lastIndex] = { role: 'model', text: currentText + data.chunk, isStreaming: true };
-          messagesRef.current = copy;
-          return copy;
-        });
-
-        if (voiceModeRef.current) {
-          sentenceBufferRef.current += data.chunk;
-          const sentences = sentenceBufferRef.current.split(/(?<=[.!?])\s+/);
-
-          if (sentences.length > 1) {
-            let combinedSentence = "";
-            for (let i = 0; i < sentences.length - 1; i++) {
-              const sentence = sentences[i].trim();
-              if (sentence) {
-                combinedSentence += (combinedSentence ? " " : "") + sentence;
-                if (combinedSentence.length > 20 || i === sentences.length - 2) {
-                  if (!processedSentencesRef.current.has(combinedSentence)) {
-                    processedSentencesRef.current.add(combinedSentence);
-                    speak(combinedSentence);
-                    combinedSentence = "";
-                  }
-                }
-              }
-            }
-            sentenceBufferRef.current = (combinedSentence ? combinedSentence + " " : "") + sentences[sentences.length - 1];
-          }
-        }
-      } else {
-        // Done
-        setIsLoading(false);
-        setMessages(prev => {
-          const copy = [...prev];
-          const lastIndex = copy.length - 1;
-          const fullText = copy[lastIndex].text;
-          copy[lastIndex] = { ...copy[lastIndex], isStreaming: false };
-          messagesRef.current = copy;
-          track('ai_responded', { text_length: fullText?.length || 0 });
-          return copy;
-        });
-
-        if (voiceModeRef.current && sentenceBufferRef.current.trim()) {
-          const remaining = sentenceBufferRef.current.trim();
-          if (!processedSentencesRef.current.has(remaining)) {
-            processedSentencesRef.current.add(remaining);
-            speak(remaining);
-          }
-        }
-      }
-    };
-
+    // Still listening for overall state updates (e.g. synthesis trigger)
     const onStateUpdate = (data: { type: string, payload: any }) => {
       if (data.type === 'synthesis-trigger') {
         setIsTransitioning(true);
@@ -207,18 +252,12 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
       } else if (data.type === 'error') {
         setIsLoading(false);
         setMicError(data.payload.message || 'An unexpected error occurred.');
-      } else if (data.type === 'thinking' || data.type === 'generating') {
-        setIsLoading(true);
-      } else if (data.type === 'idle') {
-        setIsLoading(false);
       }
     };
 
-    socket.on('chat-chunk', onChatChunk);
     socket.on('state-update', onStateUpdate);
 
     return () => {
-      socket.off('chat-chunk', onChatChunk);
       socket.off('state-update', onStateUpdate);
     };
   }, []);
@@ -286,7 +325,7 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
           {(voiceStatus === 'processing' || (isLoading && (messages[messages.length - 1]?.text === '' || messages[messages.length - 1]?.isStreaming))) && (
             <div className="message message-ai">
               <p className="flex items-center gap-2 italic" style={{ color: '#9B9590' }}>
-                <Loader2 size={14} className="animate-spin" /> Thinking...
+                <Loader2 size={14} className="animate-spin" /> The Expert is analyzing...
               </p>
             </div>
           )}

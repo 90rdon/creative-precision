@@ -183,21 +183,25 @@
       "dmPolicy": "pairing",
       "botToken": "${TELEGRAM_BOT_TOKEN}",
       "groups": {
-        "-1003873447811": {
-          "requireMention": false
-        },
         "*": {
-          "requireMention": true
+          "requireMention": false
         }
       },
-      "groupPolicy": "allowlist",
+      "groupPolicy": "open",
       "streaming": "partial"
     }
   },
   "gateway": {
-    "port": 18790,
+    "port": 18791,
     "mode": "local",
     "bind": "auto",
+    "http": {
+      "endpoints": {
+        "responses": {
+          "enabled": true
+        }
+      }
+    },
     "controlUi": {
       "allowedOrigins": [
         "http://localhost:18790",
@@ -207,7 +211,7 @@
         "https://openclaw-kube.tail4bf23a.ts.net",
         "*"
       ],
-      "allowInsecureAuth": false
+      "allowInsecureAuth": true
     },
     "auth": {
       "mode": "token",

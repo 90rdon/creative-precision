@@ -18,3 +18,7 @@
 
 ## Operating the Loop
 Every morning, run the automated generator script (WIP) to aggregate the previous 24 hours of logs. OpenClaw will synthesize the `executive_insights` and `market_signals` into a consolidated markdown report on whether the `SOUL.md` or landing page copy needs adjusting.
+
+**Delivery**:
+- **To Admin**: The consolidated report and any critical alerts are pushed to the **Telegram bot**.
+- **To Users**: The results of these refinements are implicitly delivered through updated landing page copy and improved conversational logic in the web-based `assessment.html`.

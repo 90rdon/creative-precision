@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Creative Precision — AI Governance, Redesigned</title>
+  <title>Creative Precision — The Precision Loop</title>
   <meta name="description"
-    content="Close the gap between AI ambition and AI results. Practitioner-built governance frameworks aligned to NIST AI RMF, ISO 42001, and EU AI Act.">
-  <meta property="og:title" content="Creative Precision — AI Governance, Redesigned">
+    content="The Precision Loop: Define the destination. Let AI find the fastest path there. When conditions change, the path recalculates.">
+  <meta property="og:title" content="Creative Precision — The Precision Loop">
   <meta property="og:description"
-    content="AI doesn't fail because of the technology. The system around it does. Practitioner-built governance for organizations deploying AI at scale.">
+    content="Stop fitting AI around your old business model. Define the destination. Let AI find the fastest path there. That's the Precision Loop.">
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,11 +17,72 @@
     href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
+  <style>
+    /* Additional styles for Precision Loop sections */
+    .diff-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 0;
+    }
+
+    .reframe {
+      text-align: center;
+      max-width: 600px;
+      margin: 2rem auto 0;
+    }
+
+    .reframe p {
+      font-family: var(--serif);
+      font-size: 1.1rem;
+      line-height: 1.6;
+      color: var(--charcoal);
+      font-style: italic;
+    }
+
+    .phase-sub {
+      font-family: var(--serif);
+      font-size: 0.92rem;
+      font-style: italic;
+      color: var(--stone-lt);
+      margin-bottom: 0.75rem;
+    }
+
+    .loop-close {
+      text-align: center;
+      margin-top: 2.5rem;
+    }
+
+    .loop-close p {
+      font-family: var(--serif);
+      font-size: 1.05rem;
+      font-style: italic;
+      color: var(--stone-lt);
+    }
+
+    .loop-standards {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .loop-standards span {
+      font-size: 0.72rem;
+      font-weight: 500;
+      letter-spacing: 0.06em;
+      color: var(--stone-lt);
+    }
+
+    @media (max-width: 768px) {
+      .diff-grid {
+        grid-template-columns: 1fr;
+      }
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- ═══════════ NAV ═══════════ -->
+  <!-- NAV -->
   <nav>
     <div class="nav-inner">
       <a href="index.html" class="logo">Creative <em>Precision.</em></a>
@@ -33,114 +94,183 @@
     </div>
   </nav>
 
-  <!-- ═══════════ SECTION 1: HERO — Provocation ═══════════ -->
+  <!-- HERO -->
   <section class="hero">
     <div class="wrap">
-      <p class="tag">AI Governance, Redesigned</p>
-      <h1 class="h-xl">AI doesn't fail because of<br>the <em>technology.</em></h1>
-      <p class="body-text">The gap between AI ambition and AI results isn't a technology problem. It's a system problem.
-        The organizations closing that gap are doing something different.</p>
+      <p class="tag">The Precision Loop</p>
+      <h1 class="h-xl">Stop automating the old.<br><em>Start designing the new.</em></h1>
+      <p class="body-text">Stop fitting AI around your old business model. Define the destination. Let AI find the
+        fastest path there. When conditions change, the path recalculates. That's the Precision Loop.</p>
       <div class="hero-ctas">
         <a href="assessment.html" class="btn btn-primary">Start the Assessment</a>
-        <a href="perspective.html" class="btn btn-ghost">The Perspective</a>
+        <a href="#method" class="btn btn-ghost">Explore the Methodology</a>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════ SECTION 2: EVIDENCE — Stats that speak ═══════════ -->
+  <!-- THE GAP -->
   <section class="evidence">
     <div class="wrap-wide">
-      <p class="tag">What the data shows</p>
+      <p class="tag" style="text-align: center; margin-bottom: 0.8rem;">The Gap</p>
+      <h2 class="h-lg" style="text-align: center; margin-bottom: 0.5rem;">Everyone's investing in AI.<br><em>Nobody
+          defined where it's going.</em></h2>
+      <p class="body-text" style="text-align: center; margin: 0 auto 2.5rem;">Most organizations skipped the most
+        important step &mdash; defining where they're actually going. Instead, they're building faster cars on roads
+        that lead nowhere.</p>
+
       <div class="stats-grid">
         <div class="stat-card">
-          <div class="stat-number">87%</div>
-          <div class="stat-label">of AI projects never make it past pilot.</div>
-          <div class="stat-source">Gartner</div>
+          <div class="stat-number">95%</div>
+          <div class="stat-label">of enterprise AI pilots never reach production. The failure isn't technology. It's
+            building without a destination &mdash; no defined outcome, no path to get there.</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">3,235</div>
-          <div class="stat-label">AI leaders surveyed. Conclusion: governance enables scaling — it doesn't constrain it.
-          </div>
-          <div class="stat-source">Deloitte</div>
+          <div class="stat-number">79%</div>
+          <div class="stat-label">of organizations plan to deploy AI agents within two years. Only 21% know how to
+            govern them. New roads opening with no signals, no lanes, no rules.</div>
         </div>
         <div class="stat-card">
-          <div class="stat-number">€35M</div>
-          <div class="stat-label">maximum fine under the EU AI Act. Compliance deadlines are already in motion.</div>
-          <div class="stat-source">EU AI Act, 2024</div>
+          <div class="stat-number">&euro;35M</div>
+          <div class="stat-label">Aug '26 &mdash; EU AI Act compliance deadline. Fines for organizations that can't
+            document where their AI is headed and how it's governed. No destination, no compliance. The clock is already
+            running.</div>
         </div>
+      </div>
+
+      <div class="reframe">
+        <p>The AI budget grew. The results didn't follow. Ask your team what it actually produced and you'll hear the
+          silence. That's speed without a destination.</p>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════ SECTION 3: METHODOLOGY — Channel, not control ═══════════ -->
-  <section>
+  <!-- THE PRECISION LOOP -->
+  <section id="method">
     <div class="wrap-wide">
-      <p class="tag" style="text-align: center; margin-bottom: 0.8rem;">The Creative Precision Methodology</p>
-      <h2 class="h-lg" style="text-align: center; margin-bottom: 0.5rem;"><em>Channel,</em> not control.</h2>
-      <p class="body-text" style="text-align: center; margin: 0 auto;">AI's most powerful capability isn't efficiency —
-        it's creativity. The right framework channels it from ambition to results.</p>
+      <p class="tag" style="text-align: center; margin-bottom: 0.8rem;">The Precision Loop</p>
+      <h2 class="h-lg" style="text-align: center; margin-bottom: 0.5rem;">Define the destination. Let AI find the path.
+        <em>Arrive.</em></h2>
+      <p class="body-text" style="text-align: center; margin: 0 auto;">Three phases. One continuous loop. Each cycle
+        makes the system smarter.</p>
 
       <div class="method-grid">
         <div class="method-card">
-          <p class="tag">Principle</p>
-          <p class="method-title">Stop automating the old.</p>
-          <p class="method-body">Business processes were designed around human limitations. AI doesn't share them. Start
-            with the goal, not the existing process.</p>
+          <p class="tag">Phase 01</p>
+          <p class="method-title">Map</p>
+          <p class="phase-sub">See the business as it actually operates.</p>
+          <p class="method-body">Define where you are going and understand where you actually are. Not the org chart
+            version. The real one &mdash; how your business operates, where the friction lives, what is costing you
+            money. You cannot recalculate a route if you do not know your starting point.</p>
         </div>
         <div class="method-card">
-          <p class="tag">Framework</p>
-          <p class="method-title">The system around the algorithm.</p>
-          <p class="method-body">Governance, risk routing, compliance, and change management — integrated as one
-            operating fabric, not bolted on after deployment.</p>
+          <p class="tag">Phase 02</p>
+          <p class="method-title">Redesign</p>
+          <p class="phase-sub">Ask the question nobody is asking.</p>
+          <p class="method-body">Let AI find the best path forward. Not by optimizing what exists &mdash; by asking what
+            should exist. AI identifies where old constraints are holding you back and designs new approaches you would
+            not have found on your own.</p>
         </div>
         <div class="method-card">
-          <p class="tag">Outcome</p>
-          <p class="method-title">From ideation to realization.</p>
-          <p class="method-body">AI moves from pilot purgatory to production value. Regulatory alignment comes built-in,
-            not retrofitted.</p>
+          <p class="tag">Phase 03</p>
+          <p class="method-title">Realize</p>
+          <p class="phase-sub">Build, govern, ship, prove. Then do it again.</p>
+          <p class="method-body">Arrive &mdash; through governed deployment that is fast, safe, and measurable. Risk
+            classification, approval workflows, living documentation, continuous monitoring. Then feed what you learn
+            back into the next cycle. The path recalculates.</p>
+        </div>
+      </div>
+
+      <div class="loop-close">
+        <p>The loop never stops. Conditions change. The path recalculates. Each cycle gets smarter.</p>
+      </div>
+      <div class="loop-standards">
+        <span>Built on NIST AI RMF &middot; ISO 42001 &middot; EU AI Act</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- WHY DIFFERENT -->
+  <section
+    style="background: var(--linen); border-top: 1px solid var(--border); border-bottom: 1px solid var(--border);">
+    <div class="wrap-wide">
+      <p class="tag" style="text-align: center; margin-bottom: 0.8rem;">Why This Is Different</p>
+      <h2 class="h-lg" style="text-align: center; margin-bottom: 2.5rem;">Not another framework.<br><em>A fundamentally
+          different approach.</em></h2>
+
+      <div class="diff-grid">
+        <div class="method-card">
+          <p class="method-title">Outcome-first, not technology-first</p>
+          <p class="method-body">Everyone else starts with what AI tools to buy. The Precision Loop starts with where
+            you are trying to go.</p>
+        </div>
+        <div class="method-card">
+          <p class="method-title">A complete system that actually connects</p>
+          <p class="method-body">One system that actually connects. Strategy informs governance. Governance enables
+            deployment. Deployment teaches the next strategy. No more stitching together pieces that were never designed
+            to work together.</p>
+        </div>
+        <div class="method-card">
+          <p class="method-title">Practitioner-built. Agentic-ready.</p>
+          <p class="method-body">Two decades in technology. Built AI governance systems inside real enterprises across
+            public and private sectors. Designed for the agentic era from day one.</p>
+        </div>
+        <div class="method-card">
+          <p class="method-title">$97, not $150K</p>
+          <p class="method-body">Same rigor as a Big 4 engagement. No procurement. Deploys in weeks, not months.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- ═══════════ SECTION 4: PROFILE — Trust signal ═══════════ -->
+  <!-- ASSESSMENT CTA -->
+  <section class="cta-section">
+    <div class="wrap">
+      <h2 class="h-lg">You cannot define the destination<br>if you do not know your <em>starting point.</em></h2>
+      <p class="body-text" style="margin: 0 auto 2rem; text-align: center;">The AI Leadership Assessment is your first
+        pass through the Map phase. An honest conversation that actually listens to what you are dealing with and
+        reflects back what you have not seen yet.</p>
+      <a href="assessment.html" class="btn btn-primary btn-lg">Start Here</a>
+      <p class="body-text-sm" style="margin-top: 1rem; text-align: center;">5 minutes. No pitch. Your answers stay with
+        you &mdash; or share them with your team.</p>
+    </div>
+  </section>
+
+  <!-- PROFILE -->
   <section class="profile" style="border-top: 1px solid var(--border);">
     <div class="wrap">
       <div class="profile-photo"><img src="assets/profile.png" alt="Gordon Chan"></div>
       <h2 class="h-lg">Built by a <em>practitioner.</em></h2>
-      <p class="body-text">I've spent 14 years building AI systems, governance frameworks, and centers of excellence
-        inside enterprises — from healthcare to financial services to public sector. This isn't theory assembled from
-        best practices. It's what I've shipped.</p>
-      <p class="body-text" style="margin-top: 1rem;">— Gordon Chan</p>
-      <p class="standards-signal">Built on NIST AI RMF · ISO 42001 · EU AI Act</p>
+      <p class="body-text">20 years in technology across financial services, healthcare, and government &mdash; building
+        the systems that make AI work at scale. Not assembled from theory. Not borrowed from a slide deck. Built inside
+        real enterprises with real stakes.</p>
+      <p class="body-text" style="margin-top: 1rem;">&mdash; Gordon Chan</p>
     </div>
   </section>
 
-  <!-- ═══════════ SECTION 5: CAPTURE — Email ═══════════ -->
-  <section class="capture" style="text-align: center;">
+  <!-- FOUNDING ACCESS -->
+  <section class="capture">
     <div class="wrap">
-      <h2 class="h-lg">Find your <em>bottleneck.</em></h2>
-      <p class="body-text" style="max-width: 600px; margin: 0 auto;">Take the free, AI-driven strategic assessment to
-        instantly identify what's holding your organization back from scaling AI beyond the pilot phase.</p>
-      <div style="display: flex; justify-content: center; margin-top: 2rem;">
-        <a href="assessment.html" class="btn btn-primary" style="font-size: 1.1rem; padding: 1rem 2.5rem;">Start
-          Diagnostics</a>
+      <h2 class="h-lg">Define your destination.<br><em>Start the loop.</em></h2>
+      <p class="body-text" style="margin: 0 auto 2rem; text-align: center;">Early access is open. Founding pricing for
+        the first practitioners in.</p>
+      <div class="capture-form">
+        <input type="email" placeholder="Your email" aria-label="Email address">
+        <button type="submit">Get Early Access</button>
       </div>
-      <p class="body-text-sm" style="margin-top: 1rem; text-align: center; color: var(--stone-500);">No email or
-        registration required. Completely free.</p>
+      <p class="body-text-sm" style="margin-top: 0.75rem; text-align: center;">No spam. Unsubscribe anytime.</p>
     </div>
   </section>
 
-  <!-- ═══════════ FOOTER ═══════════ -->
+  <!-- FOOTER -->
   <footer>
     <div class="wrap">
-      <p class="footer-brand">Gordon Chan · Creative Precision</p>
+      <p class="footer-brand">Gordon Chan &middot; Creative Precision</p>
       <div class="footer-links">
         <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
         <a href="assessment.html">Assessment</a>
         <a href="perspective.html">The Perspective</a>
       </div>
-      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
+      <p class="footer-sig">&ldquo;Stop automating the old. Start designing the new.&rdquo;</p>
     </div>
   </footer>
 

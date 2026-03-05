@@ -4,12 +4,12 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Creative Precision — AI Governance, Redesigned</title>
+  <title>The Perspective — Creative Precision</title>
   <meta name="description"
-    content="Close the gap between AI ambition and AI results. Practitioner-built governance frameworks aligned to NIST AI RMF, ISO 42001, and EU AI Act.">
-  <meta property="og:title" content="Creative Precision — AI Governance, Redesigned">
+    content="Three observations about why AI fails at scale — and what the organizations getting it right are doing differently.">
+  <meta property="og:title" content="The Perspective — Creative Precision">
   <meta property="og:description"
-    content="AI doesn't fail because of the technology. The system around it does. Practitioner-built governance for organizations deploying AI at scale.">
+    content="Everyone is asking how to use AI faster. Almost nobody is asking where it is actually going.">
   <meta property="og:type" content="website">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
@@ -17,11 +17,88 @@
     href="https://fonts.googleapis.com/css2?family=EB+Garamond:ital,wght@0,400;0,500;0,600;0,700;1,400;1,500;1,600&family=Libre+Franklin:wght@300;400;500;600;700&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="assets/style.css">
+  <style>
+    .paths {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 1.5rem;
+      margin-top: 2.5rem;
+    }
+
+    .path-card {
+      padding: 2rem;
+      background: var(--linen);
+      border: 1px solid var(--border);
+      border-radius: 2px;
+    }
+
+    .path-card.primary {
+      background: var(--charcoal);
+      border-color: var(--charcoal);
+    }
+
+    .path-card .tag {
+      margin-bottom: 0.75rem;
+    }
+
+    .path-card.primary .tag {
+      color: var(--stone-lt);
+    }
+
+    .path-card .h-md {
+      margin-bottom: 0.5rem;
+    }
+
+    .path-card.primary .h-md {
+      color: var(--cream);
+    }
+
+    .path-card.primary .body-text-sm {
+      color: rgba(244, 241, 235, 0.6);
+    }
+
+    .path-link {
+      display: inline-block;
+      margin-top: 1rem;
+      font-size: 0.72rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      color: var(--charcoal);
+      text-decoration: none;
+      border-bottom: 1px solid var(--border-m);
+      padding-bottom: 2px;
+      transition: border-color 0.2s;
+    }
+
+    .path-link:hover {
+      border-color: var(--charcoal);
+    }
+
+    .path-card.primary .path-link {
+      color: var(--cream);
+      border-color: rgba(244, 241, 235, 0.3);
+    }
+
+    .path-card.primary .path-link:hover {
+      border-color: var(--cream);
+    }
+
+    @media (max-width: 768px) {
+      .paths {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .observation .body-text {
+      max-width: none;
+    }
+  </style>
 </head>
 
 <body>
 
-  <!-- ═══════════ NAV ═══════════ -->
+  <!-- NAV -->
   <nav>
     <div class="nav-inner">
       <a href="index.html" class="logo">Creative <em>Precision.</em></a>
@@ -33,114 +110,94 @@
     </div>
   </nav>
 
-  <!-- ═══════════ SECTION 1: HERO — Provocation ═══════════ -->
+  <!-- HERO -->
   <section class="hero">
     <div class="wrap">
-      <p class="tag">AI Governance, Redesigned</p>
-      <h1 class="h-xl">AI doesn't fail because of<br>the <em>technology.</em></h1>
-      <p class="body-text">The gap between AI ambition and AI results isn't a technology problem. It's a system problem.
-        The organizations closing that gap are doing something different.</p>
-      <div class="hero-ctas">
-        <a href="assessment.html" class="btn btn-primary">Start the Assessment</a>
-        <a href="perspective.html" class="btn btn-ghost">The Perspective</a>
-      </div>
+      <p class="tag">The Perspective</p>
+      <h1 class="h-xl">Everyone's asking how to use AI <em>faster.</em><br>Almost nobody's asking where it's actually
+        <em>going.</em></h1>
+      <p class="body-text">After two decades building AI systems inside enterprises, these are the patterns that keep
+        showing up &mdash; in every industry, at every scale.</p>
     </div>
   </section>
 
-  <!-- ═══════════ SECTION 2: EVIDENCE — Stats that speak ═══════════ -->
-  <section class="evidence">
-    <div class="wrap-wide">
-      <p class="tag">What the data shows</p>
-      <div class="stats-grid">
-        <div class="stat-card">
-          <div class="stat-number">87%</div>
-          <div class="stat-label">of AI projects never make it past pilot.</div>
-          <div class="stat-source">Gartner</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">3,235</div>
-          <div class="stat-label">AI leaders surveyed. Conclusion: governance enables scaling — it doesn't constrain it.
-          </div>
-          <div class="stat-source">Deloitte</div>
-        </div>
-        <div class="stat-card">
-          <div class="stat-number">€35M</div>
-          <div class="stat-label">maximum fine under the EU AI Act. Compliance deadlines are already in motion.</div>
-          <div class="stat-source">EU AI Act, 2024</div>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════ SECTION 3: METHODOLOGY — Channel, not control ═══════════ -->
-  <section>
-    <div class="wrap-wide">
-      <p class="tag" style="text-align: center; margin-bottom: 0.8rem;">The Creative Precision Methodology</p>
-      <h2 class="h-lg" style="text-align: center; margin-bottom: 0.5rem;"><em>Channel,</em> not control.</h2>
-      <p class="body-text" style="text-align: center; margin: 0 auto;">AI's most powerful capability isn't efficiency —
-        it's creativity. The right framework channels it from ambition to results.</p>
-
-      <div class="method-grid">
-        <div class="method-card">
-          <p class="tag">Principle</p>
-          <p class="method-title">Stop automating the old.</p>
-          <p class="method-body">Business processes were designed around human limitations. AI doesn't share them. Start
-            with the goal, not the existing process.</p>
-        </div>
-        <div class="method-card">
-          <p class="tag">Framework</p>
-          <p class="method-title">The system around the algorithm.</p>
-          <p class="method-body">Governance, risk routing, compliance, and change management — integrated as one
-            operating fabric, not bolted on after deployment.</p>
-        </div>
-        <div class="method-card">
-          <p class="tag">Outcome</p>
-          <p class="method-title">From ideation to realization.</p>
-          <p class="method-body">AI moves from pilot purgatory to production value. Regulatory alignment comes built-in,
-            not retrofitted.</p>
-        </div>
-      </div>
-    </div>
-  </section>
-
-  <!-- ═══════════ SECTION 4: PROFILE — Trust signal ═══════════ -->
-  <section class="profile" style="border-top: 1px solid var(--border);">
+  <!-- OBSERVATION 01 -->
+  <section class="observation">
     <div class="wrap">
-      <div class="profile-photo"><img src="assets/profile.png" alt="Gordon Chan"></div>
-      <h2 class="h-lg">Built by a <em>practitioner.</em></h2>
-      <p class="body-text">I've spent 14 years building AI systems, governance frameworks, and centers of excellence
-        inside enterprises — from healthcare to financial services to public sector. This isn't theory assembled from
-        best practices. It's what I've shipped.</p>
-      <p class="body-text" style="margin-top: 1rem;">— Gordon Chan</p>
-      <p class="standards-signal">Built on NIST AI RMF · ISO 42001 · EU AI Act</p>
+      <div class="obs-number">01</div>
+      <h2 class="h-lg">AI fails because organizations are automating<br>processes that <em>shouldn't exist.</em></h2>
+      <p class="body-text">Every org chart, every SOP, every approval chain was designed around a constraint: humans.
+        Limited attention, limited coordination, limited ability to hold full business context. These aren't best
+        practices. They're workarounds.</p>
+      <p class="body-text" style="margin-top: 1rem;">And right now most AI strategies are bolting intelligence onto
+        those workarounds and calling it transformation. The organizations pulling ahead are asking a different
+        question: should this process exist at all?</p>
     </div>
   </section>
 
-  <!-- ═══════════ SECTION 5: CAPTURE — Email ═══════════ -->
-  <section class="capture">
+  <!-- OBSERVATION 02 -->
+  <section class="observation">
     <div class="wrap">
-      <h2 class="h-lg">What's <em>next.</em></h2>
-      <p class="body-text">Governance playbooks, risk routing toolkits, and regulatory compliance frameworks — designed
-        to get AI from stuck to shipped in weeks.</p>
-      <div class="capture-form">
-        <input type="email" placeholder="Your email" aria-label="Email address">
-        <button type="submit">Get Early Access</button>
-      </div>
-      <p class="body-text-sm" style="margin-top: 0.75rem; text-align: center;">First access goes to the list. No spam.
-        Unsubscribe anytime.</p>
+      <div class="obs-number">02</div>
+      <h2 class="h-lg">The organizations that ship fastest have<br>the most structure, <em>not the least.</em></h2>
+      <p class="body-text">It sounds counterintuitive. But the data backs it up &mdash; organizations with mature
+        governance frameworks scale AI faster and more profitably than those without. Structure doesn't slow things
+        down. The absence of it does.</p>
+      <p class="body-text" style="margin-top: 1rem;">The teams shipping fastest aren't moving fast and breaking things.
+        They're moving fast because the road is clear &mdash; destination defined, risks classified, approvals
+        automated, monitoring live.</p>
     </div>
   </section>
 
-  <!-- ═══════════ FOOTER ═══════════ -->
+  <!-- OBSERVATION 03 -->
+  <section class="observation">
+    <div class="wrap">
+      <div class="obs-number">03</div>
+      <h2 class="h-lg">The regulatory clock isn't approaching.<br><em>It's already running.</em></h2>
+      <p class="body-text">The EU AI Act enforcement begins August 2026. Fines reach &euro;35M or 7% of global revenue.
+        This isn't hypothetical regulation on a distant horizon &mdash; it's law, with deadlines, and it affects any
+        organization deploying AI that touches European citizens.</p>
+      <p class="body-text" style="margin-top: 1rem;">Organizations without a defined destination for their AI can't
+        demonstrate compliance &mdash; because they can't document where their AI is headed or how it's governed. No
+        destination, no compliance.</p>
+    </div>
+  </section>
+
+  <!-- TWO PATHS CTA -->
+  <section class="cta-section">
+    <div class="wrap-wide">
+      <h2 class="h-lg">If any of this sounds familiar,<br><em>start here.</em></h2>
+
+      <div class="paths">
+        <div class="path-card primary">
+          <p class="tag">Self-guided</p>
+          <p class="h-md">Start with Reflect.</p>
+          <p class="body-text-sm">An honest conversation with an AI that actually listens to what you're dealing with
+            and reflects back what you haven't seen yet. 5 minutes. No pitch.</p>
+          <a href="assessment.html" class="path-link">Start the Assessment &rarr;</a>
+        </div>
+        <div class="path-card">
+          <p class="tag">Human</p>
+          <p class="h-md">Talk to Gordon directly.</p>
+          <p class="body-text-sm">If you're past the point of needing another assessment and want to talk through what
+            you're actually dealing with &mdash; reach out.</p>
+          <a href="https://www.linkedin.com/in/gordonychan/" target="_blank" class="path-link">Connect on LinkedIn
+            &rarr;</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
   <footer>
     <div class="wrap">
-      <p class="footer-brand">Gordon Chan · Creative Precision</p>
+      <p class="footer-brand">Gordon Chan &middot; Creative Precision</p>
       <div class="footer-links">
         <a href="https://www.linkedin.com/in/gordonychan/" target="_blank">LinkedIn</a>
         <a href="assessment.html">Assessment</a>
-        <a href="perspective.html">The Perspective</a>
+        <a href="index.html">Home</a>
       </div>
-      <p class="footer-sig">"Stop automating the old. Start designing the new."</p>
+      <p class="footer-sig">&ldquo;Stop automating the old. Start designing the new.&rdquo;</p>
     </div>
   </footer>
 

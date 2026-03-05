@@ -56,6 +56,8 @@ nullclaw_data/update-check.json
 nullclaw_data/daemon_state.json
 nullclaw_data/agents/*/sessions/
 nullclaw_data/config.json.bak*
+nullclaw_data/workspace*/memory.db
+nullclaw_data/workspace*/.openclaw/
 **/.nullclaw/
 !nullclaw_data/config.json
 

@@ -1,0 +1,208 @@
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: nullclaw
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: tailscale-sa
+  namespace: nullclaw
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: tailscale-role
+  namespace: nullclaw
+rules:
+- apiGroups: [""]
+  resources: ["secrets"]
+  verbs: ["get", "create", "patch", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: tailscale-rb
+  namespace: nullclaw
+subjects:
+- kind: ServiceAccount
+  name: tailscale-sa
+  namespace: nullclaw
+roleRef:
+  kind: Role
+  name: tailscale-role
+  apiGroup: rbac.authorization.k8s.io
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: nullclaw
+  namespace: nullclaw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nullclaw
+  template:
+    metadata:
+      labels:
+        app: nullclaw
+    spec:
+      serviceAccountName: tailscale-sa
+      initContainers:
+      - name: copy-ts-bin
+        image: tailscale/tailscale:latest
+        command: ["sh", "-c", "cp /usr/local/bin/tailscale /shared/bin/tailscale"]
+        volumeMounts:
+        - name: shared-bin
+          mountPath: /shared/bin
+      - name: copy-docker-bin
+        image: docker:latest
+        command: ["sh", "-c", "cp /usr/local/bin/docker /shared/bin/docker"]
+        volumeMounts:
+        - name: shared-bin
+          mountPath: /shared/bin
+      - name: setup-mocks
+        image: alpine:latest
+        command: ['sh', '-c', "printf '#!/bin/sh\\nexit 0' > /shared/bin/systemctl && printf '#!/bin/sh\\nexit 0' > /shared/bin/loginctl && chmod +x /shared/bin/systemctl /shared/bin/loginctl"]
+        volumeMounts:
+        - name: shared-bin
+          mountPath: /shared/bin
+      containers:
+      - name: nullclaw
+        image: nullclaw:latest  # Note: Use nullclaw:root or similar if you need root privileges for DIND
+        imagePullPolicy: IfNotPresent
+        securityContext:
+          runAsUser: 0 # Using root so that access to docker sock works out of the box
+        command: ["sh", "-c", "echo 'waiting for tailscale socket...'; while [ ! -S /var/run/tailscale/tailscaled.sock ]; do sleep 1; done; echo 'sockets found, starting nullclaw'; /usr/local/bin/nullclaw gateway --port 3000 --host ::"]
+        ports:
+        - containerPort: 3000
+        env:
+        - name: GEMINI_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: GEMINI_API_KEY
+        - name: NVIDIA_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: NVIDIA_API_KEY
+        - name: OPENROUTER_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: OPENROUTER_API_KEY
+        - name: TELEGRAM_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: TELEGRAM_BOT_TOKEN
+        - name: NANO_BANANA_PRO_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: NANO_BANANA_PRO_API_KEY
+        - name: NOTION_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: NOTION_API_KEY
+        - name: SAG_API_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: SAG_API_KEY
+        - name: NODE_ENV
+          value: "production"
+        - name: PATH
+          value: "/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/shared/bin"
+        - name: TS_SOCKET
+          value: "/var/run/tailscale/tailscaled.sock"
+        - name: DOCKER_HOST
+          value: "tcp://localhost:2375"
+        - name: NULLCLAW_HOME
+          value: "/nullclaw-data"
+        volumeMounts:
+        - name: nullclaw-config
+          mountPath: /nullclaw-data
+        - name: nullclaw-workspace
+          mountPath: /nullclaw-data/workspace
+        - name: ts-socket
+          mountPath: /var/run/tailscale
+        - name: dind-socket
+          mountPath: /run
+        - name: shared-bin
+          mountPath: /shared/bin
+
+      - name: tailscale
+        image: tailscale/tailscale:latest
+        env:
+        - name: TS_AUTHKEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: TS_AUTHKEY
+        - name: TS_HOSTNAME
+          value: "nullclaw-kube"
+        - name: TS_USERSPACE
+          value: "true"
+        - name: TS_ACCEPT_DNS
+          value: "true"
+        - name: TS_STATE_DIR
+          value: /nullclaw-data/tailscale
+        - name: TS_STATEDIR
+          value: /nullclaw-data/tailscale
+        - name: TS_SOCKET
+          value: "/var/run/tailscale/tailscaled.sock"
+        volumeMounts:
+        - name: nullclaw-config
+          mountPath: /nullclaw-data
+        - name: ts-socket
+          mountPath: /var/run/tailscale
+
+      - name: dind
+        image: docker:dind
+        securityContext:
+          privileged: true
+        env:
+        - name: DOCKER_TLS_CERTDIR
+          value: ""
+        volumeMounts:
+        - name: dind-socket
+          mountPath: /run
+        - name: nullclaw-workspace
+          mountPath: /nullclaw-data/workspace
+        - name: docker-graph-storage
+          mountPath: /var/lib/docker
+
+      volumes:
+      - name: nullclaw-config
+        hostPath:
+          path: /Volumes/9_0rdon-ssd/9_0rdon/Projects/creative-precision/nullclaw_data
+          type: DirectoryOrCreate
+      - name: nullclaw-workspace
+        hostPath:
+          path: /Volumes/9_0rdon-ssd/9_0rdon/Projects/creative-precision/nullclaw_data/workspace
+          type: DirectoryOrCreate
+      - name: ts-socket
+        emptyDir: {}
+      - name: dind-socket
+        emptyDir: {}
+      - name: shared-bin
+        emptyDir: {}
+      - name: docker-graph-storage
+        emptyDir: {}
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: nullclaw
+  namespace: nullclaw
+spec:
+  type: LoadBalancer
+  selector:
+    app: nullclaw
+  ports:
+  - port: 3000
+    targetPort: 3000

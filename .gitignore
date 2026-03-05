@@ -38,22 +38,26 @@ examples/
 .lima/
 k8s/kubeconfig.yaml
 
-# OpenClaw
-openclaw_data/identity/
-openclaw_data/credentials/
-openclaw_data/devices/
-openclaw_data/memory/*.sqlite
-openclaw_data/logs/
-openclaw_data/tailscale/
-openclaw_data/docker/
-openclaw_data/sandbox/
-openclaw_data/sandboxes/
-openclaw_data/telegram/
-openclaw_data/update-check.json
-openclaw_data/agents/*/sessions/
-openclaw_data/openclaw.json.bak*
-**/.openclaw/
-!openclaw_data/openclaw.json
+openclaw_data/
+
+# NullClaw
+nullclaw_data/identity/
+nullclaw_data/credentials/
+nullclaw_data/devices/
+nullclaw_data/memory/*.sqlite
+nullclaw_data/logs/
+nullclaw_data/tailscale/
+nullclaw_data/docker/
+nullclaw_data/sandbox/
+nullclaw_data/sandboxes/
+nullclaw_data/telegram/
+nullclaw_data/cron/
+nullclaw_data/update-check.json
+nullclaw_data/daemon_state.json
+nullclaw_data/agents/*/sessions/
+nullclaw_data/config.json.bak*
+**/.nullclaw/
+!nullclaw_data/config.json
 
 # Logs & Coverage
 server/logs/

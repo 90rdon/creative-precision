@@ -5,7 +5,7 @@
 ### Simulation Engine
 Run the Node.js simulation script from the server directory. This script uses the Google GenAI SDK to spin up "Actor" prompts that talk directly to the Expert's "Prompt" architecture without needing a browser.
 ```bash
-cd server && npx ts-node src/api/openclaw/simulator.ts run --persona="CTO under pressure" --branching=true
+cd server && npx ts-node src/api/nullclaw/simulator.ts run --persona="CTO under pressure" --branching=true
 ```
 
 ### Supabase

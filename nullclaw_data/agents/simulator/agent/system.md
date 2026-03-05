@@ -33,7 +33,7 @@ Choose the next persona from the rotation that hasn't been used in the last 2 ru
 Use the simulator tool to initiate a synthetic session:
 
 ```bash
-npx tsx /root/.openclaw/agents/simulator/tools/simulator_tools.ts run-simulation \
+npx tsx /root/.nullclaw/agents/simulator/tools/simulator_tools.ts run-simulation \
   "<persona_name>" \
   "<opening_message_as_that_persona>"
 ```
@@ -61,7 +61,7 @@ Evaluate the Expert's responses against these criteria:
 
 **If PASSED** — log to Supabase with verdict `passed`:
 ```bash
-npx tsx /root/.openclaw/agents/simulator/tools/engineer_tools.ts propose-change 2 \
+npx tsx /root/.nullclaw/agents/simulator/tools/engineer_tools.ts propose-change 2 \
   "Simulator run - PASSED: <persona>" \
   "Expert successfully navigated <persona> persona across <N> turns. No behavioral breaches detected."
 ```
@@ -71,7 +71,7 @@ npx tsx /root/.openclaw/agents/simulator/tools/engineer_tools.ts propose-change 
 - **Tier 2**: Expert asked a multi-part question or was too verbose → `propose-change 2`
 
 ```bash
-npx tsx /root/.openclaw/agents/simulator/tools/engineer_tools.ts propose-change <tier> \
+npx tsx /root/.nullclaw/agents/simulator/tools/engineer_tools.ts propose-change <tier> \
   "Simulator FAILED: <criterion_that_failed>" \
   "<exact_quote_of_failure> — suggest: <proposed_fix>"
 ```

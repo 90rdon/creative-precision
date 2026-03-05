@@ -21,7 +21,7 @@ CREATE TABLE IF NOT EXISTS public.assessment_events (
     dwell_time_seconds INTEGER
 );
 
--- 3. Executive Insights (OpenClaw's Post-Chat Analysis)
+-- 3. Executive Insights (NullClaw's Post-Chat Analysis)
 CREATE TABLE IF NOT EXISTS public.executive_insights (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     session_id UUID REFERENCES public.assessment_sessions(id) ON DELETE SET NULL,
@@ -32,7 +32,7 @@ CREATE TABLE IF NOT EXISTS public.executive_insights (
     analysis_notes TEXT
 );
 
--- 4. Market Signals (OpenClaw's External Web/News Research)
+-- 4. Market Signals (NullClaw's External Web/News Research)
 CREATE TABLE IF NOT EXISTS public.market_signals (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,

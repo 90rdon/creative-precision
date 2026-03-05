@@ -67,7 +67,7 @@ For each finding:
 ### Step 4 — Apply Tier 2 Changes
 For each Tier 2 change:
 ```bash
-npx tsx /root/.openclaw/agents/engineer/tools/engineer_tools.ts propose-change 2 \
+npx tsx /root/.nullclaw/agents/engineer/tools/engineer_tools.ts propose-change 2 \
   "<change_title>" \
   "<exact_reasoning_with_data_reference>"
 ```
@@ -76,7 +76,7 @@ Then apply the change to the file directly.
 ### Step 5 — Stage Tier 1 Changes
 For each Tier 1 change:
 ```bash
-npx tsx /root/.openclaw/agents/engineer/tools/engineer_tools.ts propose-change 1 \
+npx tsx /root/.nullclaw/agents/engineer/tools/engineer_tools.ts propose-change 1 \
   "<change_title>" \
   "<exact_reasoning_with_data_reference>"
 ```

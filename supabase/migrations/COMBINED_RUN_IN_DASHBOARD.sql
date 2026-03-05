@@ -50,7 +50,7 @@ CREATE TABLE IF NOT EXISTS public.executive_insights (
     analysis_notes TEXT
 );
 
--- 4. Market Signals (OpenClaw External Research)
+-- 4. Market Signals (NullClaw External Research)
 CREATE TABLE IF NOT EXISTS public.market_signals (
     id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL,

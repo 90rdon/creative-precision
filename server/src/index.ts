@@ -65,9 +65,9 @@ app.get('/health', (req, res) => {
     res.status(200).json({ status: 'ok' });
 });
 
-// OpenClaw Expert Proxy
-import openclawProxy from './api/openclaw/proxy';
-app.use('/api/assessment', openclawProxy);
+// NullClaw Expert Proxy
+import nullclawProxy from './api/nullclaw/proxy';
+app.use('/api/assessment', nullclawProxy);
 
 // Socket auth
 io.use(socketAuthMiddleware);

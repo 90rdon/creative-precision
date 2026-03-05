@@ -1,8 +1,4 @@
 {
-  "meta": {
-    "lastTouchedVersion": "2026.3.2",
-    "lastTouchedAt": "2026-03-05T20:05:12.725Z"
-  },
   "agents": {
     "defaults": {
       "compaction": {
@@ -31,10 +27,8 @@
       "streaming": "partial"
     }
   },
-  "gateway": {
-    "auth": {
-      "mode": "token",
-      "token": "ba977b6cfa35cbb25c1ed1ddb5aee2a84fffd2aed9d8ac56"
-    }
+  "meta": {
+    "lastTouchedVersion": "2026.3.2",
+    "lastTouchedAt": "2026-03-05T20:05:12.683Z"
   }
 }

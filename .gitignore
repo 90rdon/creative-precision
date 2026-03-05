@@ -40,7 +40,7 @@ k8s/kubeconfig.yaml
 dump.rdb
 test-visibility.html
 
-openclaw_data/
+legacy_openclaw_data/
 
 # NullClaw
 nullclaw_data/identity/

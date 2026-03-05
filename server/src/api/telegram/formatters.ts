@@ -16,6 +16,6 @@ export class TelegramFormatter {
         const escapedId = this.escapeMarkdown(sessionId);
         return `🚨 *New VIP Assessment Started*\n\n` +
             `*Session ID:* \`${escapedId}\` \n` +
-            `*Status:* Active \\- OpenClaw Expert Mode`;
+            `*Status:* Active \\- NullClaw Expert Mode`;
     }
 }

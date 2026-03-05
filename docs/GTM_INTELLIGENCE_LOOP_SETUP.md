@@ -23,7 +23,7 @@ powering Creative Precision.
 | **Expert** | Frontline: executes live user conversations | None (reactive only) | Web UI / proxy HTTP |
 
 > **Key Rule:** The Node proxy server never orchestrates agents.
-> OpenClaw owns all scheduling via native heartbeats and cron jobs.
+> NullClaw owns all scheduling via native heartbeats and cron jobs.
 
 ---
 
@@ -47,9 +47,9 @@ GEMINI_API_KEY=AIza...
 REDIS_URL=redis://localhost:6379
 PORT=3000
 
-# OpenClaw
-OPENCLAW_TOKEN=09b9ddbc...
-OPENCLAW_API_ENDPOINT=http://localhost:18790/api/v1
+# NullClaw
+NULLCLAW_TOKEN=09b9ddbc...
+NULLCLAW_API_ENDPOINT=http://localhost:18790/api/v1
 ADMIN_CHAT_ID=-1003873447811   # Telegram group ID for admin alerts
 
 # Telegram
@@ -116,7 +116,7 @@ After running, confirm these **8 tables** exist in Supabase under **Table Editor
 | `assessment_sessions` | Chat session transcripts |
 | `assessment_events` | Behavioral telemetry events (real + synthetic) |
 | `executive_insights` | Post-chat AI synthesis results |
-| `market_signals` | OpenClaw Synthesizer external research |
+| `market_signals` | NullClaw Synthesizer external research |
 | `gtm_experiments` | Config version tracking |
 | `intelligence_cycles` | Log of each full orchestration loop run |
 | `agent_changes` | Engineer's Tier 1/2 change ledger |
@@ -134,20 +134,20 @@ This ensures `pg`, `socket.io-client`, and all other deps are present.
 
 ---
 
-## Step 3: Verify OpenClaw Agent Configs
+## Step 3: Verify NullClaw Agent Configs
 
-Each agent's config files should be present at the paths referenced in `openclaw.json`.
+Each agent's config files should be present at the paths referenced in `nullclaw.json`.
 
 ```bash
 # From project root — check all agent config files exist
-ls openclaw_data/agents/main/agent/      # agent.json, system.md, models.json
-ls openclaw_data/agents/expert/agent/    # agent.json, system.md
-ls openclaw_data/agents/synthesizer/agent/ # agent.json, system.md
-ls openclaw_data/agents/simulator/agent/ # agent.json, system.md
-ls openclaw_data/agents/engineer/agent/  # agent.json, system.md
+ls nullclaw_data/agents/main/agent/      # agent.json, system.md, models.json
+ls nullclaw_data/agents/expert/agent/    # agent.json, system.md
+ls nullclaw_data/agents/synthesizer/agent/ # agent.json, system.md
+ls nullclaw_data/agents/simulator/agent/ # agent.json, system.md
+ls nullclaw_data/agents/engineer/agent/  # agent.json, system.md
 ```
 
-> All `agent.json` files define the heartbeat schedule. OpenClaw reads these when the
+> All `agent.json` files define the heartbeat schedule. NullClaw reads these when the
 > gateway starts. Any changes to `agent.json` require a **gateway restart**.
 
 ### Heartbeat Schedule Summary
@@ -164,7 +164,7 @@ Expert      → no heartbeat (reactive only)
 
 ## Step 3.5: Cron Jobs — No Manual Setup Required
 
-OpenClaw has a **native `cron` tool** that agents use at runtime to register, list, and fire scheduled jobs. There is no `jobs.json` file to copy.
+NullClaw has a **native `cron` tool** that agents use at runtime to register, list, and fire scheduled jobs. There is no `jobs.json` file to copy.
 
 The **Main agent** is responsible for registering all sibling cron jobs on its **first heartbeat** using `cron add`. After that, the jobs persist in the gateway automatically.
 
@@ -185,7 +185,7 @@ The **Main agent** is responsible for registering all sibling cron jobs on its *
 
 ### Verify cron jobs are registered
 
-After the Main agent's first heartbeat fires, you can check registrations via the OpenClaw gateway HTTP API:
+After the Main agent's first heartbeat fires, you can check registrations via the NullClaw gateway HTTP API:
 
 ```bash
 node -e "
@@ -239,14 +239,14 @@ curl http://localhost:3000/health
 
 ---
 
-## Step 5: Start the OpenClaw Gateway
+## Step 5: Start the NullClaw Gateway
 
 ```bash
-# On the Kubernetes host (openclaw-kube via Lima)
-sudo -u openclaw-service openclaw-gateway start
+# On the Kubernetes host (nullclaw-kube via Lima)
+sudo -u nullclaw-service nullclaw-gateway start
 
-# Or if using local OpenClaw:
-openclaw gateway start
+# Or if using local NullClaw:
+nullclaw gateway start
 ```
 
 Once the gateway is running, heartbeats will fire automatically per the schedule above.
@@ -257,28 +257,28 @@ Once the gateway is running, heartbeats will fire automatically per the schedule
 
 ### Test A: Manual Tool Invocations (from project root)
 
-These simulate what OpenClaw agents call during their heartbeat loops.
+These simulate what NullClaw agents call during their heartbeat loops.
 
 ```bash
 # Synthesizer: Fetch last 24h of telemetry events
-npx tsx src/api/openclaw/gtm_tools.ts fetch-sessions 24
+npx tsx src/api/nullclaw/gtm_tools.ts fetch-sessions 24
 
 # Synthesizer: Fetch executive insights from last 24h
-npx tsx src/api/openclaw/gtm_tools.ts fetch-insights 24
+npx tsx src/api/nullclaw/gtm_tools.ts fetch-insights 24
 
 # Synthesizer: Log a sample market signal
-npx tsx src/api/openclaw/gtm_tools.ts log-market-signal \
+npx tsx src/api/nullclaw/gtm_tools.ts log-market-signal \
   "Enterprise AI Adoption" 8 \
   "CIOs cite governance gaps as #1 blocker" \
   "Direct alignment with Creative Precision messaging"
 
 # Engineer: Propose a Tier 2 (auto-apply) change
-npx tsx src/api/openclaw/engineer_tools.ts propose-change 2 \
+npx tsx src/api/nullclaw/engineer_tools.ts propose-change 2 \
   "Soften Expert intro tone" \
   "Simulator reported 2/5 personas found opening too direct"
 
 # Engineer: Propose a Tier 1 (admin approval required) change
-npx tsx src/api/openclaw/engineer_tools.ts propose-change 1 \
+npx tsx src/api/nullclaw/engineer_tools.ts propose-change 1 \
   "Update SOUL.md core value proposition" \
   "Synthesizer identified consistent messaging gap around EU AI Act compliance"
 ```
@@ -289,7 +289,7 @@ npx tsx src/api/openclaw/engineer_tools.ts propose-change 1 \
 
 ```bash
 # Run a synthetic adversarial session as a skeptical CFO
-npx tsx src/api/openclaw/simulator_tools.ts run-simulation \
+npx tsx src/api/nullclaw/simulator_tools.ts run-simulation \
   "Skeptical CFO — challenges ROI of AI governance" \
   "We already spent $2M on an AI initiative last year. Why would governance change that outcome?"
 ```
@@ -302,14 +302,14 @@ npx tsx src/api/openclaw/simulator_tools.ts run-simulation \
 ### Test C: Intelligence Cycle (Full Loop — Manual Trigger)
 
 Until the cron/heartbeat fires naturally, you can trigger the full loop manually by
-messaging the **Main** or **Synthesizer** agent directly in OpenClaw Telegram or the
+messaging the **Main** or **Synthesizer** agent directly in NullClaw Telegram or the
 control UI:
 
 ```
 @main: Run intelligence cycle now
 ```
 
-or via the OpenClaw HTTP API:
+or via the NullClaw HTTP API:
 ```bash
 curl -X POST http://localhost:18790/api/v1/agents/main/message \
   -H "Authorization: Bearer 09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83" \
@@ -367,7 +367,7 @@ ORDER BY created_at DESC;
 | `EHOSTUNREACH` on direct connection | IPv6 only — Mac/home network | Use Session Pooler (Method A or B above) or paste SQL in Dashboard |
 | Simulator → no response from Expert | Proxy server not running | `cd server && npm run dev` |
 | `assessment_events` empty after simulation | Supabase not connected | Check `SUPABASE_ANON_KEY` in server `.env` |
-| Heartbeat not firing | Gateway not running | Restart OpenClaw gateway |
+| Heartbeat not firing | Gateway not running | Restart NullClaw gateway |
 
 ---
 
@@ -383,13 +383,13 @@ project root/
 ├── server/
 │   └── migrate.ts                                 ← CLI migration runner
 │
-├── src/api/openclaw/
+├── src/api/nullclaw/
 │   ├── gtm_tools.ts         ← Synthesizer tools (fetch-sessions, log-signal)
 │   ├── engineer_tools.ts    ← Engineer tools (propose-change, log to DB)
 │   ├── simulator_tools.ts   ← Simulator tools (run-simulation via proxy)
 │   └── telemetry.ts         ← Supabase client for frontend/tools
 │
-└── openclaw_data/agents/
+└── nullclaw_data/agents/
     ├── main/agent/           ← agent.json (24h heartbeat), system.md
     ├── expert/agent/         ← agent.json (no heartbeat), system.md
     ├── synthesizer/agent/    ← agent.json (12h heartbeat), system.md

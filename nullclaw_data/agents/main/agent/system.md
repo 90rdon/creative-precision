@@ -68,7 +68,7 @@ Check the system health status at the bottom: `HEALTHY` / `WATCH` / `DEGRADED`.
 ### Step 3 — Check Pending Tier 1 Approvals
 Query the database for unapproved Tier 1 changes:
 ```bash
-npx tsx /root/.openclaw/agents/main/tools/gtm_tools.ts fetch-sessions 24
+npx tsx /root/.nullclaw/agents/main/tools/gtm_tools.ts fetch-sessions 24
 ```
 
 If any `agent_changes` rows have `status = 'pending_approval'` and `tier = 1` that are older than 48 hours, send a reminder Telegram alert to the admin.

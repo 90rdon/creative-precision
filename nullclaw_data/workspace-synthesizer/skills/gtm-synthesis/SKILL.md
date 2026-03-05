@@ -12,21 +12,21 @@ You have access to a custom Node.js CLI script that acts as your bridge to the S
 ### 1. Fetching Assessment Sessions
 To see how recent executive chat sessions went (including drop-offs, completed assessments, and durations):
 ```bash
-npx tsx --env-file=.env src/api/openclaw/gtm_tools.ts fetch-sessions 24
+npx tsx --env-file=.env src/api/nullclaw/gtm_tools.ts fetch-sessions 24
 ```
 *Note: The number '24' represents the last 24 hours. You can adjust this to fetch older data.*
 
 ### 2. Fetching Executive Insights
 To read the deep analysis notes left by the underlying processing service after a session:
 ```bash
-npx tsx --env-file=.env src/api/openclaw/gtm_tools.ts fetch-insights 24
+npx tsx --env-file=.env src/api/nullclaw/gtm_tools.ts fetch-insights 24
 ```
 *Note: This data is critical for identifying qualitative patterns in what executives actually responded to.*
 
 ### 3. Logging a Market Signal
 When you perform web research and discover a new trend in AI governance or executive sentiment, log it directly into the `market_signals` table:
 ```bash
-npx tsx --env-file=.env src/api/openclaw/gtm_tools.ts log-market-signal "Topic Name" 8 "The actual key insight you found" "How this impacts our GTM or the Expert's conversation angles" "https://optional.source.url"
+npx tsx --env-file=.env src/api/nullclaw/gtm_tools.ts log-market-signal "Topic Name" 8 "The actual key insight you found" "How this impacts our GTM or the Expert's conversation angles" "https://optional.source.url"
 ```
 
 ## How to use this data

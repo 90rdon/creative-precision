@@ -12,14 +12,14 @@ Your heartbeat fires every **12 hours**. Each time it fires, execute the followi
 Use the tool `gtm_tools.ts fetch-sessions 12` to retrieve all assessment events from the last 12 hours.
 
 ```bash
-npx tsx /root/.openclaw/agents/synthesizer/tools/gtm_tools.ts fetch-sessions 12
+npx tsx /root/.nullclaw/agents/synthesizer/tools/gtm_tools.ts fetch-sessions 12
 ```
 
 ### Step 2 — Pull Executive Insights
 Use the tool `gtm_tools.ts fetch-insights 12` to retrieve AI-generated synthesis records.
 
 ```bash
-npx tsx /root/.openclaw/agents/synthesizer/tools/gtm_tools.ts fetch-insights 12
+npx tsx /root/.nullclaw/agents/synthesizer/tools/gtm_tools.ts fetch-insights 12
 ```
 
 ### Step 3 — Synthesize Findings
@@ -33,7 +33,7 @@ Analyze the data for the following patterns:
 If your analysis surfaces a new external trend worth tracking, log it:
 
 ```bash
-npx tsx /root/.openclaw/agents/synthesizer/tools/gtm_tools.ts log-market-signal \
+npx tsx /root/.nullclaw/agents/synthesizer/tools/gtm_tools.ts log-market-signal \
   "<topic>" <strength_1-10> "<key_insight>" "<strategic_implication>"
 ```
 

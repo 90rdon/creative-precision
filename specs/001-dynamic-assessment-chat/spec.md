@@ -9,7 +9,7 @@
 
 ### Session 2026-03-01
 - Q: How should we track granular topic progression since we are making the chat fully dynamic? → A: Option A - The LLM uses a secondary tool (`update_current_topic()`) to notify the backend when it moves to a new topic for telemetry.
-- Architectural Pivot from User: The agent will be powered by OpenClaw to enable self-improvement and self-healing. The frontend chat will connect to a guarded backend proxy that communicates with an OpenClaw agent, using persona files (`SOUL.md`, `IDENTITY.md`) to define behavior. The system must include a README or instructions on how developers track telemetry and market signals to reintegrate into the self-improvement loop.
+- Architectural Pivot from User: The agent will be powered by NullClaw to enable self-improvement and self-healing. The frontend chat will connect to a guarded backend proxy that communicates with an NullClaw agent, using persona files (`SOUL.md`, `IDENTITY.md`) to define behavior. The system must include a README or instructions on how developers track telemetry and market signals to reintegrate into the self-improvement loop.
 
 ## User Scenarios & Testing *(mandatory)*
 
@@ -47,7 +47,7 @@ As an executive user, I want the AI to explicitly ask for my permission to end t
 
 ### User Story 3 - Codebase Configuration Management & Self-Improvement (Priority: P2)
 
-As a developer, I want to manage the chat's topics, intents, and persona explicitly through declarative files (`SOUL.md`, `IDENTITY.md`, config files) and connect to an OpenClaw agent via a guarded proxy, so that the AI can self-improve based on market signals and I can iterate rapidly.
+As a developer, I want to manage the chat's topics, intents, and persona explicitly through declarative files (`SOUL.md`, `IDENTITY.md`, config files) and connect to an NullClaw agent via a guarded proxy, so that the AI can self-improve based on market signals and I can iterate rapidly.
 
 **Why this priority**: Allows for clean separation of concerns, rapid iteration without UI tools, and sets up a powerful feedback loop for telemetry-driven agent self-improvement.
 
@@ -69,7 +69,7 @@ As a developer, I want to manage the chat's topics, intents, and persona explici
 
 ### Functional Requirements
 
-- **FR-001**: System MUST connect to an OpenClaw agent via a guarded backend proxy layer that manages the chat state and applies security guardrails.
+- **FR-001**: System MUST connect to an NullClaw agent via a guarded backend proxy layer that manages the chat state and applies security guardrails.
 - **FR-002**: System MUST allow the developer to modify the agent's behavior purely through codebase configuration files (e.g., `SOUL.md`, `IDENTITY.md`, and config arrays for topics/intents).
 - **FR-003**: System MUST NOT use explicit string keyword matching (e.g., "let me synthesize") to trigger the end of the conversation.
 - **FR-004**: System MUST utilize LLM Semantic Intent Detection (e.g., Function Calling / Tool Use) to determine when the user has agreed to synthesize the conversation.
@@ -82,7 +82,7 @@ As a developer, I want to manage the chat's topics, intents, and persona explici
 
 - **AssessmentConfig**: A structured object/files (including `SOUL.md`, `IDENTITY.md`) containing the persona, goals, and an array of `topics`.
 - **Topic**: An object representing a conversational stage, containing properties like `name`, `intent`/`goal`, and `priority`.
-- **GuardedProxy**: The backend routing layer that strictly validates inputs/outputs between the frontend and the OpenClaw agent.
+- **GuardedProxy**: The backend routing layer that strictly validates inputs/outputs between the frontend and the NullClaw agent.
 
 ## Success Criteria *(mandatory)*
 

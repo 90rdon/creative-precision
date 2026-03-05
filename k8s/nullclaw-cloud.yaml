@@ -88,7 +88,7 @@ spec:
           mountPath: /shared/bin
       containers:
       - name: nullclaw
-        image: ghcr.io/phioranex/openclaw-docker:latest # Replace with your cloud registry path
+        image: ghcr.io/phioranex/nullclaw-docker:latest # Replace with your cloud registry path
         imagePullPolicy: Always
         securityContext:
           runAsUser: 0

@@ -19,6 +19,7 @@ As a high-intent executive, I want to land on the website, start a free assessme
 
 1. **Given** a user initiates the AI assessment, **When** they send a message, **Then** the proxy server routes the message to the NullClaw Expert agent.
 2. **Given** the NullClaw agent processes the message, **When** it responds, **Then** the proxy server streams the generated response back to the web chat interface seamlessly.
+3. **Given** any message is sent or received, **When** the proxy processes the message, **Then** it asynchronously logs the message to a Supabase database for auditing.
 
 ---
 
@@ -47,16 +48,22 @@ As the Admin (9_0rdon), I want to receive a Telegram notification whenever an ex
 
 ### Functional Requirements
 
-- **FR-001**: Proxy server MUST establish a persistent connection between the `assessment.html` chat interface and a dedicated NullClaw Expert agent session.
-- **FR-002**: Proxy server MUST bi-directionally stream messages: forwarding user inputs to the NullClaw agent, and returning NullClaw responses back to the UI.
+- **FR-001**: Proxy server MUST establish communication with a dedicated NullClaw Expert agent session via the NullClaw Gateway API (default port 3000).
+- **FR-002**: Proxy server MUST forward user inputs to the NullClaw agent (e.g., via `POST /webhook` using a Bearer token) and return NullClaw responses back to the UI. Streaming should be used if supported, otherwise standard request-response buffering applies.
 - **FR-003**: System MUST trigger an asynchronous Telegram notification to the Admin channel upon assessment session initialization.
 - **FR-004**: System MUST maintain session persistence (Mapping Browser Session -> NullClaw Session ID) to allow for page reloads without losing the conversation context.
+- **FR-005**: System MUST log all chat interactions (both user inputs and agent responses) to a Supabase database for tracking and auditing purposes.
 
 ## Clarifications
 
 ### Session 2026-03-01
 - Q: Is there a "dumb" AI phase before a "smart" expert phase? → A: No. The user interacts exclusively with the NullClaw Expert agent from the very first message via the proxy. There is no "switch" or "handoff".
 - Q: What level of detail should be included in the Admin Telegram alert? → A: Context Summary Only. Telegram is strictly for Admin alerts, not for User interaction.
+
+### NullClaw Integration Details
+- **Gateway API**: NullClaw exposes a Gateway API on port 3000, requiring HTTP Bearer authentication. 
+- **Pairing**: `POST /pair` can be used to exchange a pairing code for a bearer token.
+- **Messaging**: Messages are sent to `POST /webhook` with payload `{"message": "..."}`, receiving `{"response": "..."}`.
 
 ### Key Entities
 

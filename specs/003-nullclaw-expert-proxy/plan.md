@@ -12,12 +12,12 @@ Connect AI assessment on the site pages directly to the NullClaw Expert agent vi
 ## Technical Context
 
 **Language/Version**: Node.js v22 (LTS), TypeScript 5.8
-**Primary Dependencies**: React (Frontend), Express/Fastify (Proxy), NullClaw HTTP API, Telegram Bot API
-**Storage**: In-Memory object or Redis mapping key-value
+**Primary Dependencies**: React (Frontend), Express/Fastify (Proxy), NullClaw HTTP API, Telegram Bot API, Supabase Client
+**Storage**: In-Memory object or Redis mapping key-value for sessions, Supabase (PostgreSQL) for chat history
 **Testing**: Vitest for unit tests of proxy routing logic
 **Target Platform**: Web (Vite) + Node (Backend)
 **Project Type**: Fullstack React app communicating with Proxy Backend coordinating external APIs
-**Performance Goals**: <500ms initial TTFB (Time To First Token) for chat streaming
+**Performance Goals**: <500ms initial TTFB (Time To First Token) for chat proxying
 **Constraints**: Stateless web frontend, completely session-dependent backend
 **Scale/Scope**: < 100 concurrent VIP users (V0.1 alpha launch)
 
@@ -27,7 +27,7 @@ Connect AI assessment on the site pages directly to the NullClaw Expert agent vi
 
 - **Authentic Partnership**: Addressed. Eliminates robotic transitions. The user lands straight into the smart Expert intelligence.
 - **Value Before Pitch**: Addressed. Delivers instant strategic insight without logging in.
-- **Dumb Frontend, Smart Prompt**: Addressed. The frontend simply plays SSE streams, all logic lives in the Agent prompt via the Proxy.
+- **Dumb Frontend, Smart Prompt**: Addressed. The frontend simply plays out HTTP responses, all logic lives in the Agent prompt via the Proxy.
 - **Continuous GTM Synthesis**: Telemetry tracking signals logic added via the background Telegram alerting Admin path.
 
 ## Project Structure
@@ -67,3 +67,4 @@ src/
 | Violation | Why Needed | Simpler Alternative Rejected Because |
 |-----------|------------|-------------------------------------|
 | In-Memory Session Storage | We need rapid prototyping. PostgreSQL setup delay is too high right now | Storing raw thread IDs on the client side is insecure. Simple memory map string-to-string handles V0.1 loads perfectly. |
+| Supabase Dependency | Need permanent storage for tracking and audit. | File-based logging is too difficult to query and dashboard later. |

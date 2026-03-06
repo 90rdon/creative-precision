@@ -24,3 +24,15 @@ The data structure constructed and fired off asynchronously when a new `Assessme
 | `timestamp` | `datetime` | When the session was initialized | Yes |
 | `source` | `string` | E.g., "Web Assessment v2" | Yes |
 | `status` | `string` | E.g., "Expert Session Started" | Yes |
+
+## 3. ChatMessage (Supabase PostgreSQL)
+
+Persisted historical record of all chat interactions between users and the NullClaw Expert Agent.
+
+| Field | Type | Description | Required | Constraints |
+| :--- | :--- | :--- | :--- | :--- |
+| `id` | `uuid` | Unique identifier for the message | Yes | Primary Key |
+| `session_id` | `string` | The `browserSessionId` linking this message to a specific visitor | Yes | Indexed |
+| `role` | `string` | "user" or "assistant" | Yes | |
+| `content` | `text` | The text content of the message | Yes | |
+| `created_at` | `timestamp` | When the message was processed by the proxy | Yes | Default: now() |

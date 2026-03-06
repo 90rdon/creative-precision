@@ -32,6 +32,7 @@ description: "Task list for NullClaw Expert Assessment Proxy"
 - [x] T002 Implement in-memory session mapping manager (browserSessionId -> openClawThreadId) in `server/src/api/nullclaw/sessionManager.ts`
 - [x] T003 [P] Implement basic Telegram notification sender in `server/src/api/telegram/bot.ts`
 - [x] T004 Build generic NullClaw HTTP API client wrapper in `server/src/api/nullclaw/client.ts`
+- [x] T015 [P] Implement Supabase database client wrapper in `server/src/api/supabase/client.ts`
 
 **Checkpoint**: Foundation ready - user story implementation can now begin
 
@@ -45,13 +46,14 @@ description: "Task list for NullClaw Expert Assessment Proxy"
 
 ### Implementation for User Story 1
 
-- [x] T005 [US1] Implement `POST /api/assessment/init` endpoint mapping browser session to an NullClaw thread in `server/src/api/nullclaw/proxy.ts`
-- [x] T006 [US1] Implement `POST /api/assessment/message` endpoint forwarding user message to NullClaw in `server/src/api/nullclaw/proxy.ts`
-- [x] T007 [US1] Add SSE / Fetch streaming response logic to `POST /api/assessment/message` inside `server/src/api/nullclaw/proxy.ts`
+- [x] T005 [US1] Implement `POST /api/assessment/init` endpoint maping browser session and authenticating with NullClaw (`/pair`) in `server/src/api/nullclaw/proxy.ts`
+- [x] T006 [US1] Implement `POST /api/assessment/message` endpoint forwarding user message to NullClaw via `/webhook` in `server/src/api/nullclaw/proxy.ts`
+- [x] T007 [US1] Add standard HTTP JSON response logic to `POST /api/assessment/message` inside `server/src/api/nullclaw/proxy.ts`
+- [x] T016 [US1] Add asynchronous Supabase query to `POST /api/assessment/message` to log the user input and assistant response into the `ChatMessage` table
 - [x] T008 [P] [US1] Refactor `src/components/chat/ChatInterface.tsx` (Note: in `src/components/ChatInterface.tsx`) to handle `localStorage` session persistence (`browserSessionId`)
-- [x] T009 [US1] Update `src/components/chat/ChatInterface.tsx` (Note: in `src/components/ChatInterface.tsx`) to utilize Fetch API with streaming responses instead of generic SDK methods
+- [x] T009 [US1] Update `src/components/chat/ChatInterface.tsx` (Note: in `src/components/ChatInterface.tsx`) to utilize Fetch API for standard REST requests to the proxy instead of generic SDK methods
 
-**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. Streaming chat should work.
+**Checkpoint**: At this point, User Story 1 should be fully functional and testable independently. Chat proxying should work and messages should be logged to Supabase.
 
 ---
 

@@ -10,3 +10,7 @@ build/
 .vscode/
 .idea/
 .DS_Store
+nullclaw_data/docker/
+nullclaw_data/workspace/
+legacy_openclaw_data/
+*.log

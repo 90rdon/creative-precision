@@ -61,9 +61,11 @@ spec:
         app: nullclaw
     spec:
       serviceAccountName: tailscale-sa
+      imagePullSecrets:
+      - name: gcr-pull-secret
       initContainers:
       - name: initial-seed
-        image: nullclaw:latest # Or your cloud image
+        image: gcr.io/my-first-rag-486720/nullclaw:latest # Or your cloud image
         command: ["sh", "-c", "if [ ! -f /nullclaw-data/config.json ]; then echo 'Seeding cloud volume from bundled local data...'; cp -a /nullclaw-data-seed/. /nullclaw-data/; fi"]
         volumeMounts:
         - name: nullclaw-data
@@ -88,7 +90,7 @@ spec:
           mountPath: /shared/bin
       containers:
       - name: nullclaw
-        image: ghcr.io/phioranex/nullclaw-docker:latest # Replace with your cloud registry path
+        image: gcr.io/my-first-rag-486720/nullclaw:latest # Just updated to the new image
         imagePullPolicy: Always
         securityContext:
           runAsUser: 0
@@ -131,7 +133,7 @@ spec:
         - name: TS_AUTHKEY
           valueFrom:
             secretKeyRef:
-              name: tailscale-auth
+              name: nullclaw-secrets
               key: TS_AUTHKEY
         - name: TS_HOSTNAME
           value: "nullclaw-cloud"
@@ -139,6 +141,8 @@ spec:
           value: "true"
         - name: TS_STATE_DIR
           value: /nullclaw-data/tailscale
+        - name: TS_SOCKET
+          value: /var/run/tailscale/tailscaled.sock
         volumeMounts:
         - name: nullclaw-data
           mountPath: /nullclaw-data

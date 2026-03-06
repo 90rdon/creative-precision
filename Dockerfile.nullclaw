@@ -4,9 +4,9 @@
 FROM --platform=$BUILDPLATFORM alpine:3.23 AS builder
 RUN apk add --no-cache zig musl-dev
 WORKDIR /app
-COPY build.zig build.zig.zon ./
-COPY src/ src/
-COPY vendor/sqlite3/ vendor/sqlite3/
+COPY --from=nullclaw_src build.zig build.zig.zon ./
+COPY --from=nullclaw_src src/ src/
+COPY --from=nullclaw_src vendor/sqlite3/ vendor/sqlite3/
 
 ARG TARGETARCH
 RUN --mount=type=cache,target=/root/.cache/zig \
@@ -30,7 +30,7 @@ RUN --mount=type=cache,target=/root/.cache/zig \
 # ── Stage 2: Config Prep ─────────────────────────────────────
 FROM busybox:1.37 AS config
 RUN mkdir -p /nullclaw-data/.nullclaw /nullclaw-data/workspace
-RUN echo '{"api_key":"","default_provider":"openrouter","default_model":"anthropic/claude-sonnet-4","default_temperature":0.7,"gateway":{"port":3000,"host":"::","allow_public_bind":true}}' > /nullclaw-data/.nullclaw/config.json
+RUN echo '{"api_key":"","default_provider":"openrouter","default_model":"openrouter/qwen/qwen3.5-plus-02-15","default_temperature":0.7,"gateway":{"port":3000,"host":"::","allow_public_bind":true}}' > /nullclaw-data/.nullclaw/config.json
 RUN chown -R 65534:65534 /nullclaw-data
 
 # ── Stage 3: Runtime Base ─────────────────────────────────────

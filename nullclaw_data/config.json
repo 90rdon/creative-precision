@@ -67,6 +67,11 @@
             "contextWindow": 131072
           },
           {
+            "id": "qwen/qwen3.5-plus-02-15",
+            "name": "Qwen 3.5 Plus",
+            "contextWindow": 131072
+          },
+          {
             "id": "z-ai/glm-4.5-air:free",
             "name": "GLM 4.5 Air (Free)",
             "reasoning": true,
@@ -79,7 +84,7 @@
   "agents": {
     "defaults": {
       "model": {
-        "primary": "nvidia/moonshotai/kimi-k2.5",
+        "primary": "openrouter/qwen/qwen3.5-plus-02-15",
         "fallbacks": [
           "openrouter/meta-llama/llama-3.3-70b-instruct:free",
           "openrouter/z-ai/glm-4.5-air:free",
@@ -88,6 +93,9 @@
         ]
       },
       "models": {
+        "openrouter/qwen/qwen3.5-plus-02-15": {
+          "alias": "qwen3.5-plus"
+        },
         "nvidia/moonshotai/kimi-k2.5": {
           "alias": "kimi-k2.5"
         },
@@ -215,7 +223,7 @@
     },
     "auth": {
       "mode": "token",
-      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83",
+      "token": "${NULLCLAW_TOKEN}",
       "allowTailscale": true
     },
     "trustedProxies": [

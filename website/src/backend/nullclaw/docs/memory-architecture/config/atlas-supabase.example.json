@@ -1,0 +1,23 @@
+{
+  "memory": {
+    "profile": "centralized",
+    "backend": "supabase",
+    "database": {
+      "host": "db.YOUR-PROJECT-REF.supabase.co",
+      "port": 5432,
+      "name": "postgres",
+      "user": "postgres",
+      "password": "YOUR-DB-PASSWORD",
+      "ssl": true,
+      "path": "postgresql://postgres:YOUR-DB-PASSWORD@db.YOUR-PROJECT-REF.supabase.co:5432/postgres?sslmode=require"
+    },
+    "vector_db": {
+      "url": "https://YOUR-PROJECT-REF.supabase.co",
+      "api_key": "",
+      "embedding_model": "nomic-embed-text-v1.5:free",
+      "dimensions": 1536
+    },
+    "auto_save": true,
+    "citations": "auto"
+  }
+}

@@ -1,0 +1,5 @@
+# Runtime data directories
+data/
+
+# Activity tracking
+.last_activity

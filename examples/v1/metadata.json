@@ -1,7 +1,0 @@
-{
-  "name": "Reflect - Executive Assessment",
-  "description": "A sophisticated AI thought partner for executive self-reflection and strategic assessment, inspired by the Cohere aesthetic.",
-  "requestFramePermissions": [
-    "microphone"
-  ]
-}

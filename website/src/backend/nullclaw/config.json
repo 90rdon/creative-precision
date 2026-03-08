@@ -13,6 +13,155 @@
     "log_message_payloads": true,
     "log_tool_calls": true
   },
+  "memory": {
+    "profile": "local_keyword",
+    "backend": "hybrid",
+    "embedding_provider": "openai",
+    "auto_save": true,
+    "citations": "auto",
+    "search": {
+      "enabled": true,
+      "provider": "openai",
+      "baseUrl": "https://openrouter.ai/api/v1",
+      "apiKey": "${OPENROUTER_API_KEY}",
+      "model": "openai/text-embedding-3-small",
+      "dimensions": 1536,
+      "fallback_provider": "none",
+      "store": {
+        "kind": "auto",
+        "sidecar_path": "",
+        "qdrant_url": "",
+        "qdrant_apiKey": "",
+        "qdrant_collection": "nullclaw_memories",
+        "pgvector_table": "memory_embeddings"
+      },
+      "chunking": {
+        "max_tokens": 512,
+        "overlap": 64
+      },
+      "sync": {
+        "mode": "best_effort",
+        "embed_timeout_ms": 15000,
+        "vector_timeout_ms": 5000,
+        "embed_max_retries": 2,
+        "vector_max_retries": 2
+      },
+      "query": {
+        "max_results": 6,
+        "min_score": 0,
+        "merge_strategy": "rrf",
+        "rrf_k": 60,
+        "hybrid": {
+          "enabled": true,
+          "vector_weight": 0.7,
+          "text_weight": 0.3,
+          "candidate_multiplier": 4,
+          "mmr": {
+            "enabled": true,
+            "lambda": 0.7
+          },
+          "temporal_decay": {
+            "enabled": true,
+            "half_life_days": 30
+          }
+        }
+      },
+      "cache": {
+        "enabled": true,
+        "max_entries": 10000
+      }
+    },
+    "qmd": {
+      "enabled": false,
+      "command": "qmd",
+      "search_mode": "search",
+      "include_default_memory": true,
+      "mcporter": {
+        "enabled": false,
+        "server_name": "qmd",
+        "start_daemon": true
+      },
+      "paths": [],
+      "sessions": {
+        "enabled": false,
+        "export_dir": "",
+        "retention_days": 30
+      },
+      "update": {
+        "interval_ms": 300000,
+        "debounce_ms": 15000,
+        "on_boot": true,
+        "wait_for_boot_sync": false,
+        "embed_interval_ms": 3600000,
+        "command_timeout_ms": 30000,
+        "update_timeout_ms": 120000,
+        "embed_timeout_ms": 120000
+      },
+      "limits": {
+        "max_results": 6,
+        "max_snippet_chars": 700,
+        "max_injected_chars": 4000,
+        "timeout_ms": 4000
+      }
+    },
+    "lifecycle": {
+      "hygiene_enabled": true,
+      "archive_after_days": 7,
+      "purge_after_days": 30,
+      "conversation_retention_days": 30,
+      "snapshot_enabled": true,
+      "snapshot_on_hygiene": true,
+      "auto_hydrate": true
+    },
+    "response_cache": {
+      "enabled": true,
+      "ttl_minutes": 60,
+      "max_entries": 5000
+    },
+    "reliability": {
+      "rollout_mode": "off",
+      "circuit_breaker_failures": 5,
+      "circuit_breaker_cooldown_ms": 30000,
+      "shadow_hybrid_percent": 0,
+      "canary_hybrid_percent": 0,
+      "fallback_policy": "degrade"
+    },
+    "postgres": {
+      "url": "${DATABASE_URL}",
+      "schema": "public",
+      "table": "memories",
+      "connect_timeout_secs": 30
+    },
+    "redis": {
+      "host": "127.0.0.1",
+      "port": 6379,
+      "password": "",
+      "db_index": 0,
+      "key_prefix": "nullclaw",
+      "ttl_seconds": 0
+    },
+    "api": {
+      "url": "",
+      "apiKey": "",
+      "timeout_ms": 10000,
+      "namespace": ""
+    },
+    "retrieval_stages": {
+      "query_expansion_enabled": true,
+      "adaptive_retrieval_enabled": false,
+      "adaptive_keyword_max_tokens": 3,
+      "adaptive_vector_min_tokens": 6,
+      "llm_reranker_enabled": true,
+      "llm_reranker_max_candidates": 10,
+      "llm_reranker_timeout_ms": 5000
+    },
+    "summarizer": {
+      "enabled": true,
+      "window_size_tokens": 4000,
+      "summary_max_tokens": 500,
+      "auto_extract_semantic": true
+    }
+  },
   "tools": {
     "allow": [
       "file_read",

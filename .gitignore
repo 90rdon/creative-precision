@@ -23,16 +23,16 @@ Temporary Items
 .apdisk
 
 # Node
-node_modules/
+**/node_modules/
 npm-debug.log
 yarn-error.log
 
 # Build files
-dist/
-build/
+**/dist/
+**/build/
 .env
 
-examples/
+**/examples/
 
 # Kubernetes
 .lima/

@@ -30,7 +30,7 @@ echo "LOCAL_NULLCLAW_API_ENDPOINT=http://localhost:${MOCK_PORT}" >> .env
 # Start mock gateway in background
 echo ""
 echo -e "${GREEN}Starting Mock NullClaw Gateway on port ${MOCK_PORT}...${NC}"
-npx ts-node server/src/api/nullclaw/mock-gateway.ts &
+npx ts-node website/src/backend/proxy-server/src/api/nullclaw/mock-gateway.ts &
 MOCK_PID=$!
 sleep 2
 

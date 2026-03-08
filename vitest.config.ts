@@ -7,12 +7,12 @@ export default defineConfig({
     test: {
         globals: true,
         environment: 'jsdom',
-        setupFiles: './src/test/setup.ts',
+        setupFiles: './website/src/frontend/test/setup.ts',
         coverage: {
             provider: 'v8',
             reporter: ['text', 'json', 'html'],
-            include: ['src/**/*.{ts,tsx}'],
-            exclude: ['src/**/*.test.{ts,tsx}', 'src/main.tsx', 'src/vite-env.d.ts', 'src/types.ts', 'src/test/**/*']
+            include: ['website/src/**/*.{ts,tsx}'],
+            exclude: ['website/src/**/*.test.{ts,tsx}', 'website/src/main.tsx', 'website/src/vite-env.d.ts', 'website/src/types.ts', 'website/src/test/**/*']
         }
     }
 })

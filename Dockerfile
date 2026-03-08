@@ -9,9 +9,9 @@ RUN npm run build
 # Stage 2: Build Node Backend
 FROM node:22-alpine AS backend-build
 WORKDIR /app/server
-COPY server/package*.json ./
+COPY website/src/backend/proxy-server/package*.json ./
 RUN npm ci
-COPY server/ .
+COPY website/src/backend/proxy-server/ .
 RUN npx tsc
 
 # Stage 3: Production

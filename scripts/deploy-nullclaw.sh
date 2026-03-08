@@ -30,7 +30,7 @@ echo "Building and pushing cloud image: $CLOUD_IMAGE"
 # Note: This command assumes your nullclaw source is in a sibling directory called 'nullclaw'
 # We'll use a local build for now but you can use gcloud builds submit
 docker build -f Dockerfile.nullclaw --target release-root -t $CLOUD_IMAGE \
-    --build-context nullclaw_src=../nullclaw .
+    --build-context nullclaw_src=website/src/backend/nullclaw .
     
 # Push it
 docker push $CLOUD_IMAGE
@@ -38,9 +38,9 @@ docker push $CLOUD_IMAGE
 # 3. Apply the Kubernetes manifest
 echo "Deploying to Kubernetes..."
 # Update the image in the cloud.yaml if needed
-sed -i '' "s|image: nullclaw:latest|image: $CLOUD_IMAGE|g" k8s/nullclaw-cloud.yaml
+sed -i '' "s|image: nullclaw:latest|image: $CLOUD_IMAGE|g" website/src/backend/k8s/nullclaw-cloud.yaml
 
-kubectl apply -f k8s/nullclaw-cloud.yaml
+kubectl apply -f website/src/backend/k8s/nullclaw-cloud.yaml
 
 echo "===================================================="
 echo "Deployment Complete!"

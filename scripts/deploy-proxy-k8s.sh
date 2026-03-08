@@ -26,9 +26,9 @@ docker push $CLOUD_IMAGE
 # 3. Apply the Kubernetes manifest
 echo "Deploying Proxy to Kubernetes..."
 # Update the image in the proxy.yaml
-sed -i '' "s|image: .*expert-proxy:.*|image: $CLOUD_IMAGE|g" k8s/proxy.yaml
+sed -i '' "s|image: .*expert-proxy:.*|image: $CLOUD_IMAGE|g" website/src/backend/k8s/proxy.yaml
 
-kubectl apply -f k8s/proxy.yaml
+kubectl apply -f website/src/backend/k8s/proxy.yaml
 
 echo "===================================================="
 echo "Proxy Deployment Complete!"

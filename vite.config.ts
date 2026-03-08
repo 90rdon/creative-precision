@@ -26,7 +26,7 @@ export default defineConfig(({ mode }) => {
     },
     build: {
       rollupOptions: {
-        input: 'src/index.tsx',
+        input: 'website/src/frontend/index.tsx',
         output: {
           entryFileNames: 'assets/app.js',
           assetFileNames: 'assets/[name].[ext]'

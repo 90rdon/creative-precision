@@ -1,0 +1,55 @@
+REFLECT: Most AI conversations start with what you're building. I'd rather start with what you're hoping it does. What's the biggest thing you're hoping AI will do for your organization?
+EXECUTIVE: We need to automate clinical documentation workflows so our care teams can spend more time with patients instead of paperwork. We also want predictive analytics for patient outcomes but that feels further out.
+REFLECT: There's something important in how you framed that — the automation isn't the goal. It's the *time back*. The paperwork is stealing something that matters: presence with patients.
+
+And I notice you already know which thing matters more right now. The predictive analytics can wait. The documentation burden is happening *today*.
+
+So let me ask: when you imagine this working — when the documentation piece is actually solved — what changes for your care teams that isn't changing now?
+EXECUTIVE: Honestly, it's frustrating. We have two pilots that showed promise in testing but neither made it to production. The clinical team loved the demo but IT raised security concerns, compliance wanted a review, and now both projects are in limbo. Meanwhile the CEO keeps asking when we're going to 'scale AI.'
+REFLECT: So there's a gap between what works in the demo and what actually reaches the people who need it. The clinical team saw value. IT and compliance raised legitimate concerns. And now nothing moves.
+
+Here's what I'm noticing: you've got three different groups — clinical, IT, compliance — each with their own criteria for "ready." The pilot satisfied one group. It didn't satisfy the others. And there's no clear path for how a project gets from "clinically validated" to "organizationally approved."
+
+The CEO is asking about scale. But scale requires a repeatable process. And it sounds like each initiative is figuring out the governance piece from scratch.
+
+Curious: when IT raised security concerns and compliance wanted a review — were those conversations happening in a structured way? Or did each team apply their own lens, on their own timeline, with no shared framework for what "done" looks like?
+EXECUTIVE: There's no clear process. The data science team builds something, then tries to get IT to deploy it, then compliance wants to review it, then legal gets involved. Every project feels like the first time. There's no playbook.
+REFLECT: Every project feels like the first time. That's the structural reality you're describing.
+
+The data science team builds. IT deploys. Compliance reviews. Legal weighs in. But there's no shared framework that defines what needs to happen, in what order, with what criteria for moving forward. So each initiative reinvents the wheel — and hits the same walls.
+
+The pilots proved the technology works. They didn't prove the *organization* can absorb it.
+
+Here's what I'm wondering: the care teams who were excited about the demos — the ones who actually saw this helping them spend more time with patients — what's their experience been like watching these projects stall? Are they still engaged? Or have they started to quietly assume "this is just how things work here"?
+EXECUTIVE: The data science team is excited. The clinical staff is skeptical — they've been promised 'transformative technology' before and it usually means more work, not less. A few senior clinicians are openly hostile. And middle management is quiet, which worries me more than the resistance.
+REFLECT: The excited data science team. The skeptical clinicians. The hostile senior leaders. And the quiet middle.
+
+You're right to be more worried about the silence than the resistance. Resistance is engagement — even if it's negative. Someone who's hostile is still in the conversation. They care enough to push back.
+
+But silence? Silence is what happens when people have learned that initiatives come and go, nothing really changes, and the safest move is to wait it out. They've seen "transformative technology" before. They've watched pilots stall. They're not resisting — they've just stopped believing.
+
+The quiet middle is often the most important signal. What do you think their silence means?
+EXECUTIVE: I don't have a good answer. The pilots showed technical promise — accuracy metrics looked great. But I can't draw a line from those metrics to the $3M we spent or to patient outcomes. The board doesn't care about F1 scores. They care about cost per patient encounter and clinician retention.
+REFLECT: So the pilots worked technically. The accuracy is there. But you can't connect that to what the board actually measures — cost, retention, outcomes.
+
+The F1 score proves the model works. It doesn't prove the *investment* works.
+
+Here's what I'm hearing: the value might be real, but it's invisible in the language your board speaks. You've got technical validation. You don't have business validation. And without that translation layer, every conversation about "scaling AI" becomes a conversation about faith — "trust us, this will pay off" — which is a hard sell after $3M and two stalled pilots.
+
+The board isn't asking "does the technology work?" They're asking "is our AI investment working?" And right now, you don't have an answer that lands in their world.
+
+If you had a way to make the value visible — to draw that line from the technology to cost per encounter, to clinician time back, to retention — what would change about how these conversations happen?
+EXECUTIVE: A clear, repeatable process for getting from 'this AI thing works in testing' to 'this AI thing is live and delivering value in production.' Something that doesn't require reinventing the wheel every time. With clear criteria so compliance and IT know what to look for, and clinical leadership feels confident it's been properly vetted.
+REFLECT: You just named it. Exactly.
+
+A repeatable process. Not a one-off. Not "figure it out as we go." A path that exists *before* the first pilot starts — so when IT, compliance, and legal get involved, they're not discovering the project for the first time. They're applying criteria that were clear from day one.
+
+The pilots proved the technology. What you're describing is the *organizational* capability to absorb it — a framework that channels AI from ideation to realization without losing momentum at every handoff.
+
+Right now, each initiative is building two things: the AI solution *and* the process for deploying it. That's why everything stalls. You're asking the data science team to be technologists *and* governance architects *and* change managers. No wonder nothing reaches production.
+
+You've got the technical piece figured out. The gap isn't capability — it's structure.
+
+---
+
+Before I write this up: are you still sitting with anything from what we talked through? Or are you ready for me to synthesize this into something you can take to your next leadership conversation?

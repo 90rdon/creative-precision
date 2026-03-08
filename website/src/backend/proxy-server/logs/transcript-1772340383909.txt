@@ -1,0 +1,36 @@
+REFLECT: Most AI conversations start with what you're building. I'd rather start with what you're hoping it does. What's the biggest thing you're hoping AI will do for your organization?
+EXECUTIVE: We need to automate clinical documentation workflows so our care teams can spend more time with patients instead of paperwork. We also want predictive analytics for patient outcomes but that feels further out.
+REFLECT: ItIt sounds like you're aiming to free up your care teams to focus on what matters sounds like you're aiming to give your care teams the gift of time, letting most—patient interaction—by streamlining documentation. That's a worthy goal. How them focus on patients instead of being buried in documentation. That's a vision would you describe the gap between that vision and where things stand today with clinical documentation?
+ many organizations share.
+
+How would you describe the gap between that vision and where things stand today? What are the main roadblocks preventing your teams from achieving that level of automation and predictive insight?
+
+EXECUTIVE: Honestly, it's frustrating. We have two pilots that showed promise in testing but neither made it to production. The clinical team loved the demo but IT raised security concerns, compliance wanted a review, and now both projects are in limbo. Meanwhile the CEO keeps asking when we're going to 'scale AI.'
+REFLECT: That's aIt sounds like you familiar story. Promising pilots stuck in limbo, while the pressure to "scale AI" keeps're caught between the promise of AI and the practical realities of implementation. You've building. It sounds like there's a disconnect between the enthusiasm at the pilot stage got promising pilots that are running into organizational roadblocks, and executive pressure to scale.
+
+When your and the realities of IT, compliance, and executive expectations.
+
+When your organization tries to move an AI initiative from experiment to production — where does it typically get stuck? What part of the process seems to consistently create bottlenecks or roadblocks?
+ organization tries to move an AI initiative from experiment to production — where does it typically get stuck? What are the common points of friction or bottlenecks that prevent successful deployment?
+
+EXECUTIVE: There's no clear process. The data science team builds something, then tries to get IT to deploy it, then compliance wants to review it, then legal gets involved. Every project feels like the first time. There's no playbook.
+REFLECT: SoSo it sounds like the absence of a standardized, cross-functional process is the core it sounds like the problem isn't the AI itself, but the lack of a bottleneck. Each AI project becomes a unique case, requiring ad-hoc approvals and standardized, cross-functional process for bringing AI solutions to life. Each project becomes creating delays.
+
+How is your workforce responding to AI? Where are you seeing energy, and where are you seeing resistance? Are there specific groups or individuals who a unique challenge, navigating IT, compliance, and legal without a clear playbook.
+
+How is your workforce responding to AI? Where are you seeing excitement, and where are are particularly enthusiastic or hesitant about adopting these new technologies?
+I hear you. It sounds like the absence of a standardized, cross-functional process is the core you seeing resistance or hesitancy?
+It sounds like the absence of a standardized process is the core challenge. The lack of a playbook and clear roles is making bottleneck. There's no playbook, so each AI project becomes a unique case, requiring ad-hoc approvals and creating delays.
+
+How is your workforce responding to AI? Where are you seeing energy, and where are you seeing resistance? How are your people experiencing this push for AI adoption?
+ each project feel like a one-off.
+
+How is your workforce responding to AI? Where are you seeing energy and excitement, and where are you seeing resistance or hesitancy? What are the conversations happening on the ground floor?
+
+EXECUTIVE: The data science team is excited. The clinical staff is skeptical — they've been promised 'transformative technology' before and it usually means more work, not less. A few senior clinicians are openly hostile. And middle management is quiet, which worries me more than the resistance.
+REFLECT: It sounds like you have enthusiasm in pockets, but also a layer of skepticism and aIt sounds like you've got a range of reactions: enthusiasm from the data scientists silent majority. The vocal resisters are concerning, but that quiet middle management might, skepticism from the clinical staff who've seen promises broken, open hostility from some be the real indicator of deeper uncertainty — or a 'wait and see' approach. They may be waiting for real proof of commitment before they fully buy in.
+
+Thank senior clinicians, and a concerning silence from middle management. That silence can be deafening. It often masks uncertainty and a "wait and see" attitude.
+
+Thank you for being so candid. Let me synthesize what you've shared — I think there's a pattern worth examining.
+ you for being so candid. Let me synthesize what you've shared — I think there's a pattern worth examining.

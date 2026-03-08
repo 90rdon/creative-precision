@@ -1,0 +1,30 @@
+REFLECT: Most AI conversations start with what you're building. I'd rather start with what you're hoping it does. What's the biggest thing you're hoping AI will do for your organization?
+EXECUTIVE: We need to automate clinical documentation workflows so our care teams can spend more time with patients instead of paperwork. We also want predictive analytics for patient outcomes but that feels further out.
+REFLECT: ItIt sounds like you're aiming to free up your care teams to focus on what sounds like you're aiming to free up your care teams to focus on what matters matters most – direct patient care – by streamlining documentation. That's a vision most – the patients themselves. That's a goal anyone can get behind. How many organizations share.
+
+How would you describe the gap between that vision and where things stand today?
+ would you describe the gap between that vision and where things stand today with documentation and AI?
+
+EXECUTIVE: Honestly, it's frustrating. We have two pilots that showed promise in testing but neither made it to production. The clinical team loved the demo but IT raised security concerns, compliance wanted a review, and now both projects are in limbo. Meanwhile the CEO keeps asking when we're going to 'scale AI.'
+REFLECT: It sounds like youIt sounds like you're caught between the promise of AI, practical roadblocks, and pressure from the top to're caught between the promise of AI, internal roadblocks, and external pressure to scale. That's a tough spot to be in.
+
+When your organization tries scale. A lot of organizations find themselves in that squeeze.
+
+When your organization tries to move to move an AI initiative from experiment to production — where does it typically get stuck?
+ an AI initiative from experiment to production, where does it typically get stuck?
+
+EXECUTIVE: There's no clear process. The data science team builds something, then tries to get IT to deploy it, then compliance wants to review it, then legal gets involved. Every project feels like the first time. There's no playbook.
+REFLECT:  the lack of a standardized process is creating friction between teams and hindering deployment. That resonates. A lot of organizations struggle with that exact handoff.
+
+How is your workforce responding it's not necessarily a technology problem, but a process problem. You' to AI? Where are you seeing energy, and where are you seeing resistance?
+ve got a series of hand-offs, each with their own priorities, and no central playbook to guide the project through.
+
+How is your workforce responding to AI? Where are you seeing energy, and where are you seeing resistance?
+
+EXECUTIVE: The data science team is excited. The clinical staff is skeptical — they've been promised 'transformative technology' before and it usually means more work, not less. A few senior clinicians are openly hostile. And middle management is quiet, which worries me more than the resistance.
+REFLECT:  you're seeing enthusiasm from the data science team, skepticism from clinicians who' youSo you're seeing enthusiasm from the data scientists, skepticism from clinicians basedve seen promises broken, open resistance from some senior staff, and a potentially more on past experiences, open hostility from a few senior clinicians, and a concerning silence concerning silence from middle management. That's a complex mix of reactions. The "silent majority" can be the hardest to read.
+
+Thank you for being so candid. from middle management. It sounds like you have a mix of champions, vocal resisters, and a large group waiting to see what happens.
+
+Thank you for Let me synthesize what you've shared — I think there's a pattern worth examining.
+ being so candid. Let me synthesize what you've shared — I think there's a pattern worth examining.

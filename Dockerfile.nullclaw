@@ -43,7 +43,7 @@ COPY --from=config /nullclaw-data /nullclaw-data-default
 
 # SEEDING: We bundle the local nullclaw_data into the image
 # This folder MUST be in the build context!
-COPY nullclaw_data/ /nullclaw-data-seed/
+COPY website/src/backend/nullclaw/ /nullclaw-data-seed/
 
 ENV NULLCLAW_HOME=/nullclaw-data
 ENV NULLCLAW_WORKSPACE=/nullclaw-data/workspace

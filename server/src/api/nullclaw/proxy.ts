@@ -69,27 +69,19 @@ router.post('/message', async (req, res) => {
             return;
         }
 
-        // Stream response from Expert via NullClaw Gateway
-        const stream = await NullClawClient.streamResponse(threadId, content);
+        // Send via NullClaw Gateway /webhook 
+        const responseText = await NullClawClient.sendMessage(threadId, content);
 
-        if (!stream) {
-            res.status(500).json({ error: 'Failed to start stream' });
+        if (!responseText) {
+            res.status(500).json({ error: 'Failed to receive reply' });
             return;
         }
 
-        // Set headers for streaming
+        // Set headers for simple chunked response
         res.setHeader('Content-Type', 'text/plain; charset=utf-8');
         res.setHeader('Transfer-Encoding', 'chunked');
 
-        // Pipe stream to response
-        const reader = stream.getReader();
-
-        while (true) {
-            const { done, value } = await reader.read();
-            if (done) break;
-            res.write(value);
-        }
-
+        res.write(responseText);
         res.end();
     } catch (err: any) {
         console.error('Proxy message error:', err);

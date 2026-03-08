@@ -1,19 +1,19 @@
 apiVersion: v1
 kind: Namespace
 metadata:
-  name: nullclaw
+  name: nullclaw-kube
 ---
 apiVersion: v1
 kind: ServiceAccount
 metadata:
   name: tailscale-sa
-  namespace: nullclaw
+  namespace: nullclaw-kube
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: Role
 metadata:
   name: tailscale-role
-  namespace: nullclaw
+  namespace: nullclaw-kube
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
@@ -23,11 +23,11 @@ apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: tailscale-rb
-  namespace: nullclaw
+  namespace: nullclaw-kube
 subjects:
 - kind: ServiceAccount
   name: tailscale-sa
-  namespace: nullclaw
+  namespace: nullclaw-kube
 roleRef:
   kind: Role
   name: tailscale-role
@@ -37,7 +37,7 @@ apiVersion: apps/v1
 kind: Deployment
 metadata:
   name: nullclaw
-  namespace: nullclaw
+  namespace: nullclaw-kube
 spec:
   replicas: 1
   selector:
@@ -74,7 +74,7 @@ spec:
         imagePullPolicy: IfNotPresent
         securityContext:
           runAsUser: 0 # Using root so that access to docker sock works out of the box
-        command: ["sh", "-c", "echo 'waiting for tailscale socket...'; while [ ! -S /var/run/tailscale/tailscaled.sock ]; do sleep 1; done; echo 'sockets found, starting nullclaw'; /usr/local/bin/nullclaw gateway --port 3000 --host ::"]
+        command: ["sh", "-c", "echo 'waiting for tailscale socket...'; while [ ! -S /var/run/tailscale/tailscaled.sock ]; do sleep 1; done; echo 'patching runtime config...'; mkdir -p /tmp/nc-home; for f in /nullclaw-data/*; do ln -s \"$f\" /tmp/nc-home/; done; rm -f /tmp/nc-home/config.json; sed \"s/\\\\\\${TELEGRAM_BOT_TOKEN}/$TELEGRAM_BOT_TOKEN/g; s/\\\\\\${TELEGRAM_ALLOWED_ID}/$TELEGRAM_ALLOWED_ID/g\" /nullclaw-data/config.json > /tmp/nc-home/config.json; export NULLCLAW_HOME=/tmp/nc-home; echo 'starting nullclaw...'; /usr/local/bin/nullclaw gateway --port 3000 --host ::"]
         ports:
         - containerPort: 3000
         env:
@@ -98,6 +98,16 @@ spec:
             secretKeyRef:
               name: nullclaw-secrets
               key: TELEGRAM_BOT_TOKEN
+        - name: TELEGRAM_ALLOWED_USER
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: TELEGRAM_ALLOWED_USER
+        - name: TELEGRAM_ALLOWED_ID
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: TELEGRAM_ALLOWED_ID
         - name: NANO_BANANA_PRO_API_KEY
           valueFrom:
             secretKeyRef:
@@ -193,12 +203,14 @@ spec:
         emptyDir: {}
       - name: docker-graph-storage
         emptyDir: {}
+      - name: nullclaw-runtime
+        emptyDir: {}
 ---
 apiVersion: v1
 kind: Service
 metadata:
   name: nullclaw
-  namespace: nullclaw
+  namespace: nullclaw-kube
 spec:
   type: LoadBalancer
   selector:

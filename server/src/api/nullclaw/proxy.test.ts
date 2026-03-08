@@ -16,7 +16,7 @@ vi.mock('./client', () => ({
     NullClawClient: {
         createThread: vi.fn(),
         addMessage: vi.fn(),
-        streamResponse: vi.fn(),
+        sendMessage: vi.fn(),
     }
 }));
 
@@ -28,6 +28,10 @@ vi.mock('../telegram/formatters', () => ({
     TelegramFormatter: {
         formatNewSessionAlert: vi.fn().mockReturnValue('mock-alert-text')
     }
+}));
+
+vi.mock('../../../db', () => ({
+    supabase: null // Test without actual Supabase
 }));
 
 // Import after mocking
@@ -131,26 +135,17 @@ describe('POST /api/assessment/message', () => {
         expect(res.status).toBe(404);
     });
 
-    it('should call streamResponse and stream the response', async () => {
+    it('should call sendMessage and stream the response', async () => {
         vi.mocked(SessionManager.getThreadId).mockResolvedValue('thread_abc');
 
-        // Simulate a readable stream that yields a single chunk
-        const encoder = new TextEncoder();
-        const chunk = encoder.encode('Hello from NullClaw');
-        const mockStream = new ReadableStream({
-            start(controller) {
-                controller.enqueue(chunk);
-                controller.close();
-            }
-        });
-        vi.mocked(NullClawClient.streamResponse).mockResolvedValue(mockStream as any);
+        vi.mocked(NullClawClient.sendMessage).mockResolvedValue('Hello from NullClaw');
 
         const res = await request(app)
             .post('/api/assessment/message')
             .send({ sessionId: 'session-valid', content: 'What is my bottleneck?' });
 
         expect(res.status).toBe(200);
-        expect(NullClawClient.streamResponse).toHaveBeenCalledWith('thread_abc', 'What is my bottleneck?');
+        expect(NullClawClient.sendMessage).toHaveBeenCalledWith('thread_abc', 'What is my bottleneck?');
         expect(res.text).toContain('Hello from NullClaw');
     });
 });

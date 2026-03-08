@@ -1,7 +1,9 @@
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import { Message, AppConfig, AssessmentEvent } from '../types';
 import { getSocket } from '../services/geminiService';
-import { Mic, Send, Square, Loader2, AlertCircle } from 'lucide-react';
+import { Mic, Send, Square, Loader2, AlertCircle, RotateCcw } from 'lucide-react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 
 import { useSpeechRecognition } from '../hooks/useSpeechRecognition';
 import { useAudioVisualizer } from '../hooks/useAudioVisualizer';
@@ -10,7 +12,7 @@ import { useTextToSpeech } from '../hooks/useTextToSpeech';
 interface ChatInterfaceProps {
   config: AppConfig;
   onComplete: (history: Message[]) => void;
-  sessionId?: string;
+  sessionId: string; // Made required
   onTrackEvent?: (event: AssessmentEvent) => void;
 }
 
@@ -209,31 +211,52 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
   });
 
   // --- 1. Initialization ---
+  const initSession = useCallback(async (forceNew = false) => {
+    let savedSessionId = localStorage.getItem('expert_assessment_session_id');
+
+    if (forceNew) {
+      savedSessionId = null;
+      localStorage.removeItem('expert_assessment_session_id');
+    }
+
+    try {
+      const response = await fetch('/api/assessment/init', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        // If forceNew is true, we send null to get a fresh UUID from proxy
+        body: JSON.stringify({ browserSessionId: savedSessionId })
+      });
+      const data = await response.json();
+      if (data.sessionId) {
+        localStorage.setItem('expert_assessment_session_id', data.sessionId);
+        setCurrentSessionId(data.sessionId);
+
+        // Reset messages if it's a new session
+        if (forceNew) {
+          const greeting = [{ role: 'model' as const, text: config.initialGreeting }];
+          setMessages(greeting);
+          messagesRef.current = greeting;
+          track('session_reset', { new_session_id: data.sessionId });
+        }
+      }
+    } catch (err) {
+      console.error('Failed to init session:', err);
+    }
+  }, [config, track]);
+
   useEffect(() => {
     const initialMessages = [{ role: 'model' as const, text: config.initialGreeting }];
     setMessages(initialMessages);
     messagesRef.current = initialMessages;
 
-    // Session Initialization
-    const initSession = async () => {
-      const savedSessionId = localStorage.getItem('expert_assessment_session_id');
-      try {
-        const response = await fetch('/api/assessment/init', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ browserSessionId: savedSessionId })
-        });
-        const data = await response.json();
-        if (data.sessionId) {
-          localStorage.setItem('expert_assessment_session_id', data.sessionId);
-          setCurrentSessionId(data.sessionId);
-        }
-      } catch (err) {
-        console.error('Failed to init session:', err);
-      }
-    };
     initSession();
   }, [config]);
+
+  const handleReset = () => {
+    if (window.confirm("Are you sure you want to start over? This will clear your current assessment history.")) {
+      initSession(true);
+    }
+  };
 
   // --- 2. Socket Listeners ---
   useEffect(() => {
@@ -305,20 +328,55 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
         <div className="session-label">
           <div className="session-dot"></div>
           <span className="session-text">Reflection Session</span>
-          {micError && (
-            <div className="flex items-center gap-1 text-red-600 text-[11px] bg-red-50 px-2 py-0.5 rounded ml-auto">
-              <AlertCircle size={12} /> {micError}
-            </div>
-          )}
+
+          <div className="ml-auto flex items-center gap-4">
+            {micError && (
+              <div className="flex items-center gap-1 text-red-600 text-[11px] bg-red-50 px-2 py-0.5 rounded">
+                <AlertCircle size={12} /> {micError}
+              </div>
+            )}
+
+            <button
+              onClick={handleReset}
+              className="flex items-center gap-1.5 px-3 py-1 rounded-full text-[11px] font-medium transition-all hover:bg-stone-100 text-stone-500 hover:text-charcoal border border-transparent hover:border-stone-200"
+              title="Start a fresh session"
+            >
+              <RotateCcw size={12} /> Start Over
+            </button>
+          </div>
         </div>
 
         <div className="messages">
           {messages.map((msg, idx) => (
             <div key={idx} className={`message ${msg.role === 'user' ? 'message-user' : 'message-ai'}`}>
-              <p>
-                {msg.text}
-                {msg.isStreaming && <span className="inline-block w-1 h-3 ml-1 bg-charcoal animate-pulse align-middle" style={{ backgroundColor: '#2A2520' }} />}
-              </p>
+              <ReactMarkdown
+                remarkPlugins={[remarkGfm]}
+                components={{
+                  p: ({ children }) => <p className="mb-4 last:mb-0">{children}</p>,
+                  ul: ({ children }) => <ul className="list-disc ml-6 mb-4 space-y-2">{children}</ul>,
+                  ol: ({ children }) => <ol className="list-decimal ml-6 mb-4 space-y-2">{children}</ol>,
+                  li: ({ children }) => <li className="leading-relaxed">{children}</li>,
+                  h1: ({ children }) => <h1 className="text-xl font-bold mb-3 mt-4">{children}</h1>,
+                  h2: ({ children }) => <h2 className="text-lg font-bold mb-2 mt-3">{children}</h2>,
+                  table: ({ children }) => (
+                    <div className="overflow-x-auto my-6">
+                      <table className="min-w-full border-collapse border border-[#2A2520]/10 rounded-lg overflow-hidden">
+                        {children}
+                      </table>
+                    </div>
+                  ),
+                  thead: ({ children }) => <thead className="bg-[#F5F3F0]">{children}</thead>,
+                  th: ({ children }) => <th className="border border-[#2A2520]/10 px-4 py-2 text-left font-semibold">{children}</th>,
+                  td: ({ children }) => <td className="border border-[#2A2520]/10 px-4 py-2">{children}</td>,
+                }}
+              >
+                {msg.text || ''}
+              </ReactMarkdown>
+              {msg.isStreaming && (
+                <span
+                  className="inline-block w-1.5 h-4 ml-1 bg-[#2A2520] animate-pulse align-middle"
+                />
+              )}
             </div>
           ))}
 
@@ -544,6 +602,33 @@ export const ChatInterface: React.FC<ChatInterfaceProps> = ({ config, onComplete
           font-style: italic;
           margin-top: 0.5rem;
           text-align: center;
+          max-width: 80%;
+          margin: 0.5rem auto 0;
+        }
+
+        /* Markdown Overrides */
+        .message-ai h1, .message-ai h2, .message-ai h3 {
+          color: #2A2520;
+          font-family: 'Newsreader', serif;
+        }
+        
+        .message-ai strong {
+          color: #2A2520;
+          font-weight: 600;
+        }
+
+        .message-ai table {
+          width: 100%;
+          margin: 1.5rem 0;
+          font-size: 0.95rem;
+        }
+
+        .message-ai blockquote {
+          border-left: 3px solid #2A2520;
+          padding-left: 1.5rem;
+          margin: 1.5rem 0;
+          color: #6B6560;
+          font-style: italic;
         }
       `}</style>
     </>

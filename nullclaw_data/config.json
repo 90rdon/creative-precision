@@ -8,13 +8,34 @@
     "NVIDIA_NIM_AGENT_MODE": "true",
     "NULLCLAW_MAP_DEVELOPER_TO_SYSTEM": "true"
   },
+  "diagnostics": {
+    "log_llm_io": true,
+    "log_message_payloads": true,
+    "log_tool_calls": true
+  },
+  "tools": {
+    "allow": [
+      "file_read",
+      "file_write",
+      "shell",
+      "delegate",
+      "http_request"
+    ],
+    "optional_tools": [
+      "http_request"
+    ],
+    "workspace_only": false
+  },
+  "http_request": {
+    "enabled": false
+  },
   "models": {
     "mode": "merge",
     "providers": {
       "nvidia": {
         "baseUrl": "https://integrate.api.nvidia.com/v1",
         "apiKey": "${NVIDIA_API_KEY}",
-        "api": "openai-completions",
+        "api": "openai-chat",
         "models": [
           {
             "id": "qwen/qwen3.5-397b-a17b",
@@ -48,7 +69,7 @@
       "openrouter": {
         "baseUrl": "https://openrouter.ai/api/v1",
         "apiKey": "${OPENROUTER_API_KEY}",
-        "api": "openai-completions",
+        "api": "openai-chat",
         "models": [
           {
             "id": "meta-llama/llama-3.3-70b-instruct:free",
@@ -188,15 +209,23 @@
   "channels": {
     "telegram": {
       "enabled": true,
-      "dmPolicy": "pairing",
-      "botToken": "${TELEGRAM_BOT_TOKEN}",
-      "groups": {
-        "*": {
-          "requireMention": false
+      "accounts": {
+        "main": {
+          "bot_token": "${TELEGRAM_BOT_TOKEN}",
+          "allow_from": [
+            "${TELEGRAM_ALLOWED_ID}"
+          ],
+          "authorizedUsers": [
+            "${TELEGRAM_ALLOWED_ID}"
+          ],
+          "dmPolicy": "open",
+          "reply_in_private": true,
+          "streaming": "partial"
         }
-      },
-      "groupPolicy": "open",
-      "streaming": "partial"
+      }
+    },
+    "webhook": {
+      "enabled": false
     }
   },
   "gateway": {
@@ -221,10 +250,10 @@
       ],
       "allowInsecureAuth": true
     },
+    "require_pairing": false,
     "auth": {
       "mode": "token",
-      "token": "${NULLCLAW_TOKEN}",
-      "allowTailscale": true
+      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83"
     },
     "trustedProxies": [
       "127.0.0.1",
@@ -260,13 +289,6 @@
       },
       "sag": {
         "apiKey": "${SAG_API_KEY}"
-      }
-    }
-  },
-  "plugins": {
-    "entries": {
-      "telegram": {
-        "enabled": true
       }
     }
   }

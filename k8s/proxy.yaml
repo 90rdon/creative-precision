@@ -1,0 +1,74 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: expert-proxy
+  namespace: nullclaw
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: expert-proxy
+  template:
+    metadata:
+      labels:
+        app: expert-proxy
+    spec:
+      imagePullSecrets:
+      - name: gcr-pull-secret
+      containers:
+      - name: proxy
+        image: gcr.io/my-first-rag-486720/expert-proxy:latest
+        ports:
+        - containerPort: 3000
+        env:
+        - name: NODE_ENV
+          value: "production"
+        - name: PORT
+          value: "3000"
+        - name: NULLCLAW_API_ENDPOINT
+          value: "http://nullclaw:3000"
+        - name: REDIS_URL
+          value: "redis://redis:6379"
+        - name: NULLCLAW_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: NULLCLAW_TOKEN
+              optional: true
+        - name: TELEGRAM_BOT_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: TELEGRAM_BOT_TOKEN
+              optional: true
+        - name: TELEGRAM_ADMIN_CHAT_ID
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: TELEGRAM_ADMIN_CHAT_ID
+              optional: true
+        - name: SUPABASE_URL
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: SUPABASE_URL
+              optional: true
+        - name: SUPABASE_SERVICE_KEY
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: SUPABASE_SERVICE_KEY
+              optional: true
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: expert-proxy
+  namespace: nullclaw
+spec:
+  type: LoadBalancer
+  selector:
+    app: expert-proxy
+  ports:
+  - port: 80
+    targetPort: 3000

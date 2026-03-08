@@ -20,50 +20,39 @@ describe('NullClawClient', () => {
     describe('createThread', () => {
         it('should return a generated session ID string', async () => {
             const threadId = await NullClawClient.createThread();
-            expect(threadId).toMatch(/^sess_\d+_\w+/);
+            expect(threadId).toMatch(/^[0-9a-f]{8}-[0-9a-f]{4}-4[0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/);
         });
     });
 
-    describe('streamResponse', () => {
-        it('should POST to /v1/responses with correct payload and headers', async () => {
-            // Mock a simple readable stream
-            const mockStream = new ReadableStream({
-                start(controller) {
-                    controller.enqueue(new TextEncoder().encode('data: {"type": "response.output_text.delta", "delta": "Hello"}\n'));
-                    controller.enqueue(new TextEncoder().encode('data: [DONE]\n'));
-                    controller.close();
-                }
-            });
-
+    describe('sendMessage', () => {
+        it('should POST to /webhook with correct payload and headers including UUID', async () => {
             mockFetch.mockResolvedValueOnce({
                 ok: true,
-                body: mockStream
+                json: async () => ({ response: 'Hello' })
             });
 
-            const stream = await NullClawClient.streamResponse('session-123', 'Testing');
+            const responseText = await NullClawClient.sendMessage('session-123', 'Testing');
 
             expect(mockFetch).toHaveBeenCalledWith(
-                'http://localhost:18790/v1/responses',
+                'http://localhost:18790/webhook',
                 expect.objectContaining({
                     method: 'POST',
                     headers: expect.objectContaining({
                         'Authorization': 'Bearer test-token-abc',
                         'Content-Type': 'application/json'
                     }),
-                    body: JSON.stringify({
-                        model: 'expert',
-                        input: 'Testing',
-                        stream: true
-                    })
+                    body: expect.stringContaining('"message":"Testing"')
                 })
             );
 
-            expect(stream).not.toBeNull();
+            // Verifying payload structure properties
+            const callArgs = mockFetch.mock.calls[0][1];
+            const bodyObj = JSON.parse(callArgs.body);
+            expect(bodyObj.message).toBe('Testing');
+            expect(bodyObj.session_id).toBe('session-123');
+            expect(bodyObj.request_id).toBeDefined();
 
-            // Verify streaming transformation
-            const reader = stream!.getReader();
-            const { value } = await reader.read();
-            expect(new TextDecoder().decode(value)).toBe('Hello');
+            expect(responseText).toBe('Hello');
         });
 
         it('should throw if gateway returns non-ok status', async () => {
@@ -73,7 +62,7 @@ describe('NullClawClient', () => {
                 text: async () => 'Forbidden'
             });
 
-            await expect(NullClawClient.streamResponse('s1', 'hi'))
+            await expect(NullClawClient.sendMessage('s1', 'hi'))
                 .rejects.toThrow(/Gateway call failed \(403\): Forbidden/);
         });
     });

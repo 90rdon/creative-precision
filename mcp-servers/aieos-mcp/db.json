@@ -1,0 +1,214 @@
+{
+  "instances": [
+    {
+      "id": "nullclaw-atlas",
+      "endpoint": "http://192.168.5.15:3000",
+      "type": "nullclaw",
+      "status": "online",
+      "metadata": {
+        "environment": "kubernetes"
+      },
+      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83"
+    },
+    {
+      "id": "nullclaw-kube",
+      "endpoint": "http://10.43.165.15:3000",
+      "type": "nullclaw",
+      "status": "online",
+      "metadata": {
+        "environment": "kubernetes"
+      },
+      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83"
+    },
+    {
+      "id": "nullclaw-vigil",
+      "endpoint": "http://90rdon-berry.local:3000",
+      "type": "nullclaw",
+      "status": "online",
+      "metadata": {
+        "environment": "raspberry-pi"
+      },
+      "token": "09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83",
+      "name": "Vigil"
+    }
+  ],
+  "personas": [
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "main",
+      "name": "Atlas",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "context",
+      "name": "context",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "research",
+      "name": "research",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "governance",
+      "name": "governance",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "intent-architect",
+      "name": "intent-architect",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "explorer",
+      "name": "explorer",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "adversary",
+      "name": "adversary",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "validator",
+      "name": "validator",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "learning",
+      "name": "learning",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-atlas",
+      "personaId": "adaptation",
+      "name": "adaptation",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-kube",
+      "personaId": "main",
+      "name": "main",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-kube",
+      "personaId": "expert",
+      "name": "expert",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-kube",
+      "personaId": "synthesizer",
+      "name": "synthesizer",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-kube",
+      "personaId": "engineer",
+      "name": "engineer",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-kube",
+      "personaId": "simulator",
+      "name": "simulator",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "main",
+      "name": "Atlas",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "context",
+      "name": "context",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "research",
+      "name": "research",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "governance",
+      "name": "governance",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "intent-architect",
+      "name": "intent-architect",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "explorer",
+      "name": "explorer",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "adversary",
+      "name": "adversary",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "validator",
+      "name": "validator",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "learning",
+      "name": "learning",
+      "role": "Agent",
+      "dna": ""
+    },
+    {
+      "instanceId": "nullclaw-vigil",
+      "personaId": "adaptation",
+      "name": "adaptation",
+      "role": "Agent",
+      "dna": ""
+    }
+  ],
+  "relationships": [],
+  "memories": []
+}

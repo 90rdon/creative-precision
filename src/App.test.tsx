@@ -1,5 +1,5 @@
 import { render, screen, fireEvent, waitFor } from '@testing-library/react';
-import { describe, it, expect, vi } from 'vitest';
+import { describe, it, expect, vi, beforeEach } from 'vitest';
 import App from './App';
 
 vi.mock('./components/Landing', () => ({
@@ -23,10 +23,29 @@ vi.mock('./components/Results', () => ({
     Results: ({ onRestart }: any) => <button onClick={onRestart}>MockRestart</button>
 }));
 
+// Mock window.location with proper string properties
+const mockLocation = {
+    pathname: '/assessment',
+    href: 'http://localhost/assessment.html'
+};
+
+beforeEach(() => {
+    mockLocation.pathname = '/assessment';
+    mockLocation.href = 'http://localhost/assessment.html';
+    // Reset and mock window.location
+    delete (window as any).location;
+    Object.defineProperty(window, 'location', {
+        get: () => mockLocation,
+        set: () => {},
+        configurable: true
+    });
+});
+
 describe('App', () => {
     it('covers various telemetry tracking events', () => {
-        // defaults to ChatInterface -> "MockComplete"
-        render(<App />);
+        // Start in assessment view
+        mockLocation.pathname = '/assessment';
+        const { unmount } = render(<App />);
 
         fireEvent.click(screen.getByText('MockMessage'));
         fireEvent.click(screen.getByText('MockAssessmentComplete'));
@@ -34,17 +53,31 @@ describe('App', () => {
         fireEvent.click(screen.getByText('MockShare'));
         fireEvent.click(screen.getByText('MockPdf'));
         expect(screen.getByText('MockComplete')).toBeInTheDocument();
+        unmount();
     });
 
     it('can complete and restart', () => {
-        render(<App />);
+        // Start in assessment view
+        mockLocation.pathname = '/assessment';
+        const { unmount: unmountApp } = render(<App />);
+
         fireEvent.click(screen.getByText('MockComplete'));
+        unmountApp();
 
-        // Now in results
+        // Navigate to results
+        mockLocation.pathname = '/synthesize';
+        mockLocation.href = 'http://localhost/synthesize.html';
+        const { unmount: unmountResults } = render(<App />);
+
         expect(screen.getByText('MockRestart')).toBeInTheDocument();
-
-        // Restart goes to landing
         fireEvent.click(screen.getByText('MockRestart'));
+        unmountResults();
+
+        // Navigate to landing
+        mockLocation.pathname = '/';
+        mockLocation.href = 'http://localhost/index.html';
+        render(<App />);
+
         expect(screen.getByText('MockStart')).toBeInTheDocument();
     });
 });

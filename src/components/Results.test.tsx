@@ -41,7 +41,7 @@ describe('Results Component (Socket)', () => {
 
         render(<Results history={mockHistory} onRestart={onRestart} sessionId="123" />);
 
-        expect(mockSocket.emit).toHaveBeenCalledWith('request-results', { history: mockHistory });
+        expect(mockSocket.emit).toHaveBeenCalledWith('request-results', { history: mockHistory, sessionId: "123" });
 
         // Simulate successful response
         await waitFor(() => {

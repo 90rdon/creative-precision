@@ -8,7 +8,7 @@ import dotenv from 'dotenv';
 import { handleChatConnection } from './socket/chat';
 import { socketAuthMiddleware } from './middleware/auth';
 
-dotenv.config({ path: path.join(__dirname, '../../.env'), override: true });
+dotenv.config({ path: path.join(__dirname, '../../.env'), override: false });
 delete process.env.GOOGLE_API_KEY; // Prevent SDK from picking up the expired test key in the user shell
 
 const app = express();

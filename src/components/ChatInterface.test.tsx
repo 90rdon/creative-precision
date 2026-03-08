@@ -14,6 +14,9 @@ vi.mock('../services/geminiService', () => ({
     generateSpeech: vi.fn().mockResolvedValue('test-base64')
 }));
 
+// Mock fetch for proxy endpoints
+global.fetch = vi.fn();
+
 describe('ChatInterface Component (Socket)', () => {
 
     beforeEach(() => {
@@ -38,6 +41,18 @@ describe('ChatInterface Component (Socket)', () => {
         }
         navigator.mediaDevices.getUserMedia = vi.fn().mockResolvedValue({ getTracks: () => [{ stop: vi.fn() }] });
 
+        // mock localStorage
+        const localStorageMock = (() => {
+            let store: Record<string, string> = {};
+            return {
+                getItem: (key: string) => store[key] || null,
+                setItem: (key: string, value: string) => { store[key] = value; },
+                removeItem: (key: string) => { delete store[key]; },
+                clear: () => { store = {}; }
+            };
+        })();
+        Object.defineProperty(window, 'localStorage', { value: localStorageMock });
+
         // mock SpeechRecognition
         (window as any).SpeechRecognition = vi.fn().mockImplementation(() => ({
             start: vi.fn(),
@@ -48,6 +63,20 @@ describe('ChatInterface Component (Socket)', () => {
             lang: 'en-US'
         }));
         (window as any).webkitSpeechRecognition = (window as any).SpeechRecognition;
+
+        // Mock fetch - reset after each test
+        (global.fetch as any).mockClear();
+
+        // Mock /api/assessment/init endpoint by default
+        (global.fetch as any).mockImplementation(async (url: string) => {
+            if (url === '/api/assessment/init') {
+                return {
+                    ok: true,
+                    json: async () => ({ sessionId: 'mock-session-123' })
+                } as Response;
+            }
+            return { ok: false } as Response;
+        });
     });
 
     it('renders initial greeting', () => {
@@ -56,17 +85,48 @@ describe('ChatInterface Component (Socket)', () => {
     });
 
     it('emits chat-message when sending', async () => {
+        (global.fetch as any).mockImplementation(async (url: string) => {
+            if (url === '/api/assessment/init') {
+                return {
+                    ok: true,
+                    json: async () => ({ sessionId: 'mock-session-123' })
+                } as Response;
+            }
+            if (url === '/api/assessment/message') {
+                const mockReadableStream = {
+                    getReader: vi.fn().mockReturnValue({
+                        read: vi.fn()
+                            .mockResolvedValueOnce({ done: false, value: new TextEncoder().encode('Hello') })
+                            .mockResolvedValueOnce({ done: false, value: new TextEncoder().encode(' world') })
+                            .mockResolvedValueOnce({ done: true })
+                    })
+                };
+                return {
+                    ok: true,
+                    body: mockReadableStream
+                } as Response;
+            }
+            return { ok: false } as Response;
+        });
+
         render(<ChatInterface config={DEFAULT_CONFIG as any} onComplete={vi.fn()} sessionId="123" />);
 
         const input = screen.getByPlaceholderText('Share your thoughts...');
         fireEvent.change(input, { target: { value: 'This is my ambition' } });
 
-        const sendBtn = screen.getByRole('button', { name: "Send message" });
+        const sendBtn = screen.getByRole('button', { name: 'Send message' });
         fireEvent.click(sendBtn);
 
         await waitFor(() => {
-            expect(mockSocket.emit).toHaveBeenCalledWith('chat-message', expect.any(Object));
+            // When sending, fetch should be called with the assessment/message endpoint
+            expect(global.fetch).toHaveBeenCalledWith('/api/assessment/message', expect.objectContaining({
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' }
+            }));
         });
+
+        // Verify the response text was updated
+        expect(screen.getByText(/Hello world/)).toBeInTheDocument();
     });
 
     it('updates text when chat-chunk arrives', async () => {
@@ -75,21 +135,41 @@ describe('ChatInterface Component (Socket)', () => {
             handlers[event] = cb;
         });
 
+        // Mock fetch - includes both init and message endpoints
+        (global.fetch as any).mockImplementation(async (url: string) => {
+            if (url === '/api/assessment/init') {
+                return {
+                    ok: true,
+                    json: async () => ({ sessionId: 'mock-session-123' })
+                } as Response;
+            }
+            if (url === '/api/assessment/message') {
+                const mockReadableStream = {
+                    getReader: vi.fn().mockReturnValue({
+                        read: vi.fn()
+                            .mockResolvedValueOnce({ done: false, value: new TextEncoder().encode('Hello') })
+                            .mockResolvedValueOnce({ done: false, value: new TextEncoder().encode(' world') })
+                            .mockResolvedValueOnce({ done: true })
+                    })
+                };
+                return {
+                    ok: true,
+                    body: mockReadableStream
+                } as Response;
+            }
+            return { ok: false } as Response;
+        });
+
         render(<ChatInterface config={DEFAULT_CONFIG as any} onComplete={vi.fn()} sessionId="123" />);
 
         // Simulate sending a message to start a model block
         const input = screen.getByPlaceholderText('Share your thoughts...');
         fireEvent.change(input, { target: { value: 'hi' } });
-        fireEvent.click(screen.getByRole('button', { name: "Send message" }));
+        fireEvent.click(screen.getByRole('button', { name: 'Send message' }));
 
-        // Trigger chunk
         await waitFor(() => {
-            if (handlers['chat-chunk']) {
-                handlers['chat-chunk']({ chunk: 'Hello world', done: false });
-            }
+            expect(screen.getByText(/Hello world/)).toBeInTheDocument();
         });
-
-        expect(screen.getByText(/Hello world/)).toBeInTheDocument();
     });
 
     it('handles synthesis-trigger state update', async () => {
@@ -97,6 +177,17 @@ describe('ChatInterface Component (Socket)', () => {
         const handlers: Record<string, any> = {};
         mockSocket.on.mockImplementation((event, cb) => {
             handlers[event] = cb;
+        });
+
+        // Mock fetch for init endpoint specifically
+        (global.fetch as any).mockImplementation(async (url: string) => {
+            if (url === '/api/assessment/init') {
+                return {
+                    ok: true,
+                    json: async () => ({ sessionId: 'mock-session-123' })
+                } as Response;
+            }
+            return { ok: false } as Response;
         });
 
         render(<ChatInterface config={DEFAULT_CONFIG as any} onComplete={onComplete} sessionId="123" />);

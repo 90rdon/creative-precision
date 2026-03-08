@@ -11,6 +11,7 @@
  * NullClaw persists the history internally per session.
  */
 
+import { v4 as uuidv4 } from 'uuid';
 import { SessionManager } from './sessionManager';
 
 export class NullClawClient {
@@ -64,87 +65,48 @@ export class NullClawClient {
     }
 
     /**
-     * Stream response from the Expert agent via NullClaw Gateway.
-     * Uses OpenResponses protocol and transforms it back to plain text for the proxy clients.
+     * Send a message to NullClaw Gateway via /webhook endpoint instead of /v1/responses.
      */
-    static async streamResponse(sessionId: string, content: string): Promise<ReadableStream<Uint8Array> | null> {
+    static async sendMessage(sessionId: string, content: string): Promise<string> {
         const payload = {
-            model: this.expertAgentId,
-            input: content,
-            stream: true
+            message: content,
+            session_id: sessionId,
+            request_id: uuidv4()
         };
 
         console.log(`[NullClawClient] Sending request to ${this.baseUrl}/v1/responses for session ${sessionId}`);
 
-        const response = await fetch(`${this.baseUrl}/v1/responses`, {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-                'Authorization': `Bearer ${this.authToken}`
-            },
-            signal: AbortSignal.timeout(60000),
-            body: JSON.stringify(payload)
-        });
+        let retries = 2; // Increased to 2 retries just to be safe
+        while (true) {
+            try {
+                const response = await fetch(`${this.baseUrl}/v1/responses`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${this.authToken}`,
+                        'Connection': 'close'
+                    },
+                    signal: AbortSignal.timeout(60000),
+                    body: JSON.stringify(payload)
+                });
 
-        if (!response.ok) {
-            const error = await response.text();
-            throw new Error(`[NullClawClient] Gateway call failed (${response.status}): ${error.slice(0, 200)}`);
-        }
-
-        const body = response.body;
-        if (!body) return null;
-
-        const decoder = new TextDecoder();
-        const encoder = new TextEncoder();
-
-        let buffer = '';
-
-        // Transform OpenResponses SSE -> Plain Text with line buffering
-        const transform = new TransformStream<Uint8Array, Uint8Array>({
-            transform(chunk, controller) {
-                buffer += decoder.decode(chunk, { stream: true });
-                const lines = buffer.split('\n');
-                // Keep the last partial line in the buffer
-                buffer = lines.pop() || '';
-
-                for (const line of lines) {
-                    const trimmedLine = line.trim();
-                    if (!trimmedLine || !trimmedLine.startsWith('data: ')) continue;
-
-                    const rawData = trimmedLine.slice(6).trim();
-                    if (rawData === '[DONE]') continue;
-
-                    try {
-                        const data = JSON.parse(rawData);
-                        let delta = '';
-                        if (data.type === 'response.output_text.delta') {
-                            delta = data.delta || '';
-                        }
-
-                        if (delta) {
-                            controller.enqueue(encoder.encode(delta));
-                        }
-                    } catch (e) {
-                        // Skip malformed packets
-                    }
+                if (!response.ok) {
+                    const error = await response.text();
+                    throw new Error(`[NullClawClient] Gateway call failed (${response.status}): ${error.slice(0, 200)}`);
                 }
-            },
-            flush(controller) {
-                // Process any remaining data in the buffer
-                if (buffer && buffer.startsWith('data: ')) {
-                    const rawData = buffer.slice(6).trim();
-                    if (rawData !== '[DONE]') {
-                        try {
-                            const data = JSON.parse(rawData);
-                            const delta = data.delta?.text || data.part?.text || '';
-                            if (delta) controller.enqueue(encoder.encode(delta));
-                        } catch { }
-                    }
+
+                const data = await response.json() as { response?: string, status?: string };
+                return data.response || data.status || "Acknowledged";
+            } catch (err: any) {
+                const code = err?.cause?.code || err?.code;
+                if (code === 'UND_ERR_SOCKET' && retries > 0) {
+                    console.warn(`[NullClawClient] Socket closed unexpectedly (UND_ERR_SOCKET) connecting to /v1/responses. Retrying... (${retries} retries left)`);
+                    retries--;
+                    continue;
                 }
+                throw err;
             }
-        });
-
-        return body.pipeThrough(transform);
+        }
     }
 }
 

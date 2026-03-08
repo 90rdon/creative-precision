@@ -30,7 +30,7 @@ const App: React.FC = () => {
     });
     const [isConfigOpen, setIsConfigOpen] = useState(false);
 
-    const [sessionId] = useState(() => Math.random().toString(36).substring(2, 15));
+    const [sessionId] = useState(() => (typeof crypto !== 'undefined' && crypto.randomUUID ? crypto.randomUUID() : Math.random().toString(36).substring(2, 15)));
     const sessionStartRef = useRef(Date.now());
 
     // --- Telemetry Init ---

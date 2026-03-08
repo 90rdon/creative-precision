@@ -15,7 +15,7 @@ Connect AI assessment on the site pages directly to the NullClaw Expert agent vi
 **Primary Dependencies**: React (Frontend), Express/Fastify (Proxy), NullClaw HTTP API, Telegram Bot API, Supabase Client
 **Storage**: In-Memory object or Redis mapping key-value for sessions, Supabase (PostgreSQL) for chat history
 **Testing**: Vitest for unit tests of proxy routing logic
-**Target Platform**: Web (Vite) + Node (Backend)
+**Target Platform**: Web (Vite) + Node (Backend) deployed to Kubernetes alongside NullClaw
 **Project Type**: Fullstack React app communicating with Proxy Backend coordinating external APIs
 **Performance Goals**: <500ms initial TTFB (Time To First Token) for chat proxying
 **Constraints**: Stateless web frontend, completely session-dependent backend

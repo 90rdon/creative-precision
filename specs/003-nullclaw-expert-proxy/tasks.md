@@ -101,3 +101,12 @@ description: "Task list for NullClaw Expert Assessment Proxy"
 - Foundation tasks T003 and T002 can be implemented in parallel.
 - Frontend modifications in US1 (T008) can happen alongside backend routing changes (T005, T006).
 - Telegram formatting (T010) and UI polling (T012) can run parallel to their respective backend flows.
+
+---
+
+## Phase 6: Kubernetes Deployment (NullClaw Integration)
+
+**Purpose**: Deploy the Expert Proxy alongside NullClaw on Kubernetes.
+
+- [x] T017 Create Kubernetes deployment manifest `k8s/proxy.yaml` with LoadBalancer and ENV configs linking to NullClaw internal service.
+- [x] T018 Create deployment bash script `scripts/deploy-proxy-k8s.sh` that builds the Dockerfile and deploys the Proxy manifest to the cluster.

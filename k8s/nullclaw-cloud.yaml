@@ -17,21 +17,24 @@ metadata:
 rules:
 - apiGroups: [""]
   resources: ["secrets"]
-  verbs: ["get", "create", "patch", "update"]
+  verbs: ["create"]
+- apiGroups: [""]
+  resourceNames: ["tailscale-auth"]
+  resources: ["secrets"]
+  verbs: ["get", "update", "patch"]
 ---
 apiVersion: rbac.authorization.k8s.io/v1
 kind: RoleBinding
 metadata:
   name: tailscale-rb
   namespace: nullclaw
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: tailscale-role
 subjects:
 - kind: ServiceAccount
   name: tailscale-sa
-  namespace: nullclaw
-roleRef:
-  kind: Role
-  name: tailscale-role
-  apiGroup: rbac.authorization.k8s.io
 ---
 apiVersion: v1
 kind: PersistentVolumeClaim
@@ -64,9 +67,9 @@ spec:
       imagePullSecrets:
       - name: gcr-pull-secret
       initContainers:
-      - name: initial-seed
-        image: gcr.io/my-first-rag-486720/nullclaw:latest # Or your cloud image
-        command: ["sh", "-c", "if [ ! -f /nullclaw-data/config.json ]; then echo 'Seeding cloud volume from bundled local data...'; cp -a /nullclaw-data-seed/. /nullclaw-data/; fi"]
+      - name: seed-data
+        image: alpine:latest
+        command: ["sh", "-c", "mkdir -p /nullclaw-data/devices && chmod -R 777 /nullclaw-data"]
         volumeMounts:
         - name: nullclaw-data
           mountPath: /nullclaw-data
@@ -84,17 +87,17 @@ spec:
           mountPath: /shared/bin
       - name: setup-mocks
         image: alpine:latest
-        command: ['sh', '-c', "printf '#!/bin/sh\\nexit 0' > /shared/bin/systemctl && printf '#!/bin/sh\\nexit 0' > /shared/bin/loginctl && chmod +x /shared/bin/systemctl /shared/bin/loginctl"]
+        command: ["sh", "-c", "printf '#!/bin/sh\\nexit 0' > /shared/bin/systemctl && printf '#!/bin/sh\\nexit 0' > /shared/bin/loginctl && chmod +x /shared/bin/systemctl /shared/bin/loginctl"]
         volumeMounts:
         - name: shared-bin
           mountPath: /shared/bin
       containers:
       - name: nullclaw
-        image: gcr.io/my-first-rag-486720/nullclaw:latest # Just updated to the new image
+        image: gcr.io/my-first-rag-486720/nullclaw:latest
         imagePullPolicy: Always
         securityContext:
           runAsUser: 0
-        command: ["sh", "-c", "echo 'waiting for tailscale socket...'; while [ ! -S /var/run/tailscale/tailscaled.sock ]; do sleep 1; done; echo 'sockets found, starting nullclaw'; /usr/local/bin/nullclaw gateway --port 3000 --host ::"]
+        command: ["sh", "-c", "echo 'starting nullclaw WITHOUT tailscale wait for testing'; /usr/local/bin/nullclaw gateway --port 3000 --host ::"]
         ports:
         - containerPort: 3000
         env:
@@ -106,7 +109,6 @@ spec:
           value: "/var/run/tailscale/tailscaled.sock"
         - name: DOCKER_HOST
           value: "tcp://localhost:2375"
-        # Secrets should be injected via env from a Kubernetes Secret in the cloud
         - name: NVIDIA_API_KEY
           valueFrom:
             secretKeyRef:
@@ -117,38 +119,19 @@ spec:
             secretKeyRef:
               name: nullclaw-secrets
               key: OPENROUTER_API_KEY
+        - name: NULLCLAW_TOKEN
+          valueFrom:
+            secretKeyRef:
+              name: nullclaw-secrets
+              key: NULLCLAW_TOKEN
         volumeMounts:
         - name: nullclaw-data
           mountPath: /nullclaw-data
-        - name: ts-socket
-          mountPath: /var/run/tailscale
         - name: dind-socket
           mountPath: /run
         - name: shared-bin
           mountPath: /shared/bin
       
-      - name: tailscale
-        image: tailscale/tailscale:latest
-        env:
-        - name: TS_AUTHKEY
-          valueFrom:
-            secretKeyRef:
-              name: nullclaw-secrets
-              key: TS_AUTHKEY
-        - name: TS_HOSTNAME
-          value: "nullclaw-cloud"
-        - name: TS_USERSPACE
-          value: "true"
-        - name: TS_STATE_DIR
-          value: /nullclaw-data/tailscale
-        - name: TS_SOCKET
-          value: /var/run/tailscale/tailscaled.sock
-        volumeMounts:
-        - name: nullclaw-data
-          mountPath: /nullclaw-data
-        - name: ts-socket
-          mountPath: /var/run/tailscale
-
       - name: dind
         image: docker:dind
         securityContext:
@@ -157,17 +140,14 @@ spec:
         - name: DOCKER_TLS_CERTDIR
           value: ""
         volumeMounts:
-        - name: dind-socket
-          mountPath: /run
         - name: nullclaw-data
           mountPath: /nullclaw-data
-      
+        - name: dind-socket
+          mountPath: /run
       volumes:
       - name: nullclaw-data
         persistentVolumeClaim:
           claimName: nullclaw-pvc
-      - name: ts-socket
-        emptyDir: {}
       - name: dind-socket
         emptyDir: {}
       - name: shared-bin
@@ -179,7 +159,7 @@ metadata:
   name: nullclaw
   namespace: nullclaw
 spec:
-  type: LoadBalancer # Cloud provider will assign a real external IP
+  type: ClusterIP # Internal only gateway
   selector:
     app: nullclaw
   ports:

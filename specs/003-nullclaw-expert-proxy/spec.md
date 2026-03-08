@@ -61,9 +61,18 @@ As the Admin (9_0rdon), I want to receive a Telegram notification whenever an ex
 - Q: What level of detail should be included in the Admin Telegram alert? → A: Context Summary Only. Telegram is strictly for Admin alerts, not for User interaction.
 
 ### NullClaw Integration Details
-- **Gateway API**: NullClaw exposes a Gateway API on port 3000, requiring HTTP Bearer authentication. 
+- **Advanced Gateway Routing**: The Gateway engine is the central nervous system handling external communications, running autonomously to queue standard events for the Daemon processor. 
+- **Gateway API Surface Area**: The primary authenticated ingress is `POST /webhook`. 
+- **Idempotency Controls**: The gateway implements strict biodegradability controls, calculating cryptographic hashes on incoming request bodies (which must include unique nonces/session IDs) to guarantee exactly-once processing and prevent double-processing AI LLM instructions, protecting system stability and saving provider credits.
 - **Pairing**: `POST /pair` can be used to exchange a pairing code for a bearer token.
-- **Messaging**: Messages are sent to `POST /webhook` with payload `{"message": "..."}`, receiving `{"response": "..."}`.
+- **Messaging**: Messages are sent to `POST /webhook` with payload `{"message": "...", "session_id": "...", "request_id": "unique-uuid"}`.
+
+### Security & Architecture Boundaries
+- **Unified Gateway Model**: A single (or horizontally scaled) NullClaw instance manages all concurrent sessions via the Gateway queue, preventing the extreme latency associated with creating dynamic pods per user.
+- **Airgap & Sanitization**: The Express proxy server acts as the network airgap. It holds the `NULLCLAW_TOKEN` (invisible to the client) and sanitizes payloads to ensure only valid JSON reaches the internal Kubernetes network.
+- **Rate Limiting**: The proxy must enforce strict IP-based rate limiting to prevent DoS spam attacks and protect LLM API budgets.
+- **Proxy-Level Sanitization**: The Express proxy server is responsible for filtering out prompt injection attempts, tool execution commands, and unsafe instructions. Only pure, sanitized conversational intents are forwarded to the NullClaw agent.
+- **Zero-Knowledge Memory Isolation**: The webhook channel is classified as a "Shared Context." To prevent data leakage between distinct executive sessions, the `expert` agent must NOT write to or read from the global `MEMORY.md`. All conversational context must be strictly isolated to the short-term memory array tied to the ephemeral `session_id`.
 
 ### Key Entities
 

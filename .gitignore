@@ -38,14 +38,18 @@ yarn-error.log
 .lima/
 k8s/kubeconfig.yaml
 dump.rdb
-test-visibility.html
+# test-visibility.html
 
 legacy_openclaw_data/
 
 # NullClaw (new paths)
-website/src/backend/nullclaw/identity/
+website/src/backend/nullclaw/identity/*
+!website/src/backend/nullclaw/identity/device.json
+!website/src/backend/nullclaw/identity/device-auth.json
 website/src/backend/nullclaw/credentials/
-website/src/backend/nullclaw/devices/
+website/src/backend/nullclaw/devices/*
+!website/src/backend/nullclaw/devices/paired.json
+!website/src/backend/nullclaw/devices/pending.json
 website/src/backend/nullclaw/memory/*.sqlite
 website/src/backend/nullclaw/logs/
 website/src/backend/nullclaw/tailscale/
@@ -53,20 +57,25 @@ website/src/backend/nullclaw/docker/
 website/src/backend/nullclaw/sandbox/
 website/src/backend/nullclaw/sandboxes/
 website/src/backend/nullclaw/telegram/
-website/src/backend/nullclaw/cron/
+website/src/backend/nullclaw/cron/*
+!website/src/backend/nullclaw/cron/jobs.json
 website/src/backend/nullclaw/update-check.json
-website/src/backend/nullclaw/daemon_state.json
+!website/src/backend/nullclaw/daemon_state.json
 website/src/backend/nullclaw/agents/*/sessions/
 website/src/backend/nullclaw/config.json.bak*
 website/src/backend/nullclaw/workspace*/memory.db*
-website/src/backend/nullclaw/workspace*/.nullclaw/
-**/.nullclaw/
+website/src/backend/nullclaw/workspace*/.nullclaw/*
+!website/src/backend/nullclaw/workspace*/.nullclaw/workspace-state.json
+**/.nullclaw/*
+!**/.nullclaw/workspace-state.json
 !website/src/backend/nullclaw/config.json
 
 # NullClaw
 nullclaw_data/identity/
 nullclaw_data/credentials/
 nullclaw_data/devices/
+!nullclaw_data/devices/paired.json
+!nullclaw_data/devices/pending.json
 nullclaw_data/memory/*.sqlite
 nullclaw_data/logs/
 nullclaw_data/tailscale/
@@ -79,9 +88,9 @@ nullclaw_data/update-check.json
 nullclaw_data/daemon_state.json
 nullclaw_data/agents/*/sessions/
 nullclaw_data/config.json.bak*
-nullclaw_data/workspace*/memory.db
-nullclaw_data/workspace*/.nullclaw/
-**/.nullclaw/
+nullclaw_data/workspace*/memory.db*
+**/.nullclaw/*
+!**/.nullclaw/workspace-state.json
 !nullclaw_data/config.json
 
 # Logs & Coverage
@@ -94,6 +103,6 @@ coverage/
 server/migrate.ts
 server/test-supabase.ts
 server/test-supabase.js
-website/src/backend/proxy-server/migrate.ts
-website/src/backend/proxy-server/test-supabase.ts
-website/src/backend/proxy-server/test-supabase.js
+# website/src/backend/proxy-server/migrate.ts
+# website/src/backend/proxy-server/test-supabase.ts
+# website/src/backend/proxy-server/test-supabase.js

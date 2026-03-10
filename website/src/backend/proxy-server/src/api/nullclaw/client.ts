@@ -1,40 +1,58 @@
 /**
  * NullClaw Expert Client
  *
- * Architecture Note (Updated 2026-03-02):
- * This client now uses the native NullClaw Gateway HTTP API (v1/responses).
- * Agent logic (system.md, heartbeats, tools) lives in the gateway agents.
- * The proxy server only facilitates the communication between the UI and NullClaw.
- * 
- * Session Management: 
- * We use NullClaw's native session handling by providing a session_id.
- * NullClaw persists the history internally per session.
+ * Architecture Note (Updated 2026-03-09):
+ * This client uses the NullClaw Webhook Router endpoint.
+ *
+ * - Proxy server is transport-only (no AI thinking)
+ * - All AI processes and persona routing happen inside nullclaw-kube
+ * - Webhook router at /webhook routes requests to appropriate agents
+ *
+ * Session Management:
+ * - Session IDs are generated and tracked by SessionManager
+ * - nullclaw-kube handles conversation history internally
+ * - Webhook router routes based on agent_id parameter
  */
 
 import { v4 as uuidv4 } from 'uuid';
 import { SessionManager } from './sessionManager';
 
 export class NullClawClient {
-    private static get baseUrl() {
-        // Normalize endpoint URL by stripping common trailing prefixes to ensure 
-        // the /v1/responses path is correctly formed
-        const url = process.env.NULLCLAW_API_ENDPOINT || 'http://nullclaw-kube:18790';
-        return url.replace(/\/api\/v1\/?$/, '');
-    }
+    /**
+     * Webhook router base URL
+     * Default connects to nullclaw-kube webhook router service
+     */
+    private static get webhookUrl() {
+        // Determine which host to use
+        // - If WEBHOOK_ROUTER_URL is set, use it (direct webhook router)
+        // - Otherwise use NULLCLAW_API_ENDPOINT with /webhook path
+        const webhookUrl = process.env.WEBHOOK_ROUTER_URL;
+        if (webhookUrl) {
+            return webhookUrl.replace(/\/$/, ''); // Strip trailing slash
+        }
 
-    private static get authToken() {
-        // Auth token from nullclaw.json gateway.auth.token
-        return process.env.NULLCLAW_TOKEN || '09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83';
-    }
+        // Fallback to constructing from NULLCLAW_API_ENDPOINT
+        const nullclawUrl = process.env.NULLCLAW_API_ENDPOINT || 'http://nullclaw-kube:18790';
 
-    private static get expertAgentId() {
-        return 'expert';
+        // Strip existing paths and construct webhook URL
+        const baseUrl = nullclawUrl.replace(/\/(v1\/)?responses?$/, '')
+                                       .replace(/\/webhook$/, '');
+
+        return `${baseUrl}/webhook`;
     }
 
     /**
-     * "Create a thread" = initialize a new session locally.
-     * With NullClaw's Responses API, we don't strictly need a "create" call,
-     * but we return a session ID generated for tracking.
+     * Auth token for webhook endpoint
+     */
+    private static get authToken() {
+        return process.env.WEBHOOK_TOKEN ||
+               process.env.NULLCLAW_TOKEN ||
+               '09b9ddbc0845b3525a9ea2dffe4a0a87b1c94676ab791b83';
+    }
+
+    /**
+     * Create a thread = initialize new session
+     * Session ID is generated locally for tracking
      */
     static async createThread(): Promise<string> {
         const threadId = `sess_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
@@ -43,51 +61,73 @@ export class NullClawClient {
     }
 
     /**
-     * Stub for API compatibility — SessionManager handles message storage if needed,
-     * but NullClaw also keeps history internally when session_id is provided.
+     * Stub for API compatibility
+     * SessionManager handles message storage if needed
      */
     static async addMessage(threadId: string, content: string): Promise<void> {
-        // In this architecture, we don't need to manually store history here,
-        // but we'll log it for debugging and pass it to NullClaw in the next call.
         console.log(`[NullClawClient] Queueing message for session ${threadId}`);
     }
 
     /**
-     * Start a streaming run via NullClaw Gateway.
-     * Uses OpenResponses protocol format.
+     * Start a streaming run via webhook router
+     * Streams the response back to the client
      */
-    static async startStreamingRun(threadId: string): Promise<ReadableStream<Uint8Array> | null> {
-        // Retrieve last message if we were using a history tracker, 
-        // but for now, we'll assume the message is passed in req.body.content directly
-        // in the proxy.ts caller, and actually we'll need to pass the message here.
-        // Let's modify the signature to accept content directly as it's cleaner for v1/responses.
-        return null; // Placeholder as we refactor the proxy caller too
+    static async startStreamingRun(sessionId: string, message: string): Promise<ReadableStream | null> {
+        try {
+            const webhookUrl = this.webhookUrl;
+            console.log(`[NullClawClient] Starting stream for session ${sessionId} to ${webhookUrl}`);
+
+            const response = await fetch(webhookUrl, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify({
+                    message,
+                    session_id: sessionId,
+                    request_id: uuidv4(),
+                    agent_id: 'expert'
+                })
+            });
+
+            if (!response.ok) {
+                const error = await response.text();
+                console.error(`[NullClawClient] Webhook stream error: ${response.status}`, error);
+                return null;
+            }
+
+            return response.body;
+        } catch (error) {
+            console.error('[NullClawClient] Failed to start stream', error);
+            return null;
+        }
     }
 
     /**
-     * Send a message to NullClaw Gateway via /webhook endpoint instead of /v1/responses.
+     * Send a message to the webhook router
+     * Routes to appropriate agent based on agent_id
      */
     static async sendMessage(sessionId: string, content: string): Promise<string> {
-        const payload = {
-            message: content,
-            session_id: sessionId,
-            request_id: uuidv4()
-        };
+        const webhookUrl = this.webhookUrl;
+        const request_id = uuidv4();
 
-        console.log(`[NullClawClient] Sending request to ${this.baseUrl}/v1/responses for session ${sessionId}`);
+        console.log(`[NullClawClient] Sending request to ${webhookUrl} for session ${sessionId}`);
 
-        let retries = 2; // Increased to 2 retries just to be safe
+        let retries = 2;
         while (true) {
             try {
-                const response = await fetch(`${this.baseUrl}/v1/responses`, {
+                const response = await fetch(webhookUrl, {
                     method: 'POST',
                     headers: {
                         'Content-Type': 'application/json',
-                        'Authorization': `Bearer ${this.authToken}`,
-                        'Connection': 'close'
                     },
                     signal: AbortSignal.timeout(60000),
-                    body: JSON.stringify(payload)
+                    body: JSON.stringify({
+                        message: content,
+                        session_id: sessionId,
+                        request_id,
+                        agent_id: 'expert'
+                    })
                 });
 
                 if (!response.ok) {
@@ -96,11 +136,11 @@ export class NullClawClient {
                 }
 
                 const data = await response.json() as { response?: string, status?: string };
-                return data.response || data.status || "Acknowledged";
+                return data.response || data.status || 'Acknowledged';
             } catch (err: any) {
                 const code = err?.cause?.code || err?.code;
                 if (code === 'UND_ERR_SOCKET' && retries > 0) {
-                    console.warn(`[NullClawClient] Socket closed unexpectedly (UND_ERR_SOCKET) connecting to /v1/responses. Retrying... (${retries} retries left)`);
+                    console.warn(`[NullClawClient] Socket closed unexpectedly (UND_ERR_SOCKET). Retrying... (${retries} retries left)`);
                     retries--;
                     continue;
                 }

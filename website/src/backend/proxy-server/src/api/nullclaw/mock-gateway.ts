@@ -46,13 +46,13 @@ Common areas to explore:
 Ask "Why?" and "Can you give an example?" frequently.`;
 
 // Simple in-memory session storage
-const sessions = new Map<string, { history: Array<{role: string, content: string}> }>();
+const sessions = new Map<string, { history: Array<{ role: string, content: string }> }>();
 
 async function handleRequest(req: any, res: any) {
-    const { message, session_id, request_id } = req.body;
+    const { message, session_id, request_id, agent_id } = req.body;
 
     console.log(`[MockGateway] Session: ${session_id?.slice(0, 8)}... | Request: ${request_id?.slice(0, 8)}...`);
-    console.log(`[MockGateway] Input: ${message?.slice(0, 60)}${message?.length > 60 ? '...' : ''}`);
+    console.log(`[MockGateway] Agent: ${agent_id || 'expert'} | Input: ${message?.slice(0, 60)}${message?.length > 60 ? '...' : ''}`);
 
     // Initialize session if needed
     if (!sessions.has(session_id)) {
@@ -105,6 +105,7 @@ async function handleRequest(req: any, res: any) {
 
 app.post('/', async (req, res) => handleRequest(req, res));
 app.post('/webhook', async (req, res) => handleRequest(req, res));
+app.post('/v1/responses', async (req, res) => handleRequest(req, res));
 
 app.get('/health', (req, res) => {
     res.json({ status: 'ok', sessions: sessions.size });

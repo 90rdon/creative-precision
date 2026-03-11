@@ -1,0 +1,28 @@
+{
+  "name": "simulator",
+  "version": "1.0.0",
+  "type": "module",
+  "scripts": {
+    "install": "npm install --save-optional --no-package-lock",
+    "dev": "npx tsx cli.ts",
+    "run": "npx tsx cli.ts run",
+    "batch": "npx tsx cli.ts batch",
+    "daemon": "npx tsx cli.ts daemon",
+    "schedule": "npx tsx cli.ts schedule",
+    "analyze": "npx tsx cli.ts analyze",
+    "suggest": "npx tsx cli.ts suggest",
+    "insights": "npx tsx cli.ts insights",
+    "metrics": "npx tsx cli.ts metrics",
+    "personas": "npx tsx cli.ts personas"
+  },
+  "dependencies": {
+    "commander": "^13.1.0"
+  },
+  "devDependencies": {
+    "tsx": "^4.21.0",
+    "typescript": "~5.8.2"
+  },
+  "optionalDependencies": {
+    "pg": "^8.16.0"
+  }
+}

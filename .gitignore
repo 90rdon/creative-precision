@@ -23,6 +23,7 @@ Temporary Items
 .apdisk
 
 # Node
+node_modules/
 **/node_modules/
 npm-debug.log
 yarn-error.log
@@ -33,6 +34,7 @@ yarn-error.log
 .env
 
 **/examples/
+examples/
 
 # Kubernetes
 .lima/

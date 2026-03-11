@@ -1,63 +1,78 @@
 /**
  * NullClaw-Atlas GTM Synthesis Generator
- * 
+ *
  * Daily automated market signal ingestion and GTM report generation.
- * Aggregates data from Supabase tables: executive_insights, market_signals, assessment_events
+ * Aggregates data from Postgres tables: executive_insights, market_signals, assessment_events
  * Outputs: Daily_GTM_Report.md in workspace root
  */
 
-import { createClient } from '@supabase/supabase-js';
+import { Pool } from 'pg';
+import dotenv from 'dotenv';
+import path from 'path';
 
-const SUPABASE_URL = process.env.SUPABASE_URL || '';
-const SUPABASE_KEY = process.env.SUPABASE_SERVICE_KEY || '';
-const supabase = SUPABASE_URL && SUPABASE_KEY ? createClient(SUPABASE_URL, SUPABASE_KEY) : null;
+dotenv.config({ path: path.join(__dirname, '../../../../.env'), override: false });
+
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL || 'postgresql://nullclaw:nullclaw@100.85.130.20:5432/nullclaw',
+    max: 5,
+});
 
 /**
- * Store automated market research signals into Supabase
+ * Store automated market research signals into Postgres
  */
 export async function storeAutomatedMarketResearch(signals: MarketSignal[]) {
-  if (!supabase) {
-    console.warn('Supabase not configured. Market signals stored locally only.');
-    return { success: false, reason: 'no_supabase' };
-  }
-  
-  const { data, error } = await supabase
-    .from('market_signals')
-    .insert(signals.map(s => ({
-      ...s,
-      captured_at: new Date().toISOString()
-    })));
-  
-  if (error) {
+  try {
+    const client = await pool.connect();
+    try {
+      for (const signal of signals) {
+        await client.query(
+          `INSERT INTO market_signals (source_url, topic, signal_strength, key_insight, strategic_implication, created_at)
+           VALUES ($1, $2, $3, $4, $5, NOW())`,
+          [
+            signal.url || signal.source,
+            signal.topic,
+            5, // default signal strength
+            signal.summary,
+            ''
+          ]
+        );
+      }
+      return { success: true, count: signals.length };
+    } finally {
+      client.release();
+    }
+  } catch (error) {
     console.error('Failed to store market signals:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: String(error) };
   }
-  
-  return { success: true, count: data?.length || 0 };
 }
 
 /**
  * Log executive insight from assessment sessions
  */
 export async function logExecutiveInsight(insight: ExecutiveInsight) {
-  if (!supabase) {
-    console.warn('Supabase not configured. Insight stored locally only.');
-    return { success: false, reason: 'no_supabase' };
-  }
-  
-  const { data, error } = await supabase
-    .from('executive_insights')
-    .insert({
-      ...insight,
-      logged_at: new Date().toISOString()
-    });
-  
-  if (error) {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(
+        `INSERT INTO executive_insights (sentiment_score, identified_market_trend, gtm_feedback_quote, analysis_notes, created_at)
+         VALUES ($1, $2, $3, $4, NOW())
+         RETURNING id`,
+        [
+          insight.role,
+          insight.industry,
+          insight.insight,
+          JSON.stringify(insight)
+        ]
+      );
+      return { success: true, id: result.rows[0]?.id };
+    } finally {
+      client.release();
+    }
+  } catch (error) {
     console.error('Failed to log executive insight:', error);
-    return { success: false, error: error.message };
+    return { success: false, error: String(error) };
   }
-  
-  return { success: true, id: data?.[0]?.id };
 }
 
 /**
@@ -67,30 +82,34 @@ export async function logExecutiveInsight(insight: ExecutiveInsight) {
 export async function generateDailyGTMReport(): Promise<{ success: boolean; reportPath?: string; error?: string }> {
   const reportDate = new Date().toISOString().split('T')[0];
   const reportPath = 'Daily_GTM_Report.md';
-  
-  // Gather data (with fallbacks if Supabase unavailable)
-  const marketSignals = await fetchMarketSignals();
-  const executiveInsights = await fetchExecutiveInsights();
-  const assessmentEvents = await fetchAssessmentEvents();
-  
-  const report = generateReportMarkdown({
-    reportDate,
-    marketSignals,
-    executiveInsights,
-    assessmentEvents
-  });
-  
-  // Write report to workspace
-  const { writeSuccess, writeError } = await writeReportToFile(reportPath, report);
-  
-  if (!writeSuccess) {
-    return { success: false, error: writeError || 'Failed to write report' };
+
+  try {
+    // Gather data (with fallbacks if Postgres unavailable)
+    const marketSignals = await fetchMarketSignals();
+    const executiveInsights = await fetchExecutiveInsights();
+    const assessmentEvents = await fetchAssessmentEvents();
+
+    const report = generateReportMarkdown({
+      reportDate,
+      marketSignals,
+      executiveInsights,
+      assessmentEvents
+    });
+
+    // Write report to workspace
+    const { writeSuccess, writeError } = await writeReportToFile(reportPath, report);
+
+    if (!writeSuccess) {
+      return { success: false, error: writeError || 'Failed to write report' };
+    }
+
+    return { success: true, reportPath };
+  } catch (error) {
+    return { success: false, error: String(error) };
   }
-  
-  return { success: true, reportPath };
 }
 
-// --- Data Fetching (with Supabase fallbacks) ---
+// --- Data Fetching (with Postgres integration) ---
 
 interface MarketSignal {
   source: string;
@@ -116,55 +135,87 @@ interface AssessmentEvent {
 }
 
 async function fetchMarketSignals(): Promise<MarketSignal[]> {
-  if (!supabase) {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(
+        `SELECT source_url as source, topic, key_insight as summary, strategic_implication
+         FROM market_signals
+         ORDER BY created_at DESC
+         LIMIT 50`
+      );
+
+      return result.rows.map(row => ({
+        source: row.source,
+        topic: row.topic,
+        summary: row.summary,
+        url: row.source,
+        sentiment: 'neutral' as const
+      }));
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.warn('Postgres unavailable, using fallback market signals:', error);
     return generateFallbackMarketSignals();
   }
-  
-  const { data, error } = await supabase
-    .from('market_signals')
-    .select('*')
-    .order('captured_at', { ascending: false })
-    .limit(50);
-  
-  if (error || !data) {
-    console.warn('Using fallback market signals:', error?.message);
-    return generateFallbackMarketSignals();
-  }
-  
-  return data;
 }
 
 async function fetchExecutiveInsights(): Promise<ExecutiveInsight[]> {
-  if (!supabase) {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(
+        `SELECT sentiment_score, identified_market_trend, gtm_feedback_quote, analysis_notes, session_id
+         FROM executive_insights
+         ORDER BY created_at DESC
+         LIMIT 20`
+      );
+
+      return result.rows.map(row => ({
+        role: row.sentiment_score || 'Unknown',
+        industry: row.identified_market_trend || '',
+        friction_category: 'general',
+        insight: row.gtm_feedback_quote || '',
+        session_id: row.session_id
+      }));
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.warn('Failed to fetch executive insights:', error);
     return [];
   }
-  
-  const { data } = await supabase
-    .from('executive_insights')
-    .select('*')
-    .order('logged_at', { ascending: false })
-    .limit(20);
-  
-  return data || [];
 }
 
 async function fetchAssessmentEvents(): Promise<AssessmentEvent[]> {
-  if (!supabase) {
+  try {
+    const client = await pool.connect();
+    try {
+      const result = await client.query(
+        `SELECT event_type, event_data, session_id, dwell_time_seconds
+         FROM assessment_events
+         ORDER BY created_at DESC
+         LIMIT 30`
+      );
+
+      return result.rows.map(row => ({
+        event_type: row.event_type,
+        topic: row.event_data?.topic || 'general',
+        duration_seconds: row.dwell_time_seconds,
+        session_id: row.session_id
+      }));
+    } finally {
+      client.release();
+    }
+  } catch (error) {
+    console.warn('Failed to fetch assessment events:', error);
     return [];
   }
-  
-  const { data } = await supabase
-    .from('assessment_events')
-    .select('*')
-    .order('event_timestamp', { ascending: false })
-    .limit(30);
-  
-  return data || [];
 }
 
 function generateFallbackMarketSignals(): MarketSignal[] {
-  // Fallback when Supabase is unavailable or empty
-  const today = new Date().toISOString().split('T')[0];
+  // Fallback when Postgres is unavailable or empty
   return [
     {
       source: 'industry_scan',
@@ -196,10 +247,10 @@ function generateReportMarkdown(data: {
   reportDate: string;
   marketSignals: MarketSignal[];
   executiveInsights: ExecutiveInsight[];
-  assessmentEvents: AssessmentEventEvent[];
+  assessmentEvents: AssessmentEvent[];
 }): string {
   const { reportDate, marketSignals, executiveInsights, assessmentEvents } = data;
-  
+
   return `# Daily GTM Report — NullClaw-Atlas
 **Generated:** ${reportDate}
 **System:** NullClaw-Atlas (Creative Precision Workspace)
@@ -220,7 +271,7 @@ ${marketSignals.map(signal => formatMarketSignal(signal)).join('\n\n')}
 
 ## Executive Insights (${executiveInsights.length} logged)
 
-${executiveInsights.length > 0 
+${executiveInsights.length > 0
   ? executiveInsights.map(insight => formatExecutiveInsight(insight)).join('\n\n')
   : '*No executive insights logged yet. Run assessment sessions to populate.*'
 }
@@ -265,7 +316,7 @@ function generateExecutiveSummary(
     : signals.filter(s => s.sentiment === 'positive').length > signals.length / 2
     ? 'optimistic'
     : 'mixed';
-  
+
   return `Market sentiment is **${dominantSentiment}**. ${signals.length} market signals captured. ${insights.length} executive insights logged. ${events.length} assessment events tracked.
 
 **Dominant Pattern:** ${signals.find(s => s.topic.includes('pilot') || s.topic.includes('production'))?.summary || 'Pilot-to-production gap remains the central friction point for mid-market AI adoption.'}`;
@@ -291,7 +342,7 @@ function formatAssessmentTelemetry(events: AssessmentEvent[]): string {
     acc[e.topic] = (acc[e.topic] || 0) + 1;
     return acc;
   }, {} as Record<string, number>);
-  
+
   return Object.entries(byTopic)
     .map(([topic, count]) => `- **${topic}:** ${count} events`)
     .join('\n');
@@ -299,28 +350,28 @@ function formatAssessmentTelemetry(events: AssessmentEvent[]): string {
 
 function generateRecommendations(signals: MarketSignal[], insights: ExecutiveInsight[]): string {
   const recommendations: string[] = [];
-  
+
   if (signals.some(s => s.topic.includes('governance') || s.topic.includes('headcount'))) {
     recommendations.push('- **Governance Angle:** Market data supports the "framework-first" positioning. Consider emphasizing operational readiness over technical capability in messaging.');
   }
-  
+
   if (insights.some(i => i.friction_category === 'pilot-to-production')) {
     recommendations.push('- **Friction Pattern:** Multiple executives citing pilot-to-production gaps. This validates the core thesis — consider making this the lead narrative.');
   }
-  
+
   if (recommendations.length === 0) {
     recommendations.push('- **Data Insufficient:** Run more assessment sessions and market scans to generate actionable recommendations.');
   }
-  
+
   return recommendations.join('\n');
 }
 
 // --- File I/O ---
 
-async function writeReportToFile(path: string, content: string): Promise<{ writeSuccess: boolean; writeError?: string }> {
+async function writeReportToFile(filePath: string, content: string): Promise<{ writeSuccess: boolean; writeError?: string }> {
   // This would normally use fs.writeFile, but in this runtime we delegate to the host
   // For now, return success and let the caller handle actual file writing
-  console.log(`Report would be written to: ${path}`);
+  console.log(`Report would be written to: ${filePath}`);
   console.log(content);
   return { writeSuccess: true };
 }
@@ -341,5 +392,8 @@ if (process.argv[1]?.includes('gtm_synthesis_generator')) {
     .catch(err => {
       console.error('Unexpected error:', err);
       process.exit(1);
+    })
+    .finally(() => {
+      pool.end();
     });
 }

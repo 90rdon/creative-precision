@@ -1,4 +1,4 @@
-import { redis, supabase } from '../db';
+import { redis, pool } from '../db';
 
 export async function archiveQuietSession(sessionId: string) {
     const sessionData = await redis.get(`session:${sessionId}`);
@@ -7,20 +7,21 @@ export async function archiveQuietSession(sessionId: string) {
     try {
         const session = JSON.parse(sessionData);
 
-        // Move to supabase if configure
-        if (supabase) {
-            const { error } = await supabase.from('assessment_sessions').upsert({
-                id: sessionId,
-                transcript: session.history || [],
-                status: 'quiet',
-                updated_at: new Date().toISOString()
-            });
-
-            if (error) {
-                console.error("Supabase archival error:", error.message, error.details);
-            } else {
-                console.log(`[Tier 2] Successfully archived session ${sessionId} to Supabase`);
-            }
+        // Archive to Postgres
+        const client = await pool.connect();
+        try {
+            await client.query(
+                `INSERT INTO assessment_sessions (id, session_status, transcript, updated_at, created_at)
+                 VALUES ($1, $2, $3, NOW(), NOW())
+                 ON CONFLICT (id) DO UPDATE SET
+                   transcript = $3,
+                   session_status = $2,
+                   updated_at = NOW()`,
+                [sessionId, 'quiet', JSON.stringify(session.history || [])]
+            );
+            console.log(`[Tier 2] Successfully archived session ${sessionId} to Postgres`);
+        } finally {
+            client.release();
         }
 
         // Optionally delete from redis if purely cold

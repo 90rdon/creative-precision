@@ -1,0 +1,10 @@
+{
+  "id": "81fb4798-3dfa-48c1-aea9-290528375416",
+  "personaId": "icp2-A",
+  "strategy": "standard",
+  "status": "failed",
+  "turnsCompleted": 0,
+  "startedAt": "2026-03-09T12:07:06.126Z",
+  "completedAt": "2026-03-09T12:07:06.127Z",
+  "errorMessage": "fetch failed"
+}

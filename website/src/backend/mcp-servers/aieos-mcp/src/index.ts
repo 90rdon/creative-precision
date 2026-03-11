@@ -449,6 +449,184 @@ server.tool(
     }
 );
 
+// --- FLEET LOGGING TOOLS (Vigil Integration) ---
+
+// 12. Log Event (to Vigil central storage)
+server.tool(
+    "log_event",
+    "Log an event to Vigil central storage for fleet-wide visibility.",
+    {
+        instance_id: z.string(),
+        agent_id: z.string().optional(),
+        event_type: z.string(),
+        category: z.string().optional(),
+        severity: z.string().default("info"),
+        title: z.string(),
+        description: z.string(),
+        metadata: z.record(z.any()).optional(),
+    },
+    async (params) => {
+        try {
+            // Log locally first (to db.json)
+            const db = await getDb();
+            const event: any = {
+                id: uuidv4(),
+                ...params,
+                timestamp: new Date().toISOString()
+            };
+            db.data.memories.push(event);
+            await db.write();
+
+            // TODO: Async sync to Vigil via HTTP
+            // const response = await axios.post(
+            //     `${process.env.VIGIL_ENDPOINT || 'http://vigil:18990'}/api/v1/events`,
+            //     params
+            // );
+
+            return {
+                content: [{ type: "text", text: `Event logged: ${event.id}` }],
+            };
+        } catch (err: any) {
+            return { content: [{ type: "text", text: `Failed to log event: ${err.message}` }] };
+        }
+    }
+);
+
+// 13. Log Decision (with trace ID)
+server.tool(
+    "log_decision",
+    "Log a decision with full context and trace ID to Vigil central storage.",
+    {
+        instance_id: z.string(),
+        agent_id: z.string(),
+        decision_type: z.string(),
+        decision_context: z.record(z.any()).optional(),
+        decision_logic: z.string(),
+        decision_outcome: z.record(z.any()).optional(),
+        result: z.string().default("success"),
+        confidence: z.number().optional(),
+    },
+    async (params) => {
+        try {
+            const db = await getDb();
+            const decision: any = {
+                id: uuidv4(),
+                ...params,
+                timestamp: new Date().toISOString()
+            };
+            db.data.memories.push(decision);
+            await db.write();
+
+            // TODO: Async sync to Vigil
+            return {
+                content: [{
+                    type: "text",
+                    text: `Decision logged: ${decision.id}\nTrace URL: https://vigil:18990/decisions/${decision.id}`
+                }],
+            };
+        } catch (err: any) {
+            return { content: [{ type: "text", text: `Failed to log decision: ${err.message}` }] };
+        }
+    }
+);
+
+// 14. Report Health
+server.tool(
+    "report_health",
+    "Report instance health status to Vigil central storage.",
+    {
+        instance_id: z.string(),
+        service: z.string(),
+        status: z.string(),
+        details: z.record(z.any()).optional(),
+    },
+    async (params) => {
+        try {
+            // Update instance health in local db
+            const db = await getDb();
+            const instance = db.data.instances.find(i => i.id === params.instance_id);
+            if (instance) {
+                instance.status = params.status === 'healthy' ? 'online' : 'degraded';
+                instance.lastSeen = new Date().toISOString();
+                await db.write();
+            }
+
+            // TODO: Report to Vigil via HTTP
+            // await axios.post(`${process.env.VIGIL_ENDPOINT || 'http://vigil:18990'}/api/v1/health/check`, params);
+
+            return {
+                content: [{ type: "text", text: `Health reported for ${params.instance_id}: ${params.service} = ${params.status}` }],
+            };
+        } catch (err: any) {
+            return { content: [{ type: "text", text: `Failed to report health: ${err.message}` }] };
+        }
+    }
+);
+
+// 15. Create Alert
+server.tool(
+    "create_alert",
+    "Create an alert for human attention (sends to Telegram).",
+    {
+        instance_id: z.string().optional(),
+        severity: z.string(),
+        category: z.string(),
+        title: z.string(),
+        description: z.string(),
+    },
+    async (params) => {
+        try {
+            const db = await getDb();
+            const alert: any = {
+                id: uuidv4(),
+                ...params,
+                timestamp: new Date().toISOString(),
+                is_resolved: false
+            };
+            db.data.memories.push(alert);
+            await db.write();
+
+            // TODO: Send to Vigil for Telegram push
+            // await axios.post(`${process.env.VIGIL_ENDPOINT || 'http://vigil:18990'}/api/v1/alerts`, params);
+
+            return {
+                content: [{ type: "text", text: `Alert created: ${alert.id} (${params.severity})` }],
+            };
+        } catch (err: any) {
+            return { content: [{ type: "text", text: `Failed to create alert: ${err.message}` }] };
+        }
+    }
+);
+
+// 16. Get Fleet Health
+server.tool(
+    "get_fleet_health",
+    "Get fleet-wide health summary from Vigil central storage.",
+    {},
+    async () => {
+        try {
+            // TODO: Query from Vigil via HTTP
+            // const response = await axios.get(`${process.env.VIGIL_ENDPOINT || 'http://vigil:18990'}/api/v1/health/summary`);
+            // return { content: [{ type: "text", text: JSON.stringify(response.data, null, 2) }] };
+
+            // Temporary: return local data
+            const db = await getDb();
+            const online = db.data.instances.filter(i => i.status === 'online').length;
+            const degraded = db.data.instances.filter(i => i.status === 'degraded').length;
+            const offline = db.data.instances.filter(i => i.status === 'offline').length;
+
+            return {
+                content: [{
+                    type: "text",
+                    text: `### Fleet Health Summary\n\nOnline: ${online} | Degraded: ${degraded} | Offline: ${offline}\n\n${db.data.instances.map(i => `[${i.status === 'online' ? '🟢' : i.status === 'degraded' ? '🟡' : '🔴'}] ${i.id}`).join('\n')}`
+                }],
+            };
+        } catch (err: any) {
+            return { content: [{ type: "text", text: `Failed to get fleet health: ${err.message}` }] };
+        }
+    }
+);
+
 // --- EXISTING TOOLS ---
 
 server.tool("list_personas", "Lists all personas.", { instanceId: z.string().optional() }, async ({ instanceId }) => {

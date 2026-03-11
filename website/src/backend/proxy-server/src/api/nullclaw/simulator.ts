@@ -1,5 +1,10 @@
+/**
+ * DEPRECATED — Pre-006 simulator. Uses direct Gemini calls, not /webhook.
+ * Canonical simulator: scripts/simulator/simulator-runner.ts
+ * Do not run this file for new simulations.
+ */
 import { GoogleGenAI } from '@google/genai';
-import { createClient } from '@supabase/supabase-js';
+import { query } from '../../db/postgres';
 import { APP_CONFIG, getSynthesisPrompt } from '../../gemini/prompts';
 import { v4 as uuidv4 } from 'uuid';
 import dotenv from 'dotenv';
@@ -7,10 +12,6 @@ import path from 'path';
 
 dotenv.config({ path: path.join(__dirname, '../../../../.env'), override: true });
 delete process.env.GOOGLE_API_KEY; // Explicitly drop the expired shell key
-
-const supabaseUrl = process.env.SUPABASE_URL || '';
-const supabaseKey = process.env.SUPABASE_ANON_KEY || '';
-const supabase = supabaseUrl && supabaseKey ? createClient(supabaseUrl, supabaseKey) : null;
 
 const aiClient = new GoogleGenAI({ apiKey: process.env.GEMINI_API_KEY! });
 const SIMULATOR_MODEL = "gemini-2.0-flash"; // The model acting as the "CEO"
@@ -154,51 +155,64 @@ async function runBranchingSimulation() {
 
     const synthObj = JSON.parse(synthesisResult.candidates?.[0]?.content?.parts?.[0]?.text || '{}');
 
-    if (supabase) {
+    try {
         // 0. Create the session first to satisfy foreign key constraint
-        await supabase.from('assessment_sessions').insert({
-            id: sessionId,
-            status: 'simulated',
-            transcript: history,
-            updated_at: new Date().toISOString()
-        });
+        await query(
+            `INSERT INTO assessment_sessions (id, session_status, transcript, updated_at, created_at)
+             VALUES ($1, $2, $3, NOW(), NOW())`,
+            [sessionId, 'simulated', JSON.stringify(history)]
+        );
 
         // 1. Log simulation events
-        await supabase.from('assessment_events').insert({
-            session_id: sessionId,
-            event_type: 'simulation_run',
-            payload: {
-                is_simulated: true,
-                simulator_strategy: scenario.strategy,
-                persona: scenario.name,
-                turns: turnCount,
-                evaluation: evalObj
-            }
-        });
+        await query(
+            `INSERT INTO assessment_events (session_id, event_type, event_data, created_at)
+             VALUES ($1, $2, $3, NOW())`,
+            [
+                sessionId,
+                'simulation_run',
+                JSON.stringify({
+                    is_simulated: true,
+                    simulator_strategy: scenario.strategy,
+                    persona: scenario.name,
+                    turns: turnCount,
+                    evaluation: evalObj
+                })
+            ]
+        );
 
-        // 2. Log simulated executive insight
-        const insightPayload = {
-            session_id: sessionId,
-            sentiment_score: evalObj.score.toString(),
-            identified_market_trend: synthObj.pattern_worth_examining || 'Simulated Failure to Diagnose',
-            gtm_feedback_quote: synthObj.heres_what_im_hearing || 'Simulated Lack of Insight',
-            analysis_notes: JSON.stringify({
-                is_simulated: true,
-                simulator_strategy: scenario.strategy,
-                persona: scenario.name,
-                expert_weakness: evalObj.expert_weakness_identified,
-                passed: evalObj.passed,
-                failure_reason: evalObj.failure_reason,
-                raw_synthesis: synthObj
-            })
+        // 2. Log simulation job for observability
+        await query(
+            `INSERT INTO simulator_jobs (session_id, persona_name, strategy, status, turns_completed, created_at, started_at, completed_at)
+             VALUES ($1, $2, $3, $4, $5, NOW(), NOW(), NOW())`,
+            [sessionId, scenario.name, scenario.strategy, 'completed', turnCount]
+        );
+
+        // 3. Log simulated executive insight
+        const insightNotes = {
+            is_simulated: true,
+            simulator_strategy: scenario.strategy,
+            persona: scenario.name,
+            expert_weakness: evalObj.expert_weakness_identified,
+            passed: evalObj.passed,
+            failure_reason: evalObj.failure_reason,
+            raw_synthesis: synthObj
         };
 
-        const { error } = await supabase.from('executive_insights').insert(insightPayload);
-        if (error) {
-            console.error("Failed to log simulated insight:", error);
-        } else {
-            console.log(`[Supabase] Injected simulation telemetry successfully for ${sessionId}`);
-        }
+        await query(
+            `INSERT INTO executive_insights (session_id, sentiment_score, identified_market_trend, gtm_feedback_quote, analysis_notes, created_at)
+             VALUES ($1, $2, $3, $4, $5, NOW())`,
+            [
+                sessionId,
+                evalObj.score.toString(),
+                synthObj.pattern_worth_examining || 'Simulated Failure to Diagnose',
+                synthObj.heres_what_im_hearing || 'Simulated Lack of Insight',
+                JSON.stringify(insightNotes)
+            ]
+        );
+
+        console.log(`[Postgres] Injected simulation telemetry successfully for ${sessionId}`);
+    } catch (error) {
+        console.error("Failed to log simulated insight:", error);
     }
 }
 

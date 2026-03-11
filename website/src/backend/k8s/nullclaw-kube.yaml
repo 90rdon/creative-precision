@@ -189,11 +189,11 @@ spec:
       volumes:
       - name: nullclaw-config
         hostPath:
-          path: /Volumes/9_0rdon-ssd/9_0rdon/Projects/creative-precision/nullclaw_data
+          path: /Volumes/9_0rdon-ssd/9_0rdon/Projects/creative-precision/website/src/backend/nullclaw
           type: DirectoryOrCreate
       - name: nullclaw-workspace
         hostPath:
-          path: /Volumes/9_0rdon-ssd/9_0rdon/Projects/creative-precision/nullclaw_data/workspace
+          path: /Volumes/9_0rdon-ssd/9_0rdon/Projects/creative-precision/website/src/backend/nullclaw/workspace
           type: DirectoryOrCreate
       - name: ts-socket
         emptyDir: {}

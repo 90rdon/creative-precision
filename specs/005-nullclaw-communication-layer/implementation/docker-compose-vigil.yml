@@ -1,0 +1,100 @@
+# Vigil Fleet Services Docker Compose
+# Runs central storage, event logger, and alert bot on Vigil Pi
+
+services:
+  # PostgreSQL Central Storage
+  postgres:
+    image: postgres:16-alpine
+    container_name: vigil-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: nullclaw
+      POSTGRES_PASSWORD: nullclaw
+      POSTGRES_DB: postgres
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./fleet_schema.sql:/docker-entrypoint-initdb.d/init.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U nullclaw"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Redis Pub/Sub
+  redis:
+    image: redis:7-alpine
+    container_name: vigil-redis
+    restart: unless-stopped
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  # Qdrant Vector DB
+  qdrant:
+    image: qdrant/qdrant:latest
+    container_name: vigil-qdrant
+    restart: unless-stopped
+    ports:
+      - "6333:6333"
+      - "6334:6334"
+    volumes:
+      - qdrant_data:/qdrant/storage
+
+  # Event Logger Service
+  event-logger:
+    build:
+      context: ./services/event-logger
+      dockerfile: Dockerfile
+    container_name: vigil-event-logger
+    restart: unless-stopped
+    ports:
+      - "18990:18990"
+    environment:
+      PORT: 18990
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_NAME: postgres
+      DB_USER: nullclaw
+      DB_PASSWORD: nullclaw
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost:18990/api/v1/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+
+  # Telegram Alert Bot
+  telegram-bot:
+    image: node:20-alpine
+    container_name: vigil-telegram-bot
+    restart: unless-stopped
+    working_dir: /app
+    command: npm start
+    volumes:
+      - ./services/telegram-bot/:/app
+    environment:
+      TELEGRAM_BOT_TOKEN: ${TELEGRAM_BOT_TOKEN}
+      TELEGRAM_CHAT_ID: ${TELEGRAM_CHAT_ID}
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    depends_on:
+      - redis
+
+volumes:
+  postgres_data:
+  redis_data:
+  qdrant_data:

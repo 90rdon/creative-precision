@@ -1,0 +1,21 @@
+{
+  "name": "aieos-mcp",
+  "version": "1.0.0",
+  "description": "Agent Intelligence and Execution Operating System — MCP Server",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "npx tsx src/index.ts",
+    "build": "tsc",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.27.1",
+    "zod": "^4.3.6"
+  },
+  "devDependencies": {
+    "@types/node": "^22.14.0",
+    "typescript": "~5.8.2",
+    "tsx": "^4.21.0"
+  }
+}

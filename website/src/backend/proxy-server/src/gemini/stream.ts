@@ -136,18 +136,27 @@ export const handleSynthesisRequest = async (socket: Socket, history: any[], ses
             });
 
             // Log to executive_insights so the Synthesizer agent has data to read
-            import('../db').then(({ supabase }) => {
-                if (supabase) {
-                    supabase.from('executive_insights').insert({
-                        session_id: sessionId,
-                        sentiment_score: 'N/A', // Omitted from new prompt schema
-                        identified_market_trend: resultObj.bottleneck_diagnosis || 'Unknown',
-                        gtm_feedback_quote: resultObj.boardroom_insight || 'Unknown',
-                        analysis_notes: JSON.stringify(resultObj)
-                    }).then(({ error }) => {
-                        if (error) console.error("Failed to log executive insight:", error);
-                        else console.log(`[Tier 2] Successfully logged executive insight for ${sessionId}`);
-                    });
+            import('../db').then(async ({ pool }) => {
+                try {
+                    const client = await pool.connect();
+                    try {
+                        await client.query(
+                            `INSERT INTO executive_insights (session_id, sentiment_score, identified_market_trend, gtm_feedback_quote, analysis_notes, created_at)
+                             VALUES ($1, $2, $3, $4, $5, NOW())`,
+                            [
+                                sessionId,
+                                'N/A',
+                                resultObj.bottleneck_diagnosis || 'Unknown',
+                                resultObj.boardroom_insight || 'Unknown',
+                                JSON.stringify(resultObj)
+                            ]
+                        );
+                        console.log(`[Tier 2] Successfully logged executive insight for ${sessionId}`);
+                    } finally {
+                        client.release();
+                    }
+                } catch (error) {
+                    console.error("Failed to log executive insight:", error);
                 }
             });
         }
